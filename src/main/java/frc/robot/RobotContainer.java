@@ -6,11 +6,14 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.Command;
+
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.LogGyroData;
+import frc.robot.commands.TurnToAngleProfiled;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
-import edu.wpi.first.wpilibj2.command.Command;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -24,6 +27,7 @@ public class RobotContainer {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+  private final LogGyroData m_logGyro = new LogGyroData(m_robotDrive);
 
   // TODO: Move port to constants
   private final XboxController m_driverController = new XboxController(0);
@@ -33,6 +37,7 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
+    // Set default drivetrain command to tank driving (happens during teleop)
     m_robotDrive.setDefaultCommand(
       new DefaultDrive(m_robotDrive, m_driverController::getLeftY, m_driverController::getRightY)
     );
@@ -53,6 +58,11 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return m_autoCommand;
+    // return m_autoCommand;
+    return new TurnToAngleProfiled(15, m_robotDrive);
+  }
+
+  public Command getLogCommand() {
+    return m_logGyro;
   }
 }

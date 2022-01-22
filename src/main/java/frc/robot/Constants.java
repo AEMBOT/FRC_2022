@@ -22,5 +22,39 @@ public final class Constants {
         public static final int kRightFront = 1;
         public static final int kRightCenter = 2;
         public static final int kRightBack = 3;
+
+        // Split PID-related constants based on whether robot is turning/going straight
+        public static final class StraightPID {
+            // Basic PID constants
+            public static final double kP = 1;
+            public static final double kI = 0;
+            public static final double kD = 0;
+
+            // Profiling constants
+            public static final double kMaxVelocityMetersPerSecond = 1.5;
+            public static final double kMaxAccelerationMeterPerSecondSquared = 2;
+
+            // Feedforward
+            public static final double kSVolts = 0.131;
+            // ~4.13s at 0.4 power
+            public static final double kVVoltMetersPerSecond = 0;
+        }
+
+        public static final class TurnPID {
+            public static final double kP = 0.1;
+            public static final double kI = 0;
+            public static final double kD = 0.2;
+            
+            // Profiling
+            public static final double kMaxVelocityDegreesPerSecond = 90;
+            public static final double kMaxAccelerationDegreesPerSecondSquared = 90;
+
+            // Feedforward
+            // TODO: Tune these for turning (taken from 2020 code)
+            // Measured: 0.248 (joystick input)
+            public static final double kSVolts = 0.245; 
+            // ~4 seconds per rotation at 0.4 power
+            public static final double kVVoltRadiansPerSecond = 1.45;
+        }
     }
 }
