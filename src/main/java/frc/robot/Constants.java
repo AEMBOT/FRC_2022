@@ -14,6 +14,11 @@ package frc.robot;
  */
 public final class Constants {
     public static final class DriveConstants {
+        // Wheels are 8 inches in diameter, so their circumference can be calculated
+        // (converted to meters for convenience)
+        public static final double kWheelCircumferenceMeters = Math.PI * 8 / 39.3701;
+
+
         // Motor controller ports (on 2019 bot)
         public static final int kLeftFront = 8;
         public static final int kLeftCenter = 7;
@@ -22,6 +27,7 @@ public final class Constants {
         public static final int kRightFront = 1;
         public static final int kRightCenter = 2;
         public static final int kRightBack = 3;
+
 
         // Split PID-related constants based on whether robot is turning/going straight
         public static final class StraightPID {

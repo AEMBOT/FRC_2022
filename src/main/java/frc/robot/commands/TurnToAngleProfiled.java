@@ -17,7 +17,7 @@ public class TurnToAngleProfiled extends ProfiledPIDCommand {
         super(
             new ProfiledPIDController(kP, kI, kD,
                 new TrapezoidProfile.Constraints(kMaxVelocityDegreesPerSecond, kMaxAccelerationDegreesPerSecondSquared)), 
-            () -> drive.getHeading().getDegrees(), goalAngle,
+            () -> drive.getHeading(), goalAngle,
             // (output, setpoint) -> drive.arcadeDrive(0, output + m_feedforward.calculate(setpoint.velocity)), drive);
             (output, setpoint) -> drive.arcadeDrive(0, output), drive);
     }
