@@ -36,7 +36,7 @@ public final class Constants {
             public static final double kI = 0;
             public static final double kD = 0;
 
-            // Profiling constants
+            // Profiling
             public static final double kMaxVelocityMetersPerSecond = 1.5;
             public static final double kMaxAccelerationMeterPerSecondSquared = 2;
 
@@ -51,6 +51,7 @@ public final class Constants {
             public static final double kD = 0.2;
             
             // Profiling
+            // TODO: These might have to be in meters per second
             public static final double kMaxVelocityDegreesPerSecond = 90;
             public static final double kMaxAccelerationDegreesPerSecondSquared = 90;
 

@@ -71,6 +71,9 @@ public class DriveSubsystem extends SubsystemBase {
         if (m_debug) {
             SmartDashboard.putNumber("Robot Heading", getHeading());
 
+            SmartDashboard.putNumber("Left Velocity", m_centerLeftEncoder.getVelocity());
+            SmartDashboard.putNumber("Right Velocity", m_centerRightEncoder.getVelocity());
+
             // TODO: Figure out how to log motor voltages
         }
     }
@@ -111,12 +114,20 @@ public class DriveSubsystem extends SubsystemBase {
 
         // Set encoders to output measurements in meters (converted from rotations)
         m_centerLeftEncoder.setPositionConversionFactor(kWheelCircumferenceMeters);
+        m_centerLeftEncoder.setVelocityConversionFactor(kWheelCircumferenceMeters);
+
         m_centerRightEncoder.setPositionConversionFactor(kWheelCircumferenceMeters);
+        m_centerRightEncoder.setVelocityConversionFactor(kWheelCircumferenceMeters);
     }
 
     /** Gets the heading of the robot in degrees (-180 to 180). */
     public double getHeading() {
         return m_ahrs.getYaw();
+    }
+
+    /** Resets the robot heading to 0 degrees. */
+    public void resetHeading() {
+        m_ahrs.zeroYaw();
     }
 
     /**
