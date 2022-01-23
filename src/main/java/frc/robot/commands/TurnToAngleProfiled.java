@@ -10,17 +10,18 @@ import frc.robot.subsystems.DriveSubsystem;
 
 public class TurnToAngleProfiled extends ProfiledPIDCommand {
 
-    // private static final SimpleMotorFeedforward m_feedforward =
-    //     new SimpleMotorFeedforward(kSVolts, kVVoltRadiansPerSecond);
+    private static final SimpleMotorFeedforward m_feedforward =
+        new SimpleMotorFeedforward(kSVolts, kVVoltDegreesPerSecond);
 
     public TurnToAngleProfiled(double goalAngle, DriveSubsystem drive) {
         super(
             new ProfiledPIDController(kP, kI, kD,
                 new TrapezoidProfile.Constraints(kMaxVelocityDegreesPerSecond, kMaxAccelerationDegreesPerSecondSquared)), 
-            // TODO: A negative angle might be a problem, so I should probably correct for that
             () -> drive.getHeading(), goalAngle,
-            // (output, setpoint) -> drive.arcadeDrive(0, output + m_feedforward.calculate(setpoint.velocity)), drive);
-            (output, setpoint) -> drive.arcadeDrive(0, output), drive);
+            (output, setpoint) -> drive.arcadeDrive(0, output + m_feedforward.calculate(setpoint.velocity)), drive);
+
+        // Reset the robot's heading before moving to make goalAngle relative to its current rotation
+        drive.resetHeading();
     }
 
     @Override
