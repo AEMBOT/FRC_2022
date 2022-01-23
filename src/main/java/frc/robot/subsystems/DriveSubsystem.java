@@ -50,6 +50,7 @@ public class DriveSubsystem extends SubsystemBase {
     // Whether or not to log debug information to the SmartDashboard
     private final boolean m_debug = true;
 
+    /** Creates a new DriveSubsystem. */
     public DriveSubsystem() {
         // Invert the left motors to drive in the correct direction
         m_leftMotors.setInverted(true);
@@ -57,7 +58,7 @@ public class DriveSubsystem extends SubsystemBase {
         // Reset the encoders & change their distance readings to meters
         setupEncoders();
         
-        // Initialize the robot's position on the field
+        // Initialize the tracking of the robot's position on the field
         m_odometry = new DifferentialDriveOdometry(new Rotation2d(getHeading()));
     }
 
@@ -74,23 +75,35 @@ public class DriveSubsystem extends SubsystemBase {
         }
     }
 
+    /**
+     * Tank-style drive of the robot.
+     * @param left The power to run the left motors at
+     * @param right The power to run the right motors at
+     */
     public void tankDrive(double left, double right) {
         m_drive.tankDrive(left, right);
     }
 
+    /**
+     * Arcade-style drive of the robot.
+     * @param speed The forward-backward speed to run the motors at
+     * @param rotation The rotation speed to run the motors at
+     */
     public void arcadeDrive(double speed, double rotation) {
         m_drive.arcadeDrive(speed, rotation);
     }
 
+    /** Gets the position of the center left encoder in meters. */
     public double getLeftEncoderPosition() {
         return m_centerLeftEncoder.getPosition();
     }
 
+    /** Gets the position of the center right encoder in meters. */
     public double getRightEncoderPosition() {
         return m_centerRightEncoder.getPosition();
     }
 
-    // TODO: I don't know if this is actually how you should reset the encoders
+    /** Resets the center motor encoders on each side & changes their output unit to inches */
     public void setupEncoders() {
         // Reset the motor encoders
         m_centerLeftEncoder.setPosition(0);
@@ -101,14 +114,16 @@ public class DriveSubsystem extends SubsystemBase {
         m_centerRightEncoder.setPositionConversionFactor(kWheelCircumferenceMeters);
     }
 
-    /**
-     * Gets the heading of the robot
-     * @return
-     */
+    /** Gets the heading of the robot in degrees (-180 to 180). */
     public double getHeading() {
         return m_ahrs.getYaw();
     }
 
+    /**
+     * Updates the DifferentialDriveOdometry instance variable.
+     * It keeps track of where the robot is on the field, but can get thrown off
+     * if the robot is bumped into/bumps into something.
+     */
     private void updateOdometry() {
         double currentLeftPosition = getLeftEncoderPosition();
         double currentRightPosition = getRightEncoderPosition();
