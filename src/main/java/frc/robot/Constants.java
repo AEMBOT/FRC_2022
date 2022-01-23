@@ -42,8 +42,7 @@ public final class Constants {
 
             // Feedforward
             public static final double kSVolts = 0.131;
-            // ~4.13s at 0.4 power
-            public static final double kVVoltMetersPerSecond = 0;
+            public static final double kVVoltMetersPerSecond = 0.269 / 0.8856;
         }
 
         public static final class TurnPID {
@@ -56,11 +55,8 @@ public final class Constants {
             public static final double kMaxAccelerationDegreesPerSecondSquared = 90;
 
             // Feedforward
-            // TODO: Tune these for turning (taken from 2020 code)
-            // Measured: 0.248 (joystick input)
             public static final double kSVolts = 0.245; 
-            // ~4 seconds per rotation at 0.4 power
-            public static final double kVVoltRadiansPerSecond = 1.45;
+            public static final double kVVoltDegreesPerSecond = 0.155 / 90;
         }
     }
 }
