@@ -20,8 +20,8 @@ public class TurnToAngleProfiled extends ProfiledPIDCommand {
             () -> drive.getHeading(), goalAngle,
             (output, setpoint) -> drive.arcadeDrive(0, output + m_feedforward.calculate(setpoint.velocity)), drive);
 
-        // Reset the robot's heading before moving to make goalAngle relative to its current rotation
-        drive.resetHeading();
+        // Make gyro values wrap around to avoid taking the long route to an angle
+        getController().enableContinuousInput(-180, 180);
     }
 
     @Override

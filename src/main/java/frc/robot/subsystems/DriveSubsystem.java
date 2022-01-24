@@ -70,7 +70,7 @@ public class DriveSubsystem extends SubsystemBase {
         // Log drive-related informatin to SmartDashboard if specified
         if (m_debug) {
             SmartDashboard.putNumber("Robot Heading", getHeading());
-            SmartDashboard.putNumber("Rotation Velocity", m_ahrs.getVelocityZ());
+            SmartDashboard.putNumber("Rotation Velocity", m_ahrs.getRate());
 
             SmartDashboard.putNumber("Left Velocity", m_centerLeftEncoder.getVelocity());
             SmartDashboard.putNumber("Right Velocity", m_centerRightEncoder.getVelocity());
