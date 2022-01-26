@@ -24,7 +24,7 @@ public class RobotContainer {
 
   private final TurnToAngleProfiled m_autoCommand = new TurnToAngleProfiled(15, m_robotDrive);
 
-  // TODO: Move port to constants
+  // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -32,9 +32,9 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    // Set default drivetrain command to tank driving (happens during teleop)
+    // Set default drivetrain command to arcade driving (happens during teleop)
     m_robotDrive.setDefaultCommand(
-      new DefaultDrive(m_robotDrive, m_driverController::getLeftY, m_driverController::getRightY)
+      new DefaultDrive(m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX)
     );
   }
 
