@@ -46,9 +46,9 @@ public final class Constants {
         }
 
         public static final class TurnPID {
-            public static final double kP = 0.1;
+            public static final double kP = 0;
             public static final double kI = 0;
-            public static final double kD = 0.2;
+            public static final double kD = 0;
             
             // Profiling
             // TODO: These might have to be in meters per second
@@ -57,7 +57,8 @@ public final class Constants {
 
             // Feedforward
             public static final double kSVolts = 0.245; 
-            public static final double kVVoltDegreesPerSecond = 0.155 / 90;
+            public static final double kVVoltDegreesPerSecond = 0.155 / 90; // How did you derive this Zane?
+            // I measure 4 seconds to rotate bot at .4 power, but the above value works way better
         }
     }
 }
