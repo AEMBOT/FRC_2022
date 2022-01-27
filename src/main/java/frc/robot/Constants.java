@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.util.Units;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -16,7 +18,7 @@ public final class Constants {
     public static final class DriveConstants {
         // Wheels are 8 inches in diameter, so their circumference can be calculated
         // (converted to meters for convenience)
-        public static final double kWheelCircumferenceMeters = Math.PI * 8 / 39.3701;
+        public static final double kWheelCircumferenceMeters = Units.inchesToMeters(Math.PI * 8);
 
 
         // Motor controller ports (on 2019 bot)
