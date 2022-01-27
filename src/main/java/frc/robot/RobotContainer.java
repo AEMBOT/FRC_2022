@@ -23,7 +23,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
-  private final TurnToAngleProfiled m_autoCommand = new TurnToAngleProfiled(15, m_robotDrive);
+  private TurnToAngleProfiled m_autoCommand;// = new TurnToAngleProfiled(10, m_robotDrive);
 
   // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);
@@ -58,6 +58,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    // Not sure whether we want to leave this here or not. Test with the joystick first
+    //m_autoCommand = new TurnToAngleProfiled(10, m_robotDrive);
     return m_autoCommand;
   }
 }
