@@ -76,6 +76,9 @@ public class DriveSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Right Velocity", m_centerRightEncoder.getVelocity());
 
             // TODO: Figure out how to log motor voltages
+            SmartDashboard.putNumber("Left Power", m_leftMotors.get());
+            SmartDashboard.putNumber("Right Power", m_rightMotors.get());
+
         }
     }
 
