@@ -5,9 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.PS4Controller.Button;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.TurnToAngleProfiled;
@@ -48,8 +49,14 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // Turn to 10 degrees with a profile when the Circle button is pressed, with a 5 second timeout
     // UNTESTED
-    new JoystickButton(m_driverController, Button.kCircle.value)
-    .whenPressed(new TurnToAngleProfiled(10, m_robotDrive).withTimeout(5));
+    new JoystickButton(m_driverController, Button.kX.value)
+    .whenPressed(new TurnToAngleProfiled(90, m_robotDrive).withTimeout(5));
+
+    new JoystickButton(m_driverController, Button.kY.value)
+      .whenPressed(new TurnToAngleProfiled(-90, m_robotDrive).withTimeout(5));
+
+    new JoystickButton(m_driverController, Button.kB.value)
+      .whenPressed(new InstantCommand(() -> m_robotDrive.resetHeading()));
   }
 
   /**

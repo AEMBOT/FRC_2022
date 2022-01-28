@@ -12,6 +12,7 @@ public class TurnToAngleProfiled extends ProfiledPIDCommand {
 
     private static final SimpleMotorFeedforward m_feedforward =
         new SimpleMotorFeedforward(kSVolts, kVVoltDegreesPerSecond);
+    private DriveSubsystem m_drive;
 
     public TurnToAngleProfiled(double goalAngle, DriveSubsystem drive) {
         super(
@@ -19,6 +20,8 @@ public class TurnToAngleProfiled extends ProfiledPIDCommand {
                 new TrapezoidProfile.Constraints(kMaxVelocityDegreesPerSecond, kMaxAccelerationDegreesPerSecondSquared)), 
             drive::getHeading, goalAngle,
             (output, setpoint) -> drive.arcadeDrive(0, output + m_feedforward.calculate(setpoint.velocity)), drive);
+        
+        m_drive = drive;
 
         // Make gyro values wrap around to avoid taking the long route to an angle
         getController().enableContinuousInput(-180, 180);
@@ -28,6 +31,11 @@ public class TurnToAngleProfiled extends ProfiledPIDCommand {
     //getController()
     //.setTolerance(DriveConstants.kTurnToleranceDeg, DriveConstants.kTurnRateToleranceDegPerS);
         
+    }
+
+    public void initialize() {
+        super.initialize();
+        m_drive.resetHeading();
     }
 
     @Override
