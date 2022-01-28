@@ -61,6 +61,9 @@ public final class Constants {
             public static final double kSVolts = 0.245; 
             public static final double kVVoltDegreesPerSecond = 0.155 / 90; // How did you derive this Zane?
             // I measure 4 seconds to rotate bot at .4 power, but the above value works way better
+
+            public static final double kTurnToleranceDeg = 2.0;
+            public static final double kTurnRateToleranceDegPerS = 20.0;
         }
     }
 }
