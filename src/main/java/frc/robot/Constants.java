@@ -15,55 +15,54 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final class DriveConstants {
-        // Wheels are 8 inches in diameter, so their circumference can be calculated
-        // (converted to meters for convenience)
-        public static final double kWheelCircumferenceMeters = Units.inchesToMeters(Math.PI * 8);
+  public static final class DriveConstants {
+    // Wheels are 8 inches in diameter, so their circumference can be calculated
+    // (converted to meters for convenience)
+    public static final double kWheelCircumferenceMeters = Units.inchesToMeters(Math.PI * 8);
 
+    // Motor controller ports (on 2019 bot)
+    public static final int kLeftFront = 8;
+    public static final int kLeftCenter = 7;
+    public static final int kLeftBack = 6;
 
-        // Motor controller ports (on 2019 bot)
-        public static final int kLeftFront = 8;
-        public static final int kLeftCenter = 7;
-        public static final int kLeftBack = 6;
-        
-        public static final int kRightFront = 1;
-        public static final int kRightCenter = 2;
-        public static final int kRightBack = 3;
+    public static final int kRightFront = 1;
+    public static final int kRightCenter = 2;
+    public static final int kRightBack = 3;
 
+    // Split PID-related constants based on whether robot is turning/going straight
+    public static final class StraightPID {
+      // Basic PID constants
+      public static final double kP = 1;
+      public static final double kI = 0;
+      public static final double kD = 0;
 
-        // Split PID-related constants based on whether robot is turning/going straight
-        public static final class StraightPID {
-            // Basic PID constants
-            public static final double kP = 1;
-            public static final double kI = 0;
-            public static final double kD = 0;
+      // Profiling
+      public static final double kMaxVelocityMetersPerSecond = 1.5;
+      public static final double kMaxAccelerationMeterPerSecondSquared = 2;
 
-            // Profiling
-            public static final double kMaxVelocityMetersPerSecond = 1.5;
-            public static final double kMaxAccelerationMeterPerSecondSquared = 2;
-
-            // Feedforward
-            public static final double kSVolts = 0.131;
-            public static final double kVVoltMetersPerSecond = 0.269 / 0.8856;
-        }
-
-        public static final class TurnPID {
-            public static final double kP = 0;
-            public static final double kI = 0;
-            public static final double kD = 0;
-            
-            // Profiling
-            // TODO: These might have to be in meters per second
-            public static final double kMaxVelocityDegreesPerSecond = 90;
-            public static final double kMaxAccelerationDegreesPerSecondSquared = 90;
-
-            // Feedforward
-            public static final double kSVolts = 0.245; 
-            public static final double kVVoltDegreesPerSecond = 0.155 / 90; // How did you derive this Zane?
-            // I measure 4 seconds to rotate bot at .4 power, but the above value works way better
-
-            public static final double kTurnToleranceDeg = 2.0;
-            public static final double kTurnRateToleranceDegPerS = 20.0;
-        }
+      // Feedforward
+      public static final double kSVolts = 0.131;
+      public static final double kVVoltMetersPerSecond = 0.269 / 0.8856;
     }
+
+    public static final class TurnPID {
+      public static final double kP = 0;
+      public static final double kI = 0;
+      public static final double kD = 0;
+
+      // Profiling
+      // TODO: These might have to be in meters per second
+      public static final double kMaxVelocityDegreesPerSecond = 90;
+      public static final double kMaxAccelerationDegreesPerSecondSquared = 90;
+
+      // Feedforward
+      public static final double kSVolts = 0.245;
+      public static final double kVVoltDegreesPerSecond =
+          0.155 / 90; // How did you derive this Zane?
+      // I measure 4 seconds to rotate bot at .4 power, but the above value works way better
+
+      public static final double kTurnToleranceDeg = 2.0;
+      public static final double kTurnRateToleranceDegPerS = 20.0;
+    }
+  }
 }
