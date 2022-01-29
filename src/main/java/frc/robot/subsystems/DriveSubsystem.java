@@ -1,8 +1,10 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -56,7 +58,8 @@ public class DriveSubsystem extends SubsystemBase {
         m_leftMotors.setInverted(true);
 
         // Reset the encoders & change their distance readings to meters
-        setupEncoders();
+        resetEncoders();
+        setupEncoderConversions();
         
         // Initialize the tracking of the robot's position on the field
         m_odometry = new DifferentialDriveOdometry(new Rotation2d(getHeading()));
@@ -70,7 +73,7 @@ public class DriveSubsystem extends SubsystemBase {
         // Log drive-related informatin to SmartDashboard if specified
         if (m_debug) {
             SmartDashboard.putNumber("Robot Heading", getHeading());
-            SmartDashboard.putNumber("Rotation Velocity", m_ahrs.getRate());
+            SmartDashboard.putNumber("Rotation Velocity", -m_ahrs.getRate());
 
             SmartDashboard.putNumber("Left Velocity", m_centerLeftEncoder.getVelocity());
             SmartDashboard.putNumber("Right Velocity", m_centerRightEncoder.getVelocity());
@@ -84,8 +87,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     /**
      * Tank-style drive of the robot.
-     * @param left The power to run the left motors at
-     * @param right The power to run the right motors at
+     * @param left the power to run the left motors at
+     * @param right the power to run the right motors at
      */
     public void tankDrive(double left, double right) {
         m_drive.tankDrive(left, right);
@@ -93,30 +96,32 @@ public class DriveSubsystem extends SubsystemBase {
 
     /**
      * Arcade-style drive of the robot.
-     * @param speed The forward-backward speed to run the motors at
-     * @param rotation The rotation speed to run the motors at
+     * @param speed the forward-backward speed to run the motors at
+     * @param rotation the rotation speed to run the motors at
      */
     public void arcadeDrive(double speed, double rotation) {
         m_drive.arcadeDrive(speed, rotation);
     }
 
     /** Gets the position of the center left encoder in meters. */
-    public double getLeftEncoderPosition() {
+    private double getLeftEncoderPosition() {
         return m_centerLeftEncoder.getPosition();
     }
 
     /** Gets the position of the center right encoder in meters. */
-    public double getRightEncoderPosition() {
+    private double getRightEncoderPosition() {
         return m_centerRightEncoder.getPosition();
     }
 
-    /** Resets the center motor encoders on each side & changes their output unit to inches */
-    public void setupEncoders() {
-        // Reset the motor encoders
+    /** Resets the center drive motor encoders to a position of 0 */
+    private void resetEncoders() {
         m_centerLeftEncoder.setPosition(0);
         m_centerRightEncoder.setPosition(0);
+    }
 
-        // Set encoders to output measurements in meters (converted from rotations)
+    /** Changes encoder readings to meters and meters per second for position and velocity, respectively. */
+    private void setupEncoderConversions() {
+        // TODO: If the drive motors are geared up/down this won't be accurate, so see if anyone knows the ratio
         m_centerLeftEncoder.setPositionConversionFactor(kWheelCircumferenceMeters);
         m_centerLeftEncoder.setVelocityConversionFactor(kWheelCircumferenceMeters);
 
@@ -124,14 +129,23 @@ public class DriveSubsystem extends SubsystemBase {
         m_centerRightEncoder.setVelocityConversionFactor(kWheelCircumferenceMeters);
     }
 
-    /** Gets the heading of the robot in degrees (-180 to 180). */
+    /** Gets the heading of the robot. Ranges from -180 to 180 degrees. */
     public double getHeading() {
+        // Negated to mirror signs on a coordinate plane (+ -> counterclockwise and vice versa)
         return -m_ahrs.getYaw();
     }
 
-    /** Resets the robot heading to 0 degrees. */
+    /** Resets the robot heading to 0 degrees, as well as the odometry. */
     public void resetHeading() {
+        // TODO: This fails if the NavX is calibrating, so it might be a good idea to check for that
         m_ahrs.zeroYaw();
+
+        // Resetting the odometry also requires zeroing the encoders
+        resetEncoders();
+
+        // Reuse the previous pose on the field, compensating for the change in heading
+        Pose2d prev_pose = m_odometry.getPoseMeters();
+        m_odometry.resetPosition(prev_pose, new Rotation2d(Units.degreesToRadians(getHeading())));
     }
 
     /**
@@ -145,7 +159,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         // Update the drive odometry
         m_odometry.update(
-            new Rotation2d(getHeading()),
+            new Rotation2d(Units.degreesToRadians(getHeading())),
             currentLeftPosition - m_leftPosition,
             currentRightPosition - m_rightPosition
         );
