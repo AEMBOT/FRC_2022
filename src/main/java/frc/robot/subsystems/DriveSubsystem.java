@@ -72,7 +72,7 @@ public class DriveSubsystem extends SubsystemBase {
     // Log drive-related informatin to SmartDashboard if specified
     if (m_debug) {
       SmartDashboard.putNumber("Robot Heading", getHeading());
-      SmartDashboard.putNumber("Rotation Velocity", -m_ahrs.getRate());
+      SmartDashboard.putNumber("Rotation Velocity", getRotationRate());
 
       SmartDashboard.putNumber("Left Velocity", m_centerLeftEncoder.getVelocity());
       SmartDashboard.putNumber("Right Velocity", m_centerRightEncoder.getVelocity());
@@ -124,8 +124,7 @@ public class DriveSubsystem extends SubsystemBase {
    * respectively.
    */
   private void setupEncoderConversions() {
-    // TODO: If the drive motors are geared up/down this won't be accurate, so see if anyone knows
-    // the ratio
+    // TODO: these multipliers don't seem to be very accurate, so the motors might be geared up/down
     m_centerLeftEncoder.setPositionConversionFactor(kWheelCircumferenceMeters);
     m_centerLeftEncoder.setVelocityConversionFactor(kWheelCircumferenceMeters);
 
@@ -137,6 +136,14 @@ public class DriveSubsystem extends SubsystemBase {
   public double getHeading() {
     // Negated to mirror signs on a coordinate plane (+ -> counterclockwise and vice versa)
     return -m_ahrs.getYaw();
+  }
+
+  /** Gets the rate of change of the yaw of the robot. */
+  public double getRotationRate() {
+    // getRate only returns the difference in angles, so it has to be multiplied by the NavX update
+    // frequency
+    // (see https://github.com/kauailabs/navxmxp/issues/69)
+    return -m_ahrs.getRate() * m_ahrs.getActualUpdateRate();
   }
 
   /** Resets the robot heading to 0 degrees, as well as the odometry. */

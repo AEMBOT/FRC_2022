@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DefaultDrive;
+import frc.robot.commands.TimeRotation;
 import frc.robot.commands.TurnToAngleProfiled;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -24,7 +25,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
-  private TurnToAngleProfiled m_autoCommand; // = new TurnToAngleProfiled(10, m_robotDrive);
+  private TimeRotation m_autoCommand =
+      new TimeRotation(0.75, m_robotDrive); // = new TurnToAngleProfiled(10, m_robotDrive);
 
   // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);
@@ -49,15 +51,21 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // Turn left 90 degrees with a 3 second timeout
     new JoystickButton(m_driverController, Button.kX.value)
-      .whenPressed(new TurnToAngleProfiled(90, m_robotDrive).withTimeout(3));
+        .whenPressed(new TurnToAngleProfiled(90, m_robotDrive).withTimeout(3));
 
     // Turn right 90 degrees with a 3 second timeout
     new JoystickButton(m_driverController, Button.kY.value)
-      .whenPressed(new TurnToAngleProfiled(-90, m_robotDrive).withTimeout(3));
+        .whenPressed(new TurnToAngleProfiled(-90, m_robotDrive).withTimeout(3));
 
     // Reset the robot's heading & odometry
     new JoystickButton(m_driverController, Button.kB.value)
-      .whenPressed(new InstantCommand(() -> m_robotDrive.resetHeading(), m_robotDrive));
+        .whenPressed(new InstantCommand(() -> m_robotDrive.resetHeading(), m_robotDrive));
+
+    new JoystickButton(m_driverController, Button.kA.value)
+        .whenPressed(new TurnToAngleProfiled(10, m_robotDrive).withTimeout(3));
+
+    new JoystickButton(m_driverController, Button.kRightBumper.value)
+        .whenPressed(new TurnToAngleProfiled(-10, m_robotDrive).withTimeout(3));
   }
 
   /**
