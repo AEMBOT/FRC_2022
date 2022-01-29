@@ -83,7 +83,7 @@ public class LimeLightTargeting {
     /**
      * @return returns distance in inches to target
      */
-    public static double getDistance() {
+    public double getDistance() {
         camAngle = 9.4623;
         camHeight = 12;
         targetHeight = 103.625;
