@@ -18,7 +18,7 @@ public class TurnToAngleProfiled extends ProfiledPIDCommand {
         super(
             new ProfiledPIDController(kP, kI, kD,
                 new TrapezoidProfile.Constraints(kMaxVelocityDegreesPerSecond, kMaxAccelerationDegreesPerSecondSquared)), 
-                () -> drive.getHeading(), goalAngle,
+                drive::getHeading, goalAngle,
             (output, setpoint) -> drive.arcadeDrive(0, output + m_feedforward.calculate(setpoint.velocity)), drive);
         
         m_drive = drive;
@@ -26,22 +26,21 @@ public class TurnToAngleProfiled extends ProfiledPIDCommand {
         // Make gyro values wrap around to avoid taking the long route to an angle
         getController().enableContinuousInput(-180, 180);
 
-    // Set the controller tolerance - the delta tolerance ensures the robot is stationary at the
-    // setpoint before it is considered as having reached the reference
-    getController()
-      .setTolerance(kTurnToleranceDeg, kTurnRateToleranceDegPerS);
-
-    //drive.resetHeading();
-        
+        // Set the controller tolerance - the delta tolerance ensures the robot is stationary at the
+        // setpoint before it is considered as having reached the reference
+        getController().setTolerance(kTurnToleranceDeg, kTurnRateToleranceDegPerS);
     }
 
+    @Override
     public void initialize() {
-        super.initialize();
+        // Make sure to reset the heading before resetting the internal PID controller
         m_drive.resetHeading();
+        super.initialize();
     }
 
     @Override
     public boolean isFinished() {
+        // The command finishes once the robot is done turning
         return getController().atGoal();
     }
 }
