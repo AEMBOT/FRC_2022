@@ -47,16 +47,17 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // Turn to 10 degrees with a profile when the Circle button is pressed, with a 5 second timeout
-    // UNTESTED
+    // Turn left 90 degrees with a 3 second timeout
     new JoystickButton(m_driverController, Button.kX.value)
-        .whenPressed(new TurnToAngleProfiled(90, m_robotDrive).withTimeout(5));
+      .whenPressed(new TurnToAngleProfiled(90, m_robotDrive).withTimeout(3));
 
+    // Turn right 90 degrees with a 3 second timeout
     new JoystickButton(m_driverController, Button.kY.value)
-        .whenPressed(new TurnToAngleProfiled(-90, m_robotDrive).withTimeout(5));
+      .whenPressed(new TurnToAngleProfiled(-90, m_robotDrive).withTimeout(3));
 
+    // Reset the robot's heading & odometry
     new JoystickButton(m_driverController, Button.kB.value)
-        .whenPressed(new InstantCommand(() -> m_robotDrive.resetHeading()));
+      .whenPressed(new InstantCommand(() -> m_robotDrive.resetHeading(), m_robotDrive));
   }
 
   /**
