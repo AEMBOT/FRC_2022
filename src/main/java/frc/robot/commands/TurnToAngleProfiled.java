@@ -1,46 +1,53 @@
 package frc.robot.commands;
 
+import static frc.robot.Constants.DriveConstants.TurnPID.*;
+
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
-
-import static frc.robot.Constants.DriveConstants.TurnPID.*;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class TurnToAngleProfiled extends ProfiledPIDCommand {
 
-    private static final SimpleMotorFeedforward m_feedforward =
-        new SimpleMotorFeedforward(kSVolts, kVVoltDegreesPerSecond);
-    private DriveSubsystem m_drive;
+  private static final SimpleMotorFeedforward m_feedforward =
+      new SimpleMotorFeedforward(kSVolts, kVVoltDegreesPerSecond);
+  private DriveSubsystem m_drive;
 
-    public TurnToAngleProfiled(double goalAngle, DriveSubsystem drive) {
-        super(
-            new ProfiledPIDController(kP, kI, kD,
-                new TrapezoidProfile.Constraints(kMaxVelocityDegreesPerSecond, kMaxAccelerationDegreesPerSecondSquared)), 
-                drive::getHeading, goalAngle,
-            (output, setpoint) -> drive.arcadeDrive(0, output + m_feedforward.calculate(setpoint.velocity)), drive);
-        
-        m_drive = drive;
+  public TurnToAngleProfiled(double goalAngle, DriveSubsystem drive) {
+    super(
+        new ProfiledPIDController(
+            kP,
+            kI,
+            kD,
+            new TrapezoidProfile.Constraints(
+                kMaxVelocityDegreesPerSecond, kMaxAccelerationDegreesPerSecondSquared)),
+        drive::getHeading,
+        goalAngle,
+        (output, setpoint) ->
+            drive.arcadeDrive(0, output + m_feedforward.calculate(setpoint.velocity)),
+        drive);
 
-        // Make gyro values wrap around to avoid taking the long route to an angle
-        getController().enableContinuousInput(-180, 180);
+    m_drive = drive;
 
-        // Set the controller tolerance - the delta tolerance ensures the robot is stationary at the
-        // setpoint before it is considered as having reached the reference
-        getController().setTolerance(kTurnToleranceDeg, kTurnRateToleranceDegPerS);
-    }
+    // Make gyro values wrap around to avoid taking the long route to an angle
+    getController().enableContinuousInput(-180, 180);
 
-    @Override
-    public void initialize() {
-        // Make sure to reset the heading before resetting the internal PID controller
-        m_drive.resetHeading();
-        super.initialize();
-    }
+    // Set the controller tolerance - the delta tolerance ensures the robot is stationary at the
+    // setpoint before it is considered as having reached the reference
+    getController().setTolerance(kTurnToleranceDeg, kTurnRateToleranceDegPerS);
+  }
 
-    @Override
-    public boolean isFinished() {
-        // The command finishes once the robot is done turning
-        return getController().atGoal();
-    }
+  @Override
+  public void initialize() {
+    // Make sure to reset the heading before resetting the internal PID controller
+    m_drive.resetHeading();
+    super.initialize();
+  }
+
+  @Override
+  public boolean isFinished() {
+    // The command finishes once the robot is done turning
+    return getController().atGoal();
+  }
 }

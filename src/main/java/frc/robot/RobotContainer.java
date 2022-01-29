@@ -5,8 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -24,7 +24,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
-  private TurnToAngleProfiled m_autoCommand;// = new TurnToAngleProfiled(10, m_robotDrive);
+  private TurnToAngleProfiled m_autoCommand; // = new TurnToAngleProfiled(10, m_robotDrive);
 
   // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);
@@ -36,8 +36,8 @@ public class RobotContainer {
 
     // Set default drivetrain command to arcade driving (happens during teleop)
     m_robotDrive.setDefaultCommand(
-      new DefaultDrive(m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX)
-    );
+        new DefaultDrive(
+            m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
   }
 
   /**
@@ -50,13 +50,13 @@ public class RobotContainer {
     // Turn to 10 degrees with a profile when the Circle button is pressed, with a 5 second timeout
     // UNTESTED
     new JoystickButton(m_driverController, Button.kX.value)
-    .whenPressed(new TurnToAngleProfiled(90, m_robotDrive).withTimeout(5));
+        .whenPressed(new TurnToAngleProfiled(90, m_robotDrive).withTimeout(5));
 
     new JoystickButton(m_driverController, Button.kY.value)
-      .whenPressed(new TurnToAngleProfiled(-90, m_robotDrive).withTimeout(5));
+        .whenPressed(new TurnToAngleProfiled(-90, m_robotDrive).withTimeout(5));
 
     new JoystickButton(m_driverController, Button.kB.value)
-      .whenPressed(new InstantCommand(() -> m_robotDrive.resetHeading()));
+        .whenPressed(new InstantCommand(() -> m_robotDrive.resetHeading()));
   }
 
   /**
@@ -66,7 +66,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // Not sure whether we want to leave this here or not. Test with the joystick first
-    //m_autoCommand = new TurnToAngleProfiled(10, m_robotDrive);
+    // m_autoCommand = new TurnToAngleProfiled(10, m_robotDrive);
     return m_autoCommand;
   }
 }
