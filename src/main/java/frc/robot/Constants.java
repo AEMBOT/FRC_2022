@@ -62,7 +62,7 @@ public final class Constants {
       public static final double kVVoltDegreesPerSecond =
           (kTestPower - kSVolts) / (356.828 / kSecondsPerRotation);
 
-      public static final double kTurnToleranceDeg = 2.0;
+      public static final double kTurnToleranceDeg = 3.0;
       public static final double kTurnRateToleranceDegPerS = 20.0;
     }
   }
