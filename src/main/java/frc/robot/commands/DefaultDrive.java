@@ -27,7 +27,7 @@ public class DefaultDrive extends CommandBase {
     // Log the powers to the dashboard
     double forwardPower = speedMultiplier * m_left.getAsDouble();
     SmartDashboard.putNumber("power", forwardPower);
-    double rotationPower = speedMultiplier * m_right.getAsDouble();
+    double rotationPower = speedMultiplier * -m_right.getAsDouble();
     SmartDashboard.putNumber("rotation", rotationPower);
 
     m_drive.arcadeDrive(forwardPower, rotationPower);
