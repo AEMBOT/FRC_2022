@@ -19,8 +19,11 @@ public class TimeRotation extends CommandBase {
 
   @Override
   public void initialize() {
-    // Reset the robot's heading and start the timer
+    // Reset the robot's heading
     m_drive.resetHeading();
+
+    // Reset & start the timer to time the rotation
+    m_timer.reset();
     m_timer.start();
   }
 
