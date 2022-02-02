@@ -29,7 +29,7 @@ public class TimeRotation extends CommandBase {
 
   @Override
   public void execute() {
-    m_drive.arcadeDrive(0, m_power);
+    m_drive.arcadeDrive(0, m_power, false);
     SmartDashboard.putNumber("Turn Time", m_timer.get());
   }
 

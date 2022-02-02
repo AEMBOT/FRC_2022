@@ -21,7 +21,8 @@ public class DriveSubsystem extends SubsystemBase {
   private final CANSparkMax m_centerLeftMotor = new CANSparkMax(kLeftCenter, MotorType.kBrushless);
   private final CANSparkMax m_backLeftMotor = new CANSparkMax(kLeftBack, MotorType.kBrushless);
   private final CANSparkMax m_frontRightMotor = new CANSparkMax(kRightFront, MotorType.kBrushless);
-  private final CANSparkMax m_centerRightMotor = new CANSparkMax(kRightCenter, MotorType.kBrushless);
+  private final CANSparkMax m_centerRightMotor =
+      new CANSparkMax(kRightCenter, MotorType.kBrushless);
   private final CANSparkMax m_backRightMotor = new CANSparkMax(kRightBack, MotorType.kBrushless);
 
   private final RelativeEncoder m_centerLeftEncoder = m_centerLeftMotor.getEncoder();
@@ -51,14 +52,15 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem() {
     // Invert the left motors to drive in the correct direction
     m_leftMotors.setInverted(true);
-/*
+    /*
     m_frontLeftMotor.enableVoltageCompensation(nominalVoltage);
     m_centerLeftMotor.enableVoltageCompensation(nominalVoltage);
     m_backLeftMotor.enableVoltageCompensation(nominalVoltage);
     m_frontRightMotor.enableVoltageCompensation(nominalVoltage);
     m_centerRightMotor.enableVoltageCompensation(nominalVoltage);
     m_backRightMotor.enableVoltageCompensation(nominalVoltage);
-*/
+    */
+
     // Reset the encoders & change their distance readings to meters
     resetEncoders();
     setupEncoderConversions();
@@ -101,9 +103,10 @@ public class DriveSubsystem extends SubsystemBase {
    *
    * @param speed the forward-backward speed to run the motors at
    * @param rotation the rotation speed to run the motors at
+   * @param squareInputs whether to "square" input parameter (magnitude only)
    */
-  public void arcadeDrive(double speed, double rotation) {
-    m_drive.arcadeDrive(speed, rotation);
+  public void arcadeDrive(double speed, double rotation, boolean squareInputs) {
+    m_drive.arcadeDrive(speed, rotation, squareInputs);
   }
 
   /** Gets the position of the center left encoder in meters. */

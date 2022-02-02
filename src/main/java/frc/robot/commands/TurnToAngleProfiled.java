@@ -5,6 +5,7 @@ import static frc.robot.Constants.DriveConstants.TurnPID.*;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -25,7 +26,7 @@ public class TurnToAngleProfiled extends ProfiledPIDCommand {
         drive::getHeading,
         goalAngle,
         (output, setpoint) ->
-            drive.arcadeDrive(0, output + m_feedforward.calculate(setpoint.velocity)),
+            drive.arcadeDrive(0, output + m_feedforward.calculate(setpoint.velocity), false),
         drive);
 
     m_drive = drive;
@@ -43,6 +44,13 @@ public class TurnToAngleProfiled extends ProfiledPIDCommand {
     // Make sure to reset the heading before resetting the internal PID controller
     m_drive.resetHeading();
     super.initialize();
+  }
+
+  public void execute() {
+    SmartDashboard.putNumber("Setpoint Velocity", super.getController().getSetpoint().velocity);
+    SmartDashboard.putNumber(
+        "Current Velocity",
+        super.getController().getSetpoint().velocity + super.getController().getVelocityError());
   }
 
   @Override
