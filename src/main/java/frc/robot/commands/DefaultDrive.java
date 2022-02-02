@@ -30,6 +30,6 @@ public class DefaultDrive extends CommandBase {
     double rotationPower = speedMultiplier * -m_right.getAsDouble();
     SmartDashboard.putNumber("rotation", rotationPower);
 
-    m_drive.arcadeDrive(forwardPower, rotationPower);
+    m_drive.arcadeDrive(forwardPower, rotationPower, true);
   }
 }
