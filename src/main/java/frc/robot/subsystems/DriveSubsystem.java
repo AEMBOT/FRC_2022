@@ -17,25 +17,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
-  // These motor controllers have to be instantiated separately for encoder purposes
+  private final CANSparkMax m_frontLeftMotor = new CANSparkMax(kLeftFront, MotorType.kBrushless);
   private final CANSparkMax m_centerLeftMotor = new CANSparkMax(kLeftCenter, MotorType.kBrushless);
-  private final CANSparkMax m_centerRightMotor =
-      new CANSparkMax(kRightCenter, MotorType.kBrushless);
+  private final CANSparkMax m_backLeftMotor = new CANSparkMax(kLeftBack, MotorType.kBrushless);
+  private final CANSparkMax m_frontRightMotor = new CANSparkMax(kRightFront, MotorType.kBrushless);
+  private final CANSparkMax m_centerRightMotor = new CANSparkMax(kRightCenter, MotorType.kBrushless);
+  private final CANSparkMax m_backRightMotor = new CANSparkMax(kRightBack, MotorType.kBrushless);
 
   private final RelativeEncoder m_centerLeftEncoder = m_centerLeftMotor.getEncoder();
   private final RelativeEncoder m_centerRightEncoder = m_centerRightMotor.getEncoder();
 
   // Group together drive motors on the same side of the drivetrain (left/right)
   private final MotorControllerGroup m_leftMotors =
-      new MotorControllerGroup(
-          new CANSparkMax(kLeftFront, MotorType.kBrushless),
-          m_centerLeftMotor,
-          new CANSparkMax(kLeftBack, MotorType.kBrushless));
+      new MotorControllerGroup(m_frontLeftMotor, m_centerLeftMotor, m_backLeftMotor);
   private final MotorControllerGroup m_rightMotors =
-      new MotorControllerGroup(
-          new CANSparkMax(kRightFront, MotorType.kBrushless),
-          m_centerRightMotor,
-          new CANSparkMax(kRightBack, MotorType.kBrushless));
+      new MotorControllerGroup(m_frontRightMotor, m_centerRightMotor, m_backRightMotor);
 
   // This allows us to read angle information from the NavX
   private final AHRS m_ahrs = new AHRS(SerialPort.Port.kMXP);
@@ -55,7 +51,14 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem() {
     // Invert the left motors to drive in the correct direction
     m_leftMotors.setInverted(true);
-
+/*
+    m_frontLeftMotor.enableVoltageCompensation(nominalVoltage);
+    m_centerLeftMotor.enableVoltageCompensation(nominalVoltage);
+    m_backLeftMotor.enableVoltageCompensation(nominalVoltage);
+    m_frontRightMotor.enableVoltageCompensation(nominalVoltage);
+    m_centerRightMotor.enableVoltageCompensation(nominalVoltage);
+    m_backRightMotor.enableVoltageCompensation(nominalVoltage);
+*/
     // Reset the encoders & change their distance readings to meters
     resetEncoders();
     setupEncoderConversions();

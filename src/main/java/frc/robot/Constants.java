@@ -20,6 +20,8 @@ public final class Constants {
     // (converted to meters for convenience)
     public static final double kWheelCircumferenceMeters = Units.inchesToMeters(Math.PI * 8);
 
+    public static final double nominalVoltage = 12.0;
+
     // Motor controller ports (on 2019 bot)
     public static final int kLeftFront = 8;
     public static final int kLeftCenter = 7;
