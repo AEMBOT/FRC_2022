@@ -48,7 +48,7 @@ public final class Constants {
     }
 
     public static final class TurnPID {
-      public static final double kP = 0.0001;
+      public static final double kP = 0;
       public static final double kI = 0;
       public static final double kD = 0;
 
@@ -57,12 +57,12 @@ public final class Constants {
       public static final double kMaxAccelerationDegreesPerSecondSquared = 120;
 
       // Feedforward
-      private static final double kSecondsPerRotation = 3.341;
-      private static final double kTestPower = 0.4;
+      private static final double kSecondsPerRotation = 2.036;
+      private static final double kTestPower = 0.2;
 
-      public static final double kSVolts = 0.258;
+      public static final double kSVolts = 0.04488;
       public static final double kVVoltDegreesPerSecond =
-          (kTestPower - kSVolts) / (356.828 / kSecondsPerRotation);
+          (kTestPower - kSVolts) / (356.494 / kSecondsPerRotation);
 
       public static final double kTurnToleranceDeg = 3.0;
       public static final double kTurnRateToleranceDegPerS = 20.0;

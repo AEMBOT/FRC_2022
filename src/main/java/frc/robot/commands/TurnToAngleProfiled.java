@@ -46,11 +46,16 @@ public class TurnToAngleProfiled extends ProfiledPIDCommand {
     super.initialize();
   }
 
+  @Override
   public void execute() {
-    SmartDashboard.putNumber("Setpoint Velocity", super.getController().getSetpoint().velocity);
+    SmartDashboard.putNumber("Setpoint Velocity", getController().getSetpoint().velocity);
     SmartDashboard.putNumber(
         "Current Velocity",
-        super.getController().getSetpoint().velocity + super.getController().getVelocityError());
+        super.getController().getSetpoint().velocity + getController().getVelocityError());
+    SmartDashboard.putNumber(
+        "Profiled turn power", m_feedforward.calculate(getController().getSetpoint().velocity));
+
+    super.execute();
   }
 
   @Override
