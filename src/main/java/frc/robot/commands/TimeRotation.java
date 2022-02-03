@@ -39,12 +39,12 @@ public class TimeRotation extends CommandBase {
     m_timer.stop();
 
     // Put the heading onto the dashboard in case the robot continues moving
-    SmartDashboard.putNumber("Turn Amount", m_drive.getHeading());
+    SmartDashboard.putNumber("Turn Amount", m_drive.getAngle());
   }
 
   @Override
   public boolean isFinished() {
     // Stop when the robot has rotated close to a full rotation
-    return m_drive.getHeading() >= 355;
+    return m_drive.getAngle() >= 355;
   }
 }

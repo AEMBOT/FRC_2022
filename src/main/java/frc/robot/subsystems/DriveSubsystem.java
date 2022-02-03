@@ -52,14 +52,13 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem() {
     // Invert the left motors to drive in the correct direction
     m_leftMotors.setInverted(true);
-    /*
-    m_frontLeftMotor.enableVoltageCompensation(nominalVoltage);
-    m_centerLeftMotor.enableVoltageCompensation(nominalVoltage);
-    m_backLeftMotor.enableVoltageCompensation(nominalVoltage);
-    m_frontRightMotor.enableVoltageCompensation(nominalVoltage);
-    m_centerRightMotor.enableVoltageCompensation(nominalVoltage);
-    m_backRightMotor.enableVoltageCompensation(nominalVoltage);
-    */
+
+    // m_frontLeftMotor.enableVoltageCompensation(nominalVoltage);
+    // m_centerLeftMotor.enableVoltageCompensation(nominalVoltage);
+    // m_backLeftMotor.enableVoltageCompensation(nominalVoltage);
+    // m_frontRightMotor.enableVoltageCompensation(nominalVoltage);
+    // m_centerRightMotor.enableVoltageCompensation(nominalVoltage);
+    // m_backRightMotor.enableVoltageCompensation(nominalVoltage);
 
     // Reset the encoders & change their distance readings to meters
     resetEncoders();
@@ -142,6 +141,14 @@ public class DriveSubsystem extends SubsystemBase {
   public double getHeading() {
     // Negated to mirror signs on a coordinate plane (+ -> counterclockwise and vice versa)
     return -m_ahrs.getYaw();
+  }
+
+  /**
+   * Gets the angle the robot has rotated since the last gyro reset. Can be greater than 360
+   * degrees.
+   */
+  public double getAngle() {
+    return -m_ahrs.getAngle();
   }
 
   /** Gets the rate of change of the yaw of the robot. */
