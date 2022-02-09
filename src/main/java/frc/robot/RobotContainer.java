@@ -51,8 +51,11 @@ public class RobotContainer {
       // NOTE: Doesn't have requirement of m_targeting subsystem. Could not figure out how to include
       // it. Can't add it as an additional argument for some reason, even though the function uses "..."
       // (variable-length arguments)
-      new JoystickButton(m_Controller, XboxController.Button.kA.value).whileHeld(
-        new RunCommand(() -> m_shooterSubsystem.shootFlywheels(m_targeting.getDistance()), m_shooterSubsystem));
+      RunCommand targetCommand = new RunCommand(() -> m_shooterSubsystem.shootFlywheels(m_targeting.getDistance()));
+      targetCommand.requires(m_targeting);
+      targetCommand.requires(m_shooterSubsystem);
+
+      new JoystickButton(m_Controller, XboxController.Button.kA.value).whileHeld(targetCommand);
   }
 
   /**
