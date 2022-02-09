@@ -22,7 +22,7 @@ import frc.robot.Constants.ShooterConstants;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(7,14);
+  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(ShooterConstants.ShooterLeftMotor, ShooterConstants.ShooterRightMotor);
 
   private final LimeLightTargeting m_targeting = new LimeLightTargeting();
 
