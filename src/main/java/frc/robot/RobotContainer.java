@@ -52,8 +52,7 @@ public class RobotContainer {
       // it. Can't add it as an additional argument for some reason, even though the function uses "..."
       // (variable-length arguments)
       RunCommand targetCommand = new RunCommand(() -> m_shooterSubsystem.shootFlywheels(m_targeting.getDistance()));
-      targetCommand.requires(m_targeting);
-      targetCommand.requires(m_shooterSubsystem);
+      targetCommand.addRequirements(m_targeting,m_shooterSubsystem);
 
       new JoystickButton(m_Controller, XboxController.Button.kA.value).whileHeld(targetCommand);
   }

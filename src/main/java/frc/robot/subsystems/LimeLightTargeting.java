@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * Class created to manage limelight data
@@ -10,7 +11,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
  * @author Will Richards, Goirick Saha
  */
 
-public class LimeLightTargeting {
+public class LimeLightTargeting extends SubsystemBase {
 
     // Creates uninitialized variables to hold limelight table, x offset, y offset
     // and object area
