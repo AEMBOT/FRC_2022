@@ -14,9 +14,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // Flywheel motors
   private static CANSparkMax flywheelMotor;
-  private CANSparkMax flywheelMotor2;
-
-  private boolean shooterToggled = false;
+  private static CANSparkMax flywheelMotor2;
 
   private double targetPower = 0;
 
@@ -38,14 +36,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-      distance = LimeLightTargeting.getDistance();
-      shootFlywheels(distance);
       updateDashboard();
   }
 
   private void updateDashboard(){
 
-    // Wether or not the fly wheel has reached full speed
+    // Whether or not the fly wheel has reached full speed
     SmartDashboard.putBoolean("Fly-Wheel-Speed-Status", isFullSpeed());
 
     // The current flywheel speed

@@ -6,14 +6,13 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.LimeLightTargeting;
-import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.subsystems.LimeLightTargeting;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.Constants.ShooterConstants;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -48,8 +47,12 @@ public class RobotContainer {
       new JoystickButton(m_Controller, XboxController.Button.kLeftBumper.value).whileHeld(
         new RunCommand(() -> m_shooterSubsystem.incrementTargetPower(-.05), m_shooterSubsystem)
       );
-      new JoystickButton(m_Controller, XboxController.Button.kA.value)
-        .whenPressed(new InstantCommand(()-> m_targeting.getDistance(), m_targeting));
+      
+      // NOTE: Doesn't have requirement of m_targeting subsystem. Could not figure out how to include
+      // it. Can't add it as an additional argument for some reason, even though the function uses "..."
+      // (variable-length arguments)
+      new JoystickButton(m_Controller, XboxController.Button.kA.value).whileHeld(
+        new RunCommand(() -> m_shooterSubsystem.shootFlywheels(m_targeting.getDistance()), m_shooterSubsystem));
   }
 
   /**
