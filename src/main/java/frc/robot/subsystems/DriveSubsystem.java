@@ -6,6 +6,8 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -97,6 +99,9 @@ public class DriveSubsystem extends SubsystemBase {
     m_drive.tankDrive(left, right);
   }
 
+
+  private double nominalBatteryVoltage = 12.0; // Volts
+
   /**
    * Arcade-style drive of the robot.
    *
@@ -106,6 +111,20 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public void arcadeDrive(double speed, double rotation, boolean squareInputs) {
     m_drive.arcadeDrive(speed, rotation, squareInputs);
+    /*
+
+    // Reimplement WPILib arcade drive so that we get setVoltage() functionality
+    speed = MathUtil.applyDeadband(speed, DifferentialDrive.kDefaultDeadband);
+    rotation = MathUtil.applyDeadband(rotation, DifferentialDrive.kDefaultDeadband);
+
+    var speeds = DifferentialDrive.arcadeDriveIK(speed, rotation, squareInputs);
+
+    m_leftMotors.setVoltage(speeds.left * DifferentialDrive.kDefaultMaxOutput * nominalBatteryVoltage);
+    m_rightMotors.setVoltage(speeds.right * DifferentialDrive.kDefaultMaxOutput * nominalBatteryVoltage);
+
+    SmartDashboard.putNumber("Output Voltage (r)", speeds.right* DifferentialDrive.kDefaultMaxOutput * nominalBatteryVoltage);
+    SmartDashboard.putNumber("Output Voltage (l)", speeds.left * DifferentialDrive.kDefaultMaxOutput * nominalBatteryVoltage);
+    */
   }
 
   /** Gets the position of the center left encoder in meters. */
