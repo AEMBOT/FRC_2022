@@ -6,21 +6,19 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import javax.swing.ListModel;
-
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
+import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ShooterConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
 
   // Flywheel motors
   private static CANSparkMax flywheelMotor;
   private static CANSparkMax flywheelMotor2;
+
+  private SparkMaxPIDController m_pidController;
 
   private double targetPower = 0;
 
@@ -31,13 +29,34 @@ public class ShooterSubsystem extends SubsystemBase {
     flywheelMotor = new CANSparkMax(leftMotor, MotorType.kBrushless);
     flywheelMotor2 = new CANSparkMax(rightMotor, MotorType.kBrushless);
 
+    CANSparkMax maxes[] = {flywheelMotor, flywheelMotor2};
+
+    for (CANSparkMax max : maxes) {
+      // Restore to factory defaults only for this boot. Ensure we have a consistent
+      // spark max setup even if someone changes values on the spark max flash
+      max.restoreFactoryDefaults(false);
+
+      // Set closed loop constants
+      m_pidController = max.getPIDController();
+      m_pidController.setP(ShooterConstants.P);
+      m_pidController.setI(ShooterConstants.I);
+      m_pidController.setD(ShooterConstants.D);
+      m_pidController.setFF(ShooterConstants.kvVolts);
+
+    }
+
+    // Set the pid controller to reference the first spark max
+    m_pidController = flywheelMotor.getPIDController();
+
+
+
     // Invert the first motor and have the second motor follow also inverted
     flywheelMotor.setInverted(true);
     flywheelMotor2.follow(flywheelMotor, false);
 
     // Set the open loop ramp rate, really should be using closed loop but that is
     // currently not important
-    flywheelMotor.setOpenLoopRampRate(2.5);
+    //flywheelMotor.setOpenLoopRampRate(0.01);
   }
 
   @Override
@@ -88,17 +107,24 @@ public class ShooterSubsystem extends SubsystemBase {
    * Run the shooter motor given a manual power
    */
   public void runShooter(double motorPower) {
+    /*
     if (motorPower > 0.1) {
       flywheelMotor.set(motorPower);
     } else
       flywheelMotor.set(0);
+      */
+    //flywheelMotor.setVoltage(10);
+    
+    //flywheelMotor.setVoltage(SmartDashboard.getNumber("Shooter Voltage", 10));
+    
   }
 
 /**
   * Run the shooter motor at target power
   */
   public void runShooter() {
-    flywheelMotor.set(targetPower);
+    //flywheelMotor.set(targetPower);
+    
 
   }
 
@@ -112,7 +138,11 @@ public class ShooterSubsystem extends SubsystemBase {
         targetPower = 1;
     }
 
-    flywheelMotor.set(targetPower);
+    //flywheelMotor.set(targetPower);
+    //flywheelMotor.setVoltage(10);
+    //flywheelMotor.setVoltage(10);//);
+    m_pidController.setReference(SmartDashboard.getNumber("Shooter RPM", 3500), CANSparkMax.ControlType.kVelocity);
+    
   }
 
   public double RPM;

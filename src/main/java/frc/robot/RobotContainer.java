@@ -6,13 +6,14 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.LimeLightTargeting;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.Constants.ShooterConstants;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -22,7 +23,7 @@ import frc.robot.Constants.ShooterConstants;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(ShooterConstants.ShooterLeftMotor, ShooterConstants.ShooterRightMotor);
+  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(ShooterConstants.LeftMotorCANId, ShooterConstants.RightMotorCANId);
 
   private final LimeLightTargeting m_targeting = new LimeLightTargeting();
 
@@ -32,6 +33,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+    SmartDashboard.putNumber("Shooter RPM", 3400);
   }
 
   /**
