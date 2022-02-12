@@ -12,8 +12,8 @@ public class DefaultDrive extends CommandBase {
   private final DoubleSupplier m_left;
   private final DoubleSupplier m_right;
 
-  // Don't drive at full speed for testing purposes
-  private double speedMultiplier = 0.4;
+  // Drive at full speed for driver practice
+  private double speedMultiplier = 1.0;
 
   public DefaultDrive(DriveSubsystem drive, DoubleSupplier left, DoubleSupplier right) {
     m_drive = drive;
