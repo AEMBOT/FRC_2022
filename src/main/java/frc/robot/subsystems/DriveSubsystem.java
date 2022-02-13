@@ -6,10 +6,9 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
-
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SerialPort;
@@ -44,6 +43,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   // This allows the robot to keep track of where it is on the field
   private DifferentialDriveOdometry m_odometry;
+  private Pose2d m_lastResetPose;
   private double m_leftPosition = 0;
   private double m_rightPosition = 0;
 
@@ -68,6 +68,9 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Initialize the tracking of the robot's position on the field
     m_odometry = new DifferentialDriveOdometry(new Rotation2d(getHeading()));
+
+    // Keep track of the place where the odometry was last reset
+    m_lastResetPose = m_odometry.getPoseMeters();
   }
 
   @Override
@@ -99,7 +102,6 @@ public class DriveSubsystem extends SubsystemBase {
     m_drive.tankDrive(left, right);
   }
 
-
   private double nominalBatteryVoltage = 12.0; // Volts
 
   /**
@@ -128,8 +130,12 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /** Gets the position of the center left encoder in meters. */
-  private double getLeftEncoderPosition() {
+  public double getLeftEncoderPosition() {
     return m_centerLeftEncoder.getPosition();
+  }
+
+  public double getLeftEncoderVelocity() {
+    return m_centerLeftEncoder.getVelocity();
   }
 
   /** Gets the position of the center right encoder in meters. */
@@ -148,12 +154,12 @@ public class DriveSubsystem extends SubsystemBase {
    * respectively.
    */
   private void setupEncoderConversions() {
-    // TODO: these multipliers don't seem to be very accurate, so the motors might be geared up/down
-    m_centerLeftEncoder.setPositionConversionFactor(kWheelCircumferenceMeters);
-    m_centerLeftEncoder.setVelocityConversionFactor(kWheelCircumferenceMeters);
+    double conversionFactor = 1 / (kWheelCircumferenceMeters * kMotorRotationsPerWheelRotation);
+    m_centerLeftEncoder.setPositionConversionFactor(conversionFactor);
+    m_centerLeftEncoder.setVelocityConversionFactor(conversionFactor);
 
-    m_centerRightEncoder.setPositionConversionFactor(kWheelCircumferenceMeters);
-    m_centerRightEncoder.setVelocityConversionFactor(kWheelCircumferenceMeters);
+    m_centerRightEncoder.setPositionConversionFactor(conversionFactor);
+    m_centerRightEncoder.setVelocityConversionFactor(conversionFactor);
   }
 
   /** Gets the heading of the robot. Ranges from -180 to 180 degrees. */
@@ -189,6 +195,12 @@ public class DriveSubsystem extends SubsystemBase {
     // Reuse the previous pose on the field, compensating for the change in heading
     Pose2d prev_pose = m_odometry.getPoseMeters();
     m_odometry.resetPosition(prev_pose, new Rotation2d(Units.degreesToRadians(getHeading())));
+  }
+
+  /** Gets the displacent of the robot relative to the last time the odometry was reset */
+  public double getResetDisplacement() {
+    Pose2d currentOffset = m_odometry.getPoseMeters().relativeTo(m_lastResetPose);
+    return currentOffset.getTranslation().getDistance(new Translation2d());
   }
 
   /**

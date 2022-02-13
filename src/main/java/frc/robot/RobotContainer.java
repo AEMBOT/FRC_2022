@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DefaultDrive;
+import frc.robot.commands.DriveStraightProfiled;
 import frc.robot.commands.TimeRotation;
 import frc.robot.commands.TurnToAngleProfiled;
 import frc.robot.subsystems.DriveSubsystem;
@@ -25,8 +26,9 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
-  private TimeRotation m_autoCommand =
-      new TimeRotation(0.75, m_robotDrive); // = new TurnToAngleProfiled(10, m_robotDrive);
+  private TimeRotation m_timeRotation =
+      new TimeRotation(0.3, m_robotDrive); // = new TurnToAngleProfiled(10, m_robotDrive);
+  private DriveStraightProfiled m_autoCommand = new DriveStraightProfiled(0.5, m_robotDrive);
 
   // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);

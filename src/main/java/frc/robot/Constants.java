@@ -19,6 +19,7 @@ public final class Constants {
     // Wheels are 8 inches in diameter, so their circumference can be calculated
     // (converted to meters for convenience)
     public static final double kWheelCircumferenceMeters = Units.inchesToMeters(Math.PI * 8);
+    public static final double kMotorRotationsPerWheelRotation = 7.56 * 2.8;
 
     public static final double nominalVoltage = 12.0;
 
@@ -34,17 +35,21 @@ public final class Constants {
     // Split PID-related constants based on whether robot is turning/going straight
     public static final class StraightPID {
       // Basic PID constants
-      public static final double kP = 1;
+      public static final double kP = 0;
       public static final double kI = 0;
       public static final double kD = 0;
 
       // Profiling
-      public static final double kMaxVelocityMetersPerSecond = 1.5;
-      public static final double kMaxAccelerationMeterPerSecondSquared = 2;
+      public static final double kMaxVelocityMetersPerSecond = 2;
+      public static final double kMaxAccelerationMeterPerSecondSquared = 5;
 
       // Feedforward
       public static final double kSVolts = 0.131;
       public static final double kVVoltMetersPerSecond = 0.269 / 0.8856;
+
+      // PID tolerances
+      public static final double kDriveToleranceMeters = 0.1;
+      public static final double kDriveVelocityMetersPerSecond = 0.2;
     }
 
     public static final class TurnPID {
