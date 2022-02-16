@@ -12,7 +12,6 @@ import frc.robot.subsystems.DriveSubsystem;
 public class DriveStraightProfiled extends ProfiledPIDCommand {
   private static SimpleMotorFeedforward m_feedforward =
       new SimpleMotorFeedforward(kSVolts, kVVoltMetersPerSecond);
-  private DriveSubsystem m_drive;
 
   public DriveStraightProfiled(double distance, DriveSubsystem drive) {
     super(
@@ -25,21 +24,27 @@ public class DriveStraightProfiled extends ProfiledPIDCommand {
         drive::getLeftEncoderPosition,
         distance,
         (output, setpoint) ->
-            drive.arcadeDrive(output + m_feedforward.calculate(setpoint.velocity), 0, false),
+            drive.arcadeDrive(-(output + m_feedforward.calculate(setpoint.velocity)), 0, false),
         drive);
+    
+    getController().setTolerance(kDriveToleranceMeters, kDriveVelocityToleranceMetersPerSecond);
 
-    m_controller.setTolerance(kDriveToleranceMeters, kDriveVelocityMetersPerSecond);
-    m_drive = drive;
   }
+
 
   @Override
   public void execute() {
-    SmartDashboard.putNumber("Setpoint Velocity", m_controller.getSetpoint().velocity);
-    SmartDashboard.putNumber("Actual Velocity", m_drive.getLeftEncoderVelocity());
+    SmartDashboard.putNumber("Setpoint Velocity", getController().getSetpoint().velocity);
+    SmartDashboard.putNumber("Actual Velocity", getController().getSetpoint().velocity + getController().getVelocityError());
+    SmartDashboard.putNumber("Measurement", m_measurement.getAsDouble());
+    SmartDashboard.putBoolean("At goal", getController().atGoal());
+    SmartDashboard.putNumber("Goal: ", getController().getGoal().position);
+
+    super.execute();
   }
 
   @Override
   public boolean isFinished() {
-    return m_controller.atSetpoint();
+    return super.getController().atGoal();
   }
 }

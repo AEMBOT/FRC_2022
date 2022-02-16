@@ -28,7 +28,7 @@ public class RobotContainer {
 
   private TimeRotation m_timeRotation =
       new TimeRotation(0.3, m_robotDrive); // = new TurnToAngleProfiled(10, m_robotDrive);
-  private DriveStraightProfiled m_autoCommand = new DriveStraightProfiled(0.01, m_robotDrive);
+  private DriveStraightProfiled m_autoCommand = new DriveStraightProfiled(-1.0, m_robotDrive);
 
   // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);

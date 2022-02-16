@@ -40,16 +40,16 @@ public final class Constants {
       public static final double kD = 0;
 
       // Profiling
-      public static final double kMaxVelocityMetersPerSecond = 2;
+      public static final double kMaxVelocityMetersPerSecond = .1;
       public static final double kMaxAccelerationMeterPerSecondSquared = 5;
 
       // Feedforward
-      public static final double kSVolts = 0.131;
+      public static final double kSVolts = 0.05; // Power!! for now
       public static final double kVVoltMetersPerSecond = 0.269 / 0.8856;
 
       // PID tolerances
       public static final double kDriveToleranceMeters = 0.1;
-      public static final double kDriveVelocityMetersPerSecond = 0.2;
+      public static final double kDriveVelocityToleranceMetersPerSecond = 0.2;
     }
 
     public static final class TurnPID {
