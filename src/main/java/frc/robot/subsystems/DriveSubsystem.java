@@ -66,6 +66,7 @@ public class DriveSubsystem extends SubsystemBase {
     resetEncoders();
     setupEncoderConversions();
 
+
     // Initialize the tracking of the robot's position on the field
     m_odometry = new DifferentialDriveOdometry(new Rotation2d(getHeading()));
 
@@ -89,6 +90,10 @@ public class DriveSubsystem extends SubsystemBase {
       // TODO: Figure out how to log motor voltages
       SmartDashboard.putNumber("Left Power", m_leftMotors.get());
       SmartDashboard.putNumber("Right Power", m_rightMotors.get());
+
+      SmartDashboard.putNumber("Left Encoder get position", getLeftEncoderPosition());
+      
+      SmartDashboard.putNumber("Right Encoder get position", m_centerRightEncoder.getPosition());
     }
   }
 
