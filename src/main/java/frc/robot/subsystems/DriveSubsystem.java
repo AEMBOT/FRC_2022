@@ -118,6 +118,7 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public void arcadeDrive(double speed, double rotation, boolean squareInputs) {
     m_drive.arcadeDrive(speed, rotation, squareInputs);
+    SmartDashboard.putNumber("Arcade forward", speed);
     /*
 
     // Reimplement WPILib arcade drive so that we get setVoltage() functionality
@@ -197,9 +198,12 @@ public class DriveSubsystem extends SubsystemBase {
     // Resetting the odometry also requires zeroing the encoders
     resetEncoders();
 
+
+/*  TODO: Determine if this is appropriate for this year
     // Reuse the previous pose on the field, compensating for the change in heading
     Pose2d prev_pose = m_odometry.getPoseMeters();
     m_odometry.resetPosition(prev_pose, new Rotation2d(Units.degreesToRadians(getHeading())));
+    */
   }
 
   /** Gets the displacent of the robot relative to the last time the odometry was reset */
