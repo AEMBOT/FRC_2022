@@ -12,6 +12,7 @@ import frc.robot.subsystems.DriveSubsystem;
 public class DriveStraightProfiled extends ProfiledPIDCommand {
   private static SimpleMotorFeedforward m_feedforward =
       new SimpleMotorFeedforward(kSVolts, kVVoltMetersPerSecond);
+  private DriveSubsystem m_drive;
 
   public DriveStraightProfiled(double distance, DriveSubsystem drive) {
     super(
@@ -24,11 +25,28 @@ public class DriveStraightProfiled extends ProfiledPIDCommand {
         drive::getLeftEncoderPosition,
         distance,
         (output, setpoint) ->
-            drive.arcadeDrive(-(output + m_feedforward.calculate(setpoint.velocity)), 0, false),
+            drive.arcadeDrive((output + m_feedforward.calculate(setpoint.velocity)), 0, false),
         drive);
     
     getController().setTolerance(kDriveToleranceMeters, kDriveVelocityToleranceMetersPerSecond);
 
+    m_drive = drive;
+  }
+
+  @Override
+  public void initialize() {
+    // Make sure to reset the heading before resetting the internal PID controller
+    m_drive.resetHeading();
+    
+ 
+    // For some reason, the odometry reset call from above isn't working
+    // and the controller is re-initializing with the previous distance
+    // it had before. Hacking it by manually doing what the caller is doing
+    // (resetting the controller)
+    //super.initialize();
+    //System.out.print("Foo: ");
+    //System.out.println(m_drive.getLeftEncoderPosition());
+    super.getController().reset(0);
   }
 
 
@@ -45,6 +63,6 @@ public class DriveStraightProfiled extends ProfiledPIDCommand {
 
   @Override
   public boolean isFinished() {
-    return super.getController().atGoal();
+    return getController().atGoal();
   }
 }

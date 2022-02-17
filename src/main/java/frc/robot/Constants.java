@@ -40,16 +40,20 @@ public final class Constants {
       public static final double kD = 0;
 
       // Profiling
-      public static final double kMaxVelocityMetersPerSecond = .1;
+      public static final double kMaxVelocityMetersPerSecond = .33333;
       public static final double kMaxAccelerationMeterPerSecondSquared = 5;
 
       // Feedforward
-      public static final double kSVolts = 0.05; // Power!! for now
-      public static final double kVVoltMetersPerSecond = 0.269 / 0.8856;
+      public static final double kTestPower = 0.05;
+      public static final double kTestSeconds = 3;
+      public static final double kSVolts = 0.00; // Power!! for now               82 inches -> 2.08 meters
+                                                          // .4445 meters in 3 seconds at 0.05 power
+      public static final double kVVoltMetersPerSecond = ((kTestPower - kSVolts) / (.4445 / kTestSeconds))      /      1.55; // REMOVE ME. FIGURE OUT WHY IT IS OFF
+      
 
       // PID tolerances
+      public static final double kDriveVelocityToleranceMetersPerSecond = 2;
       public static final double kDriveToleranceMeters = 0.1;
-      public static final double kDriveVelocityToleranceMetersPerSecond = 0.2;
     }
 
     public static final class TurnPID {
