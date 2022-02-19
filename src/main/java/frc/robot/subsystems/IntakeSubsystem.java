@@ -24,6 +24,8 @@ public class IntakeSubsystem extends SubsystemBase{
     private double m_lowestAllowedPosition;
     private double m_highestAllowedPosition;
 
+    private boolean rollerRunning = true;
+
     // motor geared 125:1 -> 24:72 gearing
     public IntakeSubsystem() {
 
@@ -34,7 +36,7 @@ public class IntakeSubsystem extends SubsystemBase{
         roller.kI(000001);
 
         // set the left side to follow the right side, invert=false
-        liftLeft.follow(liftRight, false);
+        liftLeft.follow(liftRight, true);
 
         // set the position conversion factors for the lift encoders
         liftRight.getEncoder().setPositionConversionFactor(factor);
@@ -44,6 +46,22 @@ public class IntakeSubsystem extends SubsystemBase{
     public void setRPM(double rpm) {
         final double kGearRatio = 1/12;
         roller.setVelocity(rpm * kGearRatio);
+    }
+
+    private void runRollerAtMaxPower() {
+        roller.set(1.0);
+    }
+
+    public void toggleRoller() {
+        if (rollerRunning) {
+            roller.set(0);
+            rollerRunning = false;
+        }
+
+        else {
+            runRollerAtMaxPower();
+            rollerRunning = true;
+        }
     }
 
     /** sets the range of motion for the intake lift. */

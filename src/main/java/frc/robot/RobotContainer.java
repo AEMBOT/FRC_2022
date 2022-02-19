@@ -12,9 +12,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.DriveStraightProfiled;
+import frc.robot.commands.IntakeControl;
 import frc.robot.commands.TimeRotation;
 import frc.robot.commands.TurnToAngleProfiled;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -25,6 +27,7 @@ import frc.robot.subsystems.DriveSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
   private TimeRotation m_timeRotation =
       new TimeRotation(0.3, m_robotDrive); // = new TurnToAngleProfiled(10, m_robotDrive);
@@ -64,10 +67,13 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(() -> m_robotDrive.resetHeading(), m_robotDrive));
 
     new JoystickButton(m_driverController, Button.kA.value)
-        .whenPressed(new TurnToAngleProfiled(10, m_robotDrive).withTimeout(3));
+        .whenPressed(new InstantCommand(() -> m_intakeSubsystem.toggleRoller(), m_intakeSubsystem));
 
     new JoystickButton(m_driverController, Button.kRightBumper.value)
-        .whenPressed(new TurnToAngleProfiled(-10, m_robotDrive).withTimeout(3));
+        .whenPressed(new IntakeControl(m_intakeSubsystem, false));
+
+    new JoystickButton(m_driverController, Button.kLeftBumper.value)
+        .whenPressed(new IntakeControl(m_intakeSubsystem, true));
   }
 
   /**

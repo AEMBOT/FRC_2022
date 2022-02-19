@@ -85,7 +85,6 @@ jar {
 deployArtifact.jarTask = jar
 wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
-<<<<<<< HEAD
 
 // Spotless formatter configuration
 // spotless {
@@ -130,5 +129,3 @@ wpi.java.configureTestTasks(test)
 //         endWithNewline()
 //     }
 // }
-=======
->>>>>>> ec5ad47 (Save off reliable data before using setVoltage)
