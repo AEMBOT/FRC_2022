@@ -40,11 +40,13 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
-
+/*
     // Set default drivetrain command to arcade driving (happens during teleop)
     m_robotDrive.setDefaultCommand(
         new DefaultDrive(
             m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
+
+            */
   }
 
   /**
@@ -70,10 +72,10 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(() -> m_intakeSubsystem.toggleRoller(), m_intakeSubsystem));
 
     new JoystickButton(m_driverController, Button.kRightBumper.value)
-        .whenPressed(new IntakeControl(m_intakeSubsystem, false));
+        .whileHeld(new IntakeControl(m_intakeSubsystem, false));
 
     new JoystickButton(m_driverController, Button.kLeftBumper.value)
-        .whenPressed(new IntakeControl(m_intakeSubsystem, true));
+        .whileHeld(new IntakeControl(m_intakeSubsystem, true));
   }
 
   /**

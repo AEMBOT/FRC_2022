@@ -23,9 +23,9 @@ public final class Constants {
 
     public static final double nominalVoltage = 12.0;
 
-    // Motor controller ports (on 2019 bot)
-    public static final int kLeftFront = 8;
-    public static final int kLeftCenter = 7;
+    // Motor controller ports (on 2022 bot)
+    public static final int kLeftFront = 4;
+    public static final int kLeftCenter = 5;
     public static final int kLeftBack = 6;
 
     public static final int kRightFront = 1;

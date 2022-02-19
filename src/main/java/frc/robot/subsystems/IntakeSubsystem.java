@@ -7,9 +7,10 @@ import frc.robot.hardware.ClosedLoopSparkMax;
 
 public class IntakeSubsystem extends SubsystemBase{
     // TODO: move these later 
-    private final int kLiftLeftPort = 7;
-    private final int kLiftRightPort = 8;
-    private final int kRollerPort = 9;
+    private static final int kLiftLeftPort = 7;
+    private static final int kLiftRightPort = 8;
+    private static final int kRollerPort = 9;
+  
 
     // motor controllers
     private final CANSparkMax liftLeft = new CANSparkMax(kLiftLeftPort, MotorType.kBrushless);
@@ -49,7 +50,7 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     private void runRollerAtMaxPower() {
-        roller.set(0.1);
+        roller.set(0.5);
     }
 
     public void toggleRoller() {

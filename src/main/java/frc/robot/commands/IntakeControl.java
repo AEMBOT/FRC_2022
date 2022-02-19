@@ -21,7 +21,7 @@ public class IntakeControl extends CommandBase {
    */
   public IntakeControl(IntakeSubsystem subsystem, boolean invert) {
     m_subsystem = subsystem;
-    invert = shouldInvert;
+    shouldInvert = invert;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
   }
@@ -30,7 +30,7 @@ public class IntakeControl extends CommandBase {
   @Override
   public void initialize() {
       int direction = (shouldInvert ? -1 : 1);
-      double power = 0.1 * direction;
+      double power = .6 * direction;
     m_subsystem.setLiftPower(power);
   }
 
