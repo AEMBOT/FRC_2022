@@ -8,6 +8,12 @@ public class DriveStraightSmart extends CommandBase {
   private DriveSubsystem m_drive;
   private double m_distance;
 
+  /**
+   * A command to drive a distance using Smart Motion on the Spark Maxes.
+   *
+   * @param distance The distance to drive
+   * @param drive The robot's DriveSubsystem
+   */
   public DriveStraightSmart(double distance, DriveSubsystem drive) {
     m_distance = distance;
     m_drive = drive;
@@ -17,14 +23,16 @@ public class DriveStraightSmart extends CommandBase {
 
   @Override
   public void initialize() {
-    // Reset the heading and encoders
+    // Make sure motors are running in brake mode
     m_drive.setBrakeMode();
-    m_drive.resetHeading();
+
+    // Reset the encoders before running the motors
+    m_drive.resetEncoders();
   }
 
   @Override
   public void execute() {
-    m_drive.feedDrive();
+    // Run the motors to the provided position
     m_drive.smartMotionToPosition(m_distance);
 
     // Debugging info
