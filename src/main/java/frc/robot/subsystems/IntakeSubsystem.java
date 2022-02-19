@@ -49,7 +49,7 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     private void runRollerAtMaxPower() {
-        roller.set(1.0);
+        roller.set(0.1);
     }
 
     public void toggleRoller() {
