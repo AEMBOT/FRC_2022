@@ -49,7 +49,7 @@ public class TurnToAngleProfiled extends ProfiledPIDCommand {
   @Override
   public void execute() {
     SmartDashboard.putNumber("Setpoint Velocity", getController().getSetpoint().velocity);
-    SmartDashboard.putNumber("Setpoint Velocity Error",getController().getVelocityError());
+    SmartDashboard.putNumber("Setpoint Velocity Error", getController().getVelocityError());
     super.execute();
   }
 

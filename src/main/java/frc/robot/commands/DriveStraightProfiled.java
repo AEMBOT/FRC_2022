@@ -17,9 +17,9 @@ public class DriveStraightProfiled extends ProfiledPIDCommand {
   public DriveStraightProfiled(double distance, DriveSubsystem drive) {
     super(
         new ProfiledPIDController(
-            kP,
-            kI,
-            kD,
+            0,
+            0,
+            0,
             new TrapezoidProfile.Constraints(
                 kMaxVelocityMetersPerSecond, kMaxAccelerationMeterPerSecondSquared)),
         drive::getLeftEncoderPosition,
@@ -27,7 +27,7 @@ public class DriveStraightProfiled extends ProfiledPIDCommand {
         (output, setpoint) ->
             drive.arcadeDrive((output + m_feedforward.calculate(setpoint.velocity)), 0, false),
         drive);
-    
+
     getController().setTolerance(kDriveToleranceMeters, kDriveVelocityToleranceMetersPerSecond);
 
     m_drive = drive;
@@ -37,23 +37,23 @@ public class DriveStraightProfiled extends ProfiledPIDCommand {
   public void initialize() {
     // Make sure to reset the heading before resetting the internal PID controller
     m_drive.resetHeading();
-    
- 
+
     // For some reason, the odometry reset call from above isn't working
     // and the controller is re-initializing with the previous distance
     // it had before. Hacking it by manually doing what the caller is doing
     // (resetting the controller)
-    //super.initialize();
-    //System.out.print("Foo: ");
-    //System.out.println(m_drive.getLeftEncoderPosition());
+    // super.initialize();
+    // System.out.print("Foo: ");
+    // System.out.println(m_drive.getLeftEncoderPosition());
     super.getController().reset(0);
   }
-
 
   @Override
   public void execute() {
     SmartDashboard.putNumber("Setpoint Velocity", getController().getSetpoint().velocity);
-    SmartDashboard.putNumber("Actual Velocity", getController().getSetpoint().velocity + getController().getVelocityError());
+    SmartDashboard.putNumber(
+        "Actual Velocity",
+        getController().getSetpoint().velocity + getController().getVelocityError());
     SmartDashboard.putNumber("Measurement", m_measurement.getAsDouble());
     SmartDashboard.putBoolean("At goal", getController().atGoal());
     SmartDashboard.putNumber("Goal: ", getController().getGoal().position);

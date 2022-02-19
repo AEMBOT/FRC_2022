@@ -1,11 +1,14 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.DriveConstants.*;
+import static frc.robot.Constants.DriveConstants.StraightPID.SmartMotion.*;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -13,7 +16,6 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -26,20 +28,24 @@ public class DriveSubsystem extends SubsystemBase {
       new CANSparkMax(kRightCenter, MotorType.kBrushless);
   private final CANSparkMax m_backRightMotor = new CANSparkMax(kRightBack, MotorType.kBrushless);
 
+  private final SparkMaxPIDController m_leftController = m_centerLeftMotor.getPIDController();
+  private final SparkMaxPIDController m_rightController = m_centerRightMotor.getPIDController();
+
   private final RelativeEncoder m_centerLeftEncoder = m_centerLeftMotor.getEncoder();
   private final RelativeEncoder m_centerRightEncoder = m_centerRightMotor.getEncoder();
 
   // Group together drive motors on the same side of the drivetrain (left/right)
-  private final MotorControllerGroup m_leftMotors =
-      new MotorControllerGroup(m_frontLeftMotor, m_centerLeftMotor, m_backLeftMotor);
-  private final MotorControllerGroup m_rightMotors =
-      new MotorControllerGroup(m_frontRightMotor, m_centerRightMotor, m_backRightMotor);
+  // private final MotorControllerGroup m_leftMotors =
+  //     new MotorControllerGroup(m_frontLeftMotor, m_centerLeftMotor, m_backLeftMotor);
+  // private final MotorControllerGroup m_rightMotors =
+  //     new MotorControllerGroup(m_frontRightMotor, m_centerRightMotor, m_backRightMotor);
 
   // This allows us to read angle information from the NavX
   private final AHRS m_ahrs = new AHRS(SerialPort.Port.kMXP);
 
   // WPILib provides a convenience class for differential drive
-  private final DifferentialDrive m_drive = new DifferentialDrive(m_leftMotors, m_rightMotors);
+  private final DifferentialDrive m_drive =
+      new DifferentialDrive(m_centerLeftMotor, m_centerRightMotor);
 
   // This allows the robot to keep track of where it is on the field
   private DifferentialDriveOdometry m_odometry;
@@ -53,7 +59,15 @@ public class DriveSubsystem extends SubsystemBase {
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
     // Invert the left motors to drive in the correct direction
-    m_leftMotors.setInverted(true);
+    // m_leftMotors.setInverted(true);
+    m_centerLeftMotor.setInverted(true);
+
+    // Have the front/back motors mirror power outputs from the center motors
+    m_frontLeftMotor.follow(m_centerLeftMotor);
+    m_backLeftMotor.follow(m_centerLeftMotor);
+
+    m_frontRightMotor.follow(m_centerRightMotor);
+    m_backRightMotor.follow(m_centerRightMotor);
 
     // m_frontLeftMotor.enableVoltageCompensation(nominalVoltage);
     // m_centerLeftMotor.enableVoltageCompensation(nominalVoltage);
@@ -61,23 +75,65 @@ public class DriveSubsystem extends SubsystemBase {
     // m_frontRightMotor.enableVoltageCompensation(nominalVoltage);
     // m_centerRightMotor.enableVoltageCompensation(nominalVoltage);
     // m_backRightMotor.enableVoltageCompensation(nominalVoltage);
+    setSmartMotionConstants(m_leftController);
+    setSmartMotionConstants(m_rightController);
 
     // Reset the encoders & change their distance readings to meters
     resetEncoders();
     setupEncoderConversions();
 
-
     // Initialize the tracking of the robot's position on the field
-    m_odometry = new DifferentialDriveOdometry(new Rotation2d(getHeading()));
+    // m_odometry = new DifferentialDriveOdometry(new Rotation2d(getHeading()));
 
     // Keep track of the place where the odometry was last reset
-    m_lastResetPose = m_odometry.getPoseMeters();
+    // m_lastResetPose = m_odometry.getPoseMeters();
+  }
+
+  public void feedDrive() {
+    m_drive.feed();
+  }
+
+  public void setBrakeMode() {
+    m_frontLeftMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    m_centerLeftMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    m_backLeftMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+
+    m_frontRightMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    m_centerRightMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    m_backRightMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+  }
+
+  public void setCoastMode() {
+    m_frontLeftMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    m_centerLeftMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    m_backLeftMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+
+    m_frontRightMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    m_centerRightMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    m_backRightMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+  }
+
+  private void setSmartMotionConstants(SparkMaxPIDController controller) {
+    controller.setP(kP);
+    controller.setI(kI);
+    controller.setD(kD);
+    controller.setIZone(kIz);
+
+    controller.setOutputRange(kMinOutput, kMaxOutput);
+
+    controller.setFF(kFF);
+
+    int slot = 0;
+    controller.setSmartMotionMaxVelocity(kMaxVel, slot);
+    controller.setSmartMotionMinOutputVelocity(kMinVel, slot);
+    controller.setSmartMotionMaxAccel(kMaxAcc, slot);
+    controller.setSmartMotionAllowedClosedLoopError(kAllowedErr, slot);
   }
 
   @Override
   public void periodic() {
     // Keep track of where the robot is on the field
-    updateOdometry();
+    // updateOdometry();
 
     // Log drive-related informatin to SmartDashboard if specified
     if (m_debug) {
@@ -88,13 +144,29 @@ public class DriveSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Right Velocity", m_centerRightEncoder.getVelocity());
 
       // TODO: Figure out how to log motor voltages
-      SmartDashboard.putNumber("Left Power", m_leftMotors.get());
-      SmartDashboard.putNumber("Right Power", m_rightMotors.get());
+      SmartDashboard.putNumber("Left Power", m_centerLeftMotor.get());
+      SmartDashboard.putNumber("Right Power", m_centerRightMotor.get());
 
       SmartDashboard.putNumber("Left Encoder get position", getLeftEncoderPosition());
-      
+
       SmartDashboard.putNumber("Right Encoder get position", m_centerRightEncoder.getPosition());
     }
+  }
+
+  public void smartMotionToPosition(double position) {
+    m_rightController.setReference(position, ControlType.kSmartMotion);
+    m_leftController.setReference(position, ControlType.kSmartMotion);
+  }
+
+  public boolean smartMotionAtGoal(double goal) {
+    double leftPosition = getLeftEncoderPosition();
+    double rightPosition = getRightEncoderPosition();
+    return inRangeInclusive(goal, kAllowedErr, leftPosition)
+        || inRangeInclusive(goal, kAllowedErr, rightPosition);
+  }
+
+  private boolean inRangeInclusive(double goal, double margin, double val) {
+    return goal - margin <= val && val <= goal + margin;
   }
 
   /**
@@ -106,8 +178,6 @@ public class DriveSubsystem extends SubsystemBase {
   public void tankDrive(double left, double right) {
     m_drive.tankDrive(left, right);
   }
-
-  private double nominalBatteryVoltage = 12.0; // Volts
 
   /**
    * Arcade-style drive of the robot.
@@ -145,7 +215,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /** Gets the position of the center right encoder in meters. */
-  private double getRightEncoderPosition() {
+  public double getRightEncoderPosition() {
     return m_centerRightEncoder.getPosition();
   }
 
@@ -196,10 +266,10 @@ public class DriveSubsystem extends SubsystemBase {
     m_ahrs.zeroYaw();
 
     // Resetting the odometry also requires zeroing the encoders
+    // TODO: Either mention this in the method documentation or call it separately
     resetEncoders();
 
-
-/*  TODO: Determine if this is appropriate for this year
+    /*  TODO: Determine if this is appropriate for this year
     // Reuse the previous pose on the field, compensating for the change in heading
     Pose2d prev_pose = m_odometry.getPoseMeters();
     m_odometry.resetPosition(prev_pose, new Rotation2d(Units.degreesToRadians(getHeading())));

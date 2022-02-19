@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.DriveStraightProfiled;
+import frc.robot.commands.DriveStraightSmart;
 import frc.robot.commands.TimeRotation;
 import frc.robot.commands.TurnToAngleProfiled;
 import frc.robot.subsystems.DriveSubsystem;
@@ -28,7 +30,9 @@ public class RobotContainer {
 
   private TimeRotation m_timeRotation =
       new TimeRotation(0.3, m_robotDrive); // = new TurnToAngleProfiled(10, m_robotDrive);
-  private DriveStraightProfiled m_autoCommand = new DriveStraightProfiled(-1.0, m_robotDrive);
+  private DriveStraightProfiled m_openLoopStraight = new DriveStraightProfiled(-1.0, m_robotDrive);
+  private DriveStraightSmart m_autoCommand =
+      new DriveStraightSmart(Units.feetToMeters(6), m_robotDrive);
 
   // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);
