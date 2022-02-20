@@ -34,44 +34,22 @@ public final class Constants {
 
     // Split PID-related constants based on whether robot is turning/going straight
     public static final class StraightPID {
-      public static final class SmartMotion {
-        public static final double kP = 0;
-        public static final double kI = 0;
-        public static final double kD = 0;
-        public static final double kIz = 0;
+      // Spark MAX Smart Motion PIDF constants
+      public static final double kP = 0;
+      public static final double kI = 0;
+      public static final double kD = 0;
+      public static final double kIz = 0;
 
-        public static final double kFF = 0.000457;
-        public static final double kMaxOutput = 1;
-        public static final double kMinOutput = -1;
-        public static final double kMaxRPM = 5676;
-        public static final double kMinVel = 0;
-        public static final double kMaxVel = 2000; // rpm
-        public static final double kMaxAcc = 1500;
-        public static final double kAllowedErr = 0.05;
-      }
+      public static final double kFF = 0.000457;
+      public static final double kMaxOutput = 1;
+      public static final double kMinOutput = -1;
+      public static final double kAllowedErr = 0.01; // meters
 
-      // Basic PID constants
-      // public static final double kP = 0;
-      // public static final double kI = 0;
-      // public static final double kD = 0;
-
-      // Profiling
-      public static final double kMaxVelocityMetersPerSecond = .33333;
-      public static final double kMaxAccelerationMeterPerSecondSquared = 5;
-
-      // Feedforward
-      public static final double kTestPower = 0.05;
-      public static final double kTestSeconds = 3;
-      public static final double kSVolts =
-          0.00; // Power!! for now               82 inches -> 2.08 meters
-      // .4445 meters in 3 seconds at 0.05 power
-      public static final double kVVoltMetersPerSecond =
-          ((kTestPower - kSVolts) / (.4445 / kTestSeconds))
-              / 1.55; // REMOVE ME. FIGURE OUT WHY IT IS OFF
-
-      // PID tolerances
-      public static final double kDriveVelocityToleranceMetersPerSecond = 2;
-      public static final double kDriveToleranceMeters = 0.1;
+      // All of these are measured in RPM
+      public static final double kMaxRPM = 5676;
+      public static final double kMinVel = 0;
+      public static final double kMaxVel = 2000;
+      public static final double kMaxAcc = 1500;
     }
 
     public static final class TurnPID {

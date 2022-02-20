@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -23,7 +23,7 @@ public class DriveStraightSmart extends CommandBase {
 
   @Override
   public void initialize() {
-    // Make sure motors are running in brake mode
+    // Make sure motors are running in brake mode to avoid overshooting
     m_drive.setBrakeMode();
 
     // Reset the encoders before running the motors
@@ -37,8 +37,6 @@ public class DriveStraightSmart extends CommandBase {
 
     // Debugging info
     SmartDashboard.putNumber("Set Point", m_distance);
-    SmartDashboard.putNumber("Left Position", m_drive.getLeftEncoderPosition());
-    SmartDashboard.putNumber("Right Position", m_drive.getRightEncoderPosition());
   }
 
   @Override

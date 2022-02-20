@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.DriveConstants.*;
-import static frc.robot.Constants.DriveConstants.StraightPID.SmartMotion.*;
+import static frc.robot.Constants.DriveConstants.StraightPID.*;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
@@ -67,8 +67,8 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRightMotor.follow(m_centerRightMotor);
     m_backRightMotor.follow(m_centerRightMotor);
 
-    // TODO: Test native Spark MAX voltage compensation // Enable voltage compensation for all of
-    // the motors
+    // TODO: Test native Spark MAX voltage compensation
+    // Enable voltage compensation for all of the motors
     // m_frontLeftMotor.enableVoltageCompensation(nominalVoltage);
     // m_centerLeftMotor.enableVoltageCompensation(nominalVoltage);
     // m_backLeftMotor.enableVoltageCompensation(nominalVoltage);
@@ -80,7 +80,7 @@ public class DriveSubsystem extends SubsystemBase {
     setSmartMotionConstants(m_leftController);
     setSmartMotionConstants(m_rightController);
 
-    // Reset the encoders & change their distance readings to meters
+    // Reset the encoders & change their position readings to meters
     resetEncoders();
     setupEncoderConversions();
 
@@ -91,6 +91,7 @@ public class DriveSubsystem extends SubsystemBase {
     // m_lastResetPose = m_odometry.getPoseMeters();
   }
 
+  /** Set all drive motors to brake mode. */
   public void setBrakeMode() {
     m_frontLeftMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
     m_centerLeftMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
@@ -101,6 +102,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_backRightMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
   }
 
+  /** Set all drive motors to coast mode. */
   public void setCoastMode() {
     m_frontLeftMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
     m_centerLeftMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
@@ -111,6 +113,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_backRightMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
   }
 
+  /** Sets various Smart Motion constants for a Spark Max PID controller */
   private void setSmartMotionConstants(SparkMaxPIDController controller) {
     controller.setP(kP);
     controller.setI(kI);
@@ -138,16 +141,17 @@ public class DriveSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Robot Heading", getHeading());
       SmartDashboard.putNumber("Rotation Velocity", getRotationRate());
 
+      // Motor positions (meters)
+      SmartDashboard.putNumber("Left Position", getLeftEncoderPosition());
+      SmartDashboard.putNumber("Right Position", getRightEncoderPosition());
+
+      // Motor velocities (meters per second)
       SmartDashboard.putNumber("Left Velocity", m_centerLeftEncoder.getVelocity());
       SmartDashboard.putNumber("Right Velocity", m_centerRightEncoder.getVelocity());
 
-      // TODO: Figure out how to log motor voltages
+      // Motor powers (-1 to 1)
       SmartDashboard.putNumber("Left Power", m_centerLeftMotor.get());
       SmartDashboard.putNumber("Right Power", m_centerRightMotor.get());
-
-      SmartDashboard.putNumber("Left Encoder get position", getLeftEncoderPosition());
-
-      SmartDashboard.putNumber("Right Encoder get position", m_centerRightEncoder.getPosition());
     }
   }
 
@@ -214,13 +218,17 @@ public class DriveSubsystem extends SubsystemBase {
    * respectively.
    */
   private void setupEncoderConversions() {
-    double conversionFactor = 1 / (kWheelCircumferenceMeters * kMotorRotationsPerWheelRotation);
-    m_centerLeftEncoder.setPositionConversionFactor(conversionFactor);
-    m_centerLeftEncoder.setVelocityConversionFactor(conversionFactor);
-
     // TODO: Maybe compensate for lower right encoder readings?
-    m_centerRightEncoder.setPositionConversionFactor(conversionFactor);
-    m_centerRightEncoder.setVelocityConversionFactor(conversionFactor);
+    // Convert revolutions to meters
+    double positionConversionFactor =
+        1 / (kWheelCircumferenceMeters * kMotorRotationsPerWheelRotation);
+    m_centerLeftEncoder.setPositionConversionFactor(positionConversionFactor);
+    m_centerRightEncoder.setPositionConversionFactor(positionConversionFactor);
+
+    // Convert RPM to meters per second
+    double velocityConversionFactor = positionConversionFactor / 60;
+    m_centerLeftEncoder.setVelocityConversionFactor(velocityConversionFactor);
+    m_centerRightEncoder.setVelocityConversionFactor(velocityConversionFactor);
   }
 
   // SMARTMOTION METHODS

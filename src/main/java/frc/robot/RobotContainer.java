@@ -11,11 +11,9 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.DefaultDrive;
-import frc.robot.commands.DriveStraightProfiled;
-import frc.robot.commands.DriveStraightSmart;
-import frc.robot.commands.TimeRotation;
-import frc.robot.commands.TurnToAngleProfiled;
+import frc.robot.commands.drive.DefaultDrive;
+import frc.robot.commands.drive.DriveStraightSmart;
+import frc.robot.commands.drive.TurnToAngleProfiled;
 import frc.robot.subsystems.DriveSubsystem;
 
 /**
@@ -28,9 +26,6 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
-  private TimeRotation m_timeRotation =
-      new TimeRotation(0.3, m_robotDrive); // = new TurnToAngleProfiled(10, m_robotDrive);
-  private DriveStraightProfiled m_openLoopStraight = new DriveStraightProfiled(-1.0, m_robotDrive);
   private DriveStraightSmart m_autoCommand =
       new DriveStraightSmart(Units.feetToMeters(6), m_robotDrive);
 
@@ -80,8 +75,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // Not sure whether we want to leave this here or not. Test with the joystick first
-    // m_autoCommand = new TurnToAngleProfiled(10, m_robotDrive);
     return m_autoCommand;
   }
 }
