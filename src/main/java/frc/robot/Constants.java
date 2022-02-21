@@ -15,6 +15,18 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    
+  public static final class ShooterConstants {
+    public static final int LeftMotorCANId = 27;
+    public static final int RightMotorCANId = 28;
+
+    public static final double kvVolts = 0.00018;//0.002181818182; // Volts per RPM
+    public static final double P = 0.0000;
+    public static final double I = 0.0000001;
+    public static final double D = 0.0000;
+
+  }
+
   public static final class DriveConstants {
     // Wheels are 8 inches in diameter, so their circumference can be calculated
     // (converted to meters for convenience)
@@ -31,6 +43,8 @@ public final class Constants {
     public static final int kRightFront = 1;
     public static final int kRightCenter = 2;
     public static final int kRightBack = 3;
+  }
+    
 
     // Split PID-related constants based on whether robot is turning/going straight
     public static final class StraightPID {

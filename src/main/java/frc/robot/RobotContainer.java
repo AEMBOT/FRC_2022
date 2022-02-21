@@ -10,7 +10,11 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.ShooterConstants;
+import frc.robot.subsystems.LimeLightTargeting;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.drive.DriveStraightSmart;
 import frc.robot.commands.drive.TurnToAngleProfiled;
@@ -24,10 +28,13 @@ import frc.robot.subsystems.DriveSubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(ShooterConstants.LeftMotorCANId, ShooterConstants.RightMotorCANId);
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
   private DriveStraightSmart m_autoCommand =
       new DriveStraightSmart(Units.feetToMeters(6), m_robotDrive);
+
+  private final LimeLightTargeting m_targeting = new LimeLightTargeting();
 
   // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);
@@ -36,7 +43,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
-
+    SmartDashboard.putNumber("Shooter RPM", 3400);
     // Set default drivetrain command to arcade driving (happens during teleop)
     m_robotDrive.setDefaultCommand(
         new DefaultDrive(
@@ -67,6 +74,14 @@ public class RobotContainer {
 
     new JoystickButton(m_driverController, Button.kRightBumper.value)
         .whenPressed(new TurnToAngleProfiled(-10, m_robotDrive).withTimeout(3));
+        
+    // NOTE: Doesn't have requirement of m_targeting subsystem. Could not figure out how to include
+      // it. Can't add it as an additional argument for some reason, even though the function uses "..."
+      // (variable-length arguments)
+      RunCommand targetCommand = new RunCommand(() -> m_shooterSubsystem.shootFlywheels(m_targeting.getDistance()));
+      targetCommand.addRequirements(m_targeting,m_shooterSubsystem);
+
+      new JoystickButton(m_Controller, XboxController.Button.kA.value).whileHeld(targetCommand);
   }
 
   /**
