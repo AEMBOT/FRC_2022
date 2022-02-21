@@ -43,7 +43,6 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
-    SmartDashboard.putNumber("Shooter RPM", 3400);
     // Set default drivetrain command to arcade driving (happens during teleop)
     m_robotDrive.setDefaultCommand(
         new DefaultDrive(
@@ -81,7 +80,7 @@ public class RobotContainer {
       RunCommand targetCommand = new RunCommand(() -> m_shooterSubsystem.shootFlywheels(m_targeting.getDistance()));
       targetCommand.addRequirements(m_targeting,m_shooterSubsystem);
 
-      new JoystickButton(m_Controller, XboxController.Button.kA.value).whileHeld(targetCommand);
+      new JoystickButton(m_driverController, XboxController.Button.kA.value).whileHeld(targetCommand);
   }
 
   /**
