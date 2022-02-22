@@ -6,7 +6,7 @@ aspect_min:0.000000
 black_level:6
 blue_balance:1965
 calibration_type:0
-contour_grouping:0
+contour_grouping:2
 contour_sort_final:0
 convexity_max:100
 convexity_min:11.8
