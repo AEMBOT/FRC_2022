@@ -28,7 +28,7 @@ import frc.robot.subsystems.DriveSubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(ShooterConstants.LeftMotorCANId, ShooterConstants.RightMotorCANId);
+  //private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(ShooterConstants.LeftMotorCANId, ShooterConstants.RightMotorCANId);
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
   private DriveStraightSmart m_autoCommand =
@@ -77,10 +77,12 @@ public class RobotContainer {
     // NOTE: Doesn't have requirement of m_targeting subsystem. Could not figure out how to include
       // it. Can't add it as an additional argument for some reason, even though the function uses "..."
       // (variable-length arguments)
+      /*
       RunCommand targetCommand = new RunCommand(() -> m_shooterSubsystem.shootFlywheels(m_targeting.getDistance()));
       targetCommand.addRequirements(m_targeting,m_shooterSubsystem);
 
       new JoystickButton(m_driverController, XboxController.Button.kA.value).whileHeld(targetCommand);
+      */
   }
 
   /**
