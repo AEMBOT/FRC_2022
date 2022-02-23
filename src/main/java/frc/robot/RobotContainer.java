@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.LimeLightTargeting;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.commands.drive.AutonomousPathing;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.drive.DriveStraightSmart;
 import frc.robot.commands.drive.TurnToAngleProfiled;
@@ -31,9 +32,14 @@ public class RobotContainer {
   //private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(ShooterConstants.LeftMotorCANId, ShooterConstants.RightMotorCANId);
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
-  private DriveStraightSmart m_autoCommand =
-      new DriveStraightSmart(Units.feetToMeters(6), m_robotDrive);
+  private AutonomousPathing m_autoCommand = 
+      new AutonomousPathing(m_robotDrive);
 
+/*
+  private DriveStraightSmart m_autoCommand =
+      new AutonomousPathing(m_robotDrive);
+      //new DriveStraightSmart(Units.feetToMeters(6), m_robotDrive);
+*/
   private final LimeLightTargeting m_targeting = new LimeLightTargeting();
 
   // TODO: Move port to constants?
