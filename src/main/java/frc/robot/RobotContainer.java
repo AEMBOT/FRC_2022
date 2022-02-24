@@ -19,6 +19,7 @@ import frc.robot.commands.drive.AutonomousPathing;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.drive.DriveStraightSmart;
 import frc.robot.commands.drive.TurnToAngleProfiled;
+import frc.robot.commands.drive.TurnToAngleSmart;
 import frc.robot.subsystems.DriveSubsystem;
 
 /**
@@ -34,6 +35,8 @@ public class RobotContainer {
 
   private AutonomousPathing m_autoCommand = 
       new AutonomousPathing(m_robotDrive);
+  private final DriveStraightSmart m_driveForward = new DriveStraightSmart(Units.feetToMeters(3), m_robotDrive);
+  private final TurnToAngleSmart m_turn90 = new TurnToAngleSmart(90, m_robotDrive);
 
 /*
   private DriveStraightSmart m_autoCommand =
@@ -97,6 +100,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return m_autoCommand;
+    return m_turn90;
   }
 }

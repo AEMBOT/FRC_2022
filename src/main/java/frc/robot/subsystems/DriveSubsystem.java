@@ -235,13 +235,23 @@ public class DriveSubsystem extends SubsystemBase {
 
   /**
    * Runs the motors on both sides of the robot using SmartMotion.
+   * 
+   * @param left The distance to move the left motor
+   * @param right The distance to move the right motor
+   */
+  public void smartMotionToPosition(double left, double right) {
+    m_drive.feed();
+    m_rightController.setReference(right, ControlType.kSmartMotion);
+    m_leftController.setReference(left, ControlType.kSmartMotion);
+  }
+
+  /**
+   * Runs the motors on both sides of the robot using SmartMotion.
    *
    * @param distance The distance to drive (in meters)
    */
   public void smartMotionToPosition(double distance) {
-    m_drive.feed();
-    m_rightController.setReference(distance, ControlType.kSmartMotion);
-    m_leftController.setReference(distance, ControlType.kSmartMotion);
+    smartMotionToPosition(distance, distance);
   }
 
   /**
