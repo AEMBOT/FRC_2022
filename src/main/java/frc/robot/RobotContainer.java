@@ -7,16 +7,22 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.DriveStraightProfiled;
 import frc.robot.commands.IntakeControl;
+import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.TimeRotation;
 import frc.robot.commands.TurnToAngleProfiled;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LimeLightTargeting;
+import frc.robot.subsystems.ShooterSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -27,11 +33,15 @@ import frc.robot.subsystems.IntakeSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(ShooterConstants.LeftMotorCANId, ShooterConstants.RightMotorCANId);
   private IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
   private TimeRotation m_timeRotation =
       new TimeRotation(0.3, m_robotDrive); // = new TurnToAngleProfiled(10, m_robotDrive);
   private DriveStraightProfiled m_autoCommand = new DriveStraightProfiled(-1.0, m_robotDrive);
+  private final LimeLightTargeting m_targeting = new LimeLightTargeting();
+
+  private final XboxController m_Controller = new XboxController(0);
 
   // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);
@@ -40,13 +50,15 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
-/*
+
     // Set default drivetrain command to arcade driving (happens during teleop)
     m_robotDrive.setDefaultCommand(
         new DefaultDrive(
             m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
 
-            */
+    // Tried to write this without creating a separate file, but failed.
+    // Please correct as some point
+    m_shooterSubsystem.setDefaultCommand(new ShooterCommand(m_shooterSubsystem, m_driverController::getRightTriggerAxis));
   }
 
   /**
@@ -71,11 +83,28 @@ public class RobotContainer {
     new JoystickButton(m_driverController, Button.kA.value)
         .whenPressed(new InstantCommand(() -> m_intakeSubsystem.toggleRoller(), m_intakeSubsystem));
 
+    new JoystickButton(m_Controller, XboxController.Button.kLeftBumper.value).whileHeld(
+      new RunCommand(() -> m_shooterSubsystem.incrementTargetPower(-.05), m_shooterSubsystem)
+    );
+
     new JoystickButton(m_driverController, Button.kRightBumper.value)
-        .whileHeld(new IntakeControl(m_intakeSubsystem, false));
+    .whileHeld(new IntakeControl(m_intakeSubsystem, false));
 
     new JoystickButton(m_driverController, Button.kLeftBumper.value)
-        .whileHeld(new IntakeControl(m_intakeSubsystem, true));
+    .whileHeld(new IntakeControl(m_intakeSubsystem, true));
+      
+    // NOTE: Doesn't have requirement of m_targeting subsystem. Could not figure out how to include
+    // it. Can't add it as an additional argument for some reason, even though the function uses "..."
+    // (variable-length arguments)
+    /*
+    RunCommand targetCommand = new RunCommand(() -> m_shooterSubsystem.shootFlywheels(m_targeting.getDistance()));
+    targetCommand.addRequirements(m_targeting,m_shooterSubsystem);
+
+    new JoystickButton(m_Controller, XboxController.Button.kA.value).whileHeld(targetCommand);
+
+    */
+
+
   }
 
   /**
