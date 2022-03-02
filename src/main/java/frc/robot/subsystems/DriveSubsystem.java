@@ -88,7 +88,7 @@ public class DriveSubsystem extends SubsystemBase {
     // m_odometry = new DifferentialDriveOdometry(new Rotation2d(getHeading()));
 
     // Keep track of the place where the odometry was last reset
-    // m_lastResetPose = m_odometry.getPoseFeet();
+    // m_lastResetPose = m_odometry.getPoseMeters();
   }
 
   /** Set all drive motors to brake mode. */
@@ -313,7 +313,7 @@ public class DriveSubsystem extends SubsystemBase {
      * TODO: Determine if this is appropriate for this year
      * // Reuse the previous pose on the field, compensating for the change in
      * heading
-     * Pose2d prev_pose = m_odometry.getPoseFeet();
+     * Pose2d prev_pose = m_odometry.getPoseMeters();
      * m_odometry.resetPosition(prev_pose, new
      * Rotation2d(Units.degreesToRadians(getHeading())));
      */
@@ -326,8 +326,12 @@ public class DriveSubsystem extends SubsystemBase {
    * reset
    */
   public double getResetDisplacement() {
-    Pose2d currentOffset = m_odometry.getPoseFeet().relativeTo(m_lastResetPose);
+    return -1;
+    /*
+    // TODO: Convert to use feet
+    Pose2d currentOffset = m_odometry.getPoseMeters().relativeTo(m_lastResetPose);
     return currentOffset.getTranslation().getDistance(new Translation2d());
+    */
   }
 
   /**
