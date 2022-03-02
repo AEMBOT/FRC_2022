@@ -18,16 +18,38 @@ public class ClosedLoopSparkMax extends CANSparkMax {
 
         m_pidController = getPIDController();
         m_encoder = getEncoder();
-        
+
+        //initialize PID coefficients
+        m_pidController.setI(kI);
+        m_pidController.setD(kD);
+        m_pidController.setIZone(kIz);
+        m_pidController.setFF(kFF);
+        m_pidController.setOutputRange(kMinOutput, kMaxOutput);
+
+        // initialize SmartMotion values
+        m_pidController.setSmartMotionMaxVelocity(maxVel, 0);
+        m_pidController.setSmartMotionMinOutputVelocity(minVel, 0);
+        m_pidController.setSmartMotionMaxAccel(maxAcc, 0);
+        m_pidController.setSmartMotionAllowedClosedLoopError(allowedErr, 0);
     }
 
-    /**  Uses the "Smart Motion" closed loop to move some number of rotations
+    /** Uses the closed loop control onboard the SparkMax to move some number of rotations
     * @return error as an REVLibError, REVLibError.kOk == successful
     */
     public REVLibError runToSetPoint(double setPoint) {
+        return m_pidController.setReference(setPoint, ControlType.kPosition);
+    }
+
+    /** Uses the "Smart Motion" closed loop control onboard the SparkMax to move some number of rotations
+    * @return error as an REVLibError, REVLibError.kOk == successful
+    */
+    public REVLibError runToSetPointSmartMotion(double setPoint) {
         return m_pidController.setReference(setPoint, ControlType.kSmartMotion);
     }
 
+    /** Uses the closed loop control onboard the SparkMax to run at a target velocity
+    * @return error as an REVLibError, REVLibError.kOk == successful
+    */
     public REVLibError setVelocity(double setPoint) {
         return m_pidController.setReference(setPoint, ControlType.kVelocity);
     }
