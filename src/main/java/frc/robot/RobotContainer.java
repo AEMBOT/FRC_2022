@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -58,7 +59,11 @@ public class RobotContainer {
 
     // Tried to write this without creating a separate file, but failed.
     // Please correct as some point
+
     m_shooterSubsystem.setDefaultCommand(new ShooterCommand(m_shooterSubsystem, m_driverController::getRightTriggerAxis));
+
+    //m_shooterSubsystem.setDefaultCommand(new InstantCommand(()-> m_shooterSubsystem.test(12.2), m_shooterSubsystem));
+
   }
 
   /**
@@ -69,8 +74,12 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // Turn left 90 degrees with a 3 second timeout
+
     new JoystickButton(m_driverController, Button.kX.value)
-        .whenPressed(new TurnToAngleProfiled(90, m_robotDrive).withTimeout(3));
+      .whenPressed(new InstantCommand(()-> m_shooterSubsystem.test(12.2), m_shooterSubsystem));
+    /*
+    new JoystickButton(m_driverController, Button.kX.value)
+        .whenPressed(new TurnToAngleProfiled(90, m_robotDrive).withTimeout(3));*/
 
     // Turn right 90 degrees with a 3 second timeout
     new JoystickButton(m_driverController, Button.kY.value)

@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController;
@@ -206,4 +209,62 @@ public class ShooterSubsystem extends SubsystemBase {
       double RPM = linearToRPM(neededVelocity);
       return RPM;
   }    
-}
+
+  public double ExtrapolateSlope(double ty1, double rpm1, double ty2, double rpm2){
+    //make linaer model between rpm1 and rpm2
+    double deltaRPM = rpm2 - rpm1;
+    double deltaTy = ty2 - ty1;
+    double slope = deltaRPM / deltaTy;
+    return slope; 
+  }
+
+  public double rpmFromSlope(double ty, double slope){
+    double desiredRPM = slope * ty; 
+    return desiredRPM;
+  }
+
+  
+  Dictionary<Double, Double> dictionary = new Hashtable<>();
+  public void Dict(String[] args){
+    
+    //dictionary.put(ty value, rpm value) 
+    // do every 6 inches -> about every 3 degress 
+    dictionary.put(1.0,1.0);
+    dictionary.put(27.3,2000.0);
+    dictionary.put(12.0, 2000.0);
+    dictionary.put(12.5, 2200.0);
+    dictionary.put(13.0, 25000.0);
+  }
+  public double returnRPM(double ty){
+    double lowTy = 0.5 * Math.floor(Math.abs(ty/0.5));
+    double highTy = 0.5 * Math.ceil(Math.abs(ty/0.5));
+    double higherTy = highTy + 0.5;
+    double rpm = 0;
+    if (Math.abs(ty - lowTy) > Math.abs(ty - highTy)){
+      //double slope = ExtrapolateSlope(lowTy, )
+      double slope = ExtrapolateSlope(lowTy, dictionary.get(lowTy), highTy, dictionary.get(highTy));
+      rpm = ty * slope;
+      return rpm;
+    }
+    else if (Math.abs(ty - highTy) > Math.abs(ty - lowTy)){
+      double slope = ExtrapolateSlope(highTy, dictionary.get(highTy), higherTy, dictionary.get(higherTy));
+      rpm = ty * slope;
+      return rpm;
+    }
+    else if (ty == highTy){
+      rpm = dictionary.get(highTy);
+      return rpm;
+    }
+    else{
+      rpm = dictionary.get(lowTy);
+      return rpm;
+    }
+  
+  }
+
+  public double test(double ty){
+    System.out.print(returnRPM(ty));
+    return 0;
+    }
+  }
+
