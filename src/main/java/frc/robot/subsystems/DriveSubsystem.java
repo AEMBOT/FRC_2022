@@ -80,7 +80,7 @@ public class DriveSubsystem extends SubsystemBase {
     setSmartMotionConstants(m_leftController);
     setSmartMotionConstants(m_rightController);
 
-    // Reset the encoders & change their position readings to meters
+    // Reset the encoders & change their position readings to feet
     resetEncoders();
     setupEncoderConversions();
 
@@ -88,7 +88,7 @@ public class DriveSubsystem extends SubsystemBase {
     // m_odometry = new DifferentialDriveOdometry(new Rotation2d(getHeading()));
 
     // Keep track of the place where the odometry was last reset
-    // m_lastResetPose = m_odometry.getPoseMeters();
+    // m_lastResetPose = m_odometry.getPoseFeet();
   }
 
   /** Set all drive motors to brake mode. */
@@ -141,11 +141,11 @@ public class DriveSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Robot Heading", getHeading());
       SmartDashboard.putNumber("Rotation Velocity", getRotationRate());
 
-      // Motor positions (meters)
+      // Motor positions (feet)
       SmartDashboard.putNumber("Left Position", getLeftEncoderPosition());
       SmartDashboard.putNumber("Right Position", getRightEncoderPosition());
 
-      // Motor velocities (meters per second)
+      // Motor velocities (feet per second)
       SmartDashboard.putNumber("Left Velocity", m_centerLeftEncoder.getVelocity());
       SmartDashboard.putNumber("Right Velocity", m_centerRightEncoder.getVelocity());
 
@@ -195,12 +195,12 @@ public class DriveSubsystem extends SubsystemBase {
 
   // ENCODER METHODS
 
-  /** Gets the position of the center left encoder in meters. */
+  /** Gets the position of the center left encoder in feet. */
   public double getLeftEncoderPosition() {
     return m_centerLeftEncoder.getPosition();
   }
 
-  /** Gets the position of the center right encoder in meters. */
+  /** Gets the position of the center right encoder in feet. */
   public double getRightEncoderPosition() {
     return m_centerRightEncoder.getPosition();
   }
@@ -210,22 +210,23 @@ public class DriveSubsystem extends SubsystemBase {
     m_centerLeftEncoder.setPosition(0);
     m_centerRightEncoder.setPosition(0);
 
-    // TODO: If odometry is added back in, previous positions also have to be updated
+    // TODO: If odometry is added back in, previous positions also have to be
+    // updated
   }
 
   /**
-   * Changes encoder readings to meters and meters per second for position and velocity,
+   * Changes encoder readings to feet and feet per second for position and
+   * velocity,
    * respectively.
    */
   private void setupEncoderConversions() {
     // TODO: Maybe compensate for lower right encoder readings?
-    // Convert revolutions to meters
-    double positionConversionFactor =
-        1 / (kWheelCircumferenceMeters * kMotorRotationsPerWheelRotation);
+    // Convert revolutions to feet
+    double positionConversionFactor = 1 / (kWheelCircumferenceFeet * kMotorRotationsPerWheelRotation);
     m_centerLeftEncoder.setPositionConversionFactor(positionConversionFactor);
     m_centerRightEncoder.setPositionConversionFactor(positionConversionFactor);
 
-    // Convert RPM to meters per second
+    // Convert RPM to feet per second
     double velocityConversionFactor = positionConversionFactor / 60;
     m_centerLeftEncoder.setVelocityConversionFactor(velocityConversionFactor);
     m_centerRightEncoder.setVelocityConversionFactor(velocityConversionFactor);
@@ -248,7 +249,7 @@ public class DriveSubsystem extends SubsystemBase {
   /**
    * Runs the motors on both sides of the robot using SmartMotion.
    *
-   * @param distance The distance to drive (in meters)
+   * @param distance The distance to drive (in feet)
    */
   public void smartMotionToPosition(double distance) {
     smartMotionToPosition(distance, distance);
@@ -275,12 +276,14 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Gets the heading of the robot. Ranges from -180 to 180 degrees. */
   public double getHeading() {
-    // Negated to mirror signs on a coordinate plane (+ -> counterclockwise and vice versa)
+    // Negated to mirror signs on a coordinate plane (+ -> counterclockwise and vice
+    // versa)
     return -m_ahrs.getYaw();
   }
 
   /**
-   * Gets the angle the robot has rotated since the last gyro reset. Can be greater than 360
+   * Gets the angle the robot has rotated since the last gyro reset. Can be
+   * greater than 360
    * degrees.
    */
   public double getAngle() {
@@ -289,7 +292,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Gets the rate of change of the yaw of the robot. */
   public double getRotationRate() {
-    // getRate only returns the difference in angles, so it has to be multiplied by the NavX update
+    // getRate only returns the difference in angles, so it has to be multiplied by
+    // the NavX update
     // frequency
     // (see https://github.com/kauailabs/navxmxp/issues/69)
     return -m_ahrs.getRate() * m_ahrs.getActualUpdateRate();
@@ -297,31 +301,40 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Resets the robot heading to 0 degrees, as well as the odometry. */
   public void resetHeading() {
-    // TODO: This fails if the NavX is calibrating, so it might be a good idea to check for that
+    // TODO: This fails if the NavX is calibrating, so it might be a good idea to
+    // check for that
     m_ahrs.zeroYaw();
 
     // Resetting the odometry also requires zeroing the encoders
     // TODO: Either mention this in the method documentation or call it separately
     resetEncoders();
 
-    /*  TODO: Determine if this is appropriate for this year
-    // Reuse the previous pose on the field, compensating for the change in heading
-    Pose2d prev_pose = m_odometry.getPoseMeters();
-    m_odometry.resetPosition(prev_pose, new Rotation2d(Units.degreesToRadians(getHeading())));
-    */
+    /*
+     * TODO: Determine if this is appropriate for this year
+     * // Reuse the previous pose on the field, compensating for the change in
+     * heading
+     * Pose2d prev_pose = m_odometry.getPoseFeet();
+     * m_odometry.resetPosition(prev_pose, new
+     * Rotation2d(Units.degreesToRadians(getHeading())));
+     */
   }
 
   // ODOMETRY METHODS (might not be necessary)
 
-  /** Gets the displacent of the robot relative to the last time the odometry was reset */
+  /**
+   * Gets the displacent of the robot relative to the last time the odometry was
+   * reset
+   */
   public double getResetDisplacement() {
-    Pose2d currentOffset = m_odometry.getPoseMeters().relativeTo(m_lastResetPose);
+    Pose2d currentOffset = m_odometry.getPoseFeet().relativeTo(m_lastResetPose);
     return currentOffset.getTranslation().getDistance(new Translation2d());
   }
 
   /**
-   * Updates the DifferentialDriveOdometry instance variable. It keeps track of where the robot is
-   * on the field, but can get thrown off if the robot is bumped into/bumps into something.
+   * Updates the DifferentialDriveOdometry instance variable. It keeps track of
+   * where the robot is
+   * on the field, but can get thrown off if the robot is bumped into/bumps into
+   * something.
    */
   private void updateOdometry() {
     double currentLeftPosition = getLeftEncoderPosition();

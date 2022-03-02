@@ -29,8 +29,7 @@ public final class Constants {
 
   public static final class DriveConstants {
     // Wheels are 8 inches in diameter, so their circumference can be calculated
-    // (converted to meters for convenience)
-    public static final double kWheelCircumferenceMeters = Units.inchesToMeters(Math.PI * 7.736);
+    public static final double kWheelCircumferenceFeet = Math.PI * 7.736 / 12.0; // inches to feet
     public static final double kMotorRotationsPerWheelRotation = 7.56 * 2.8;
 
     public static final double nominalVoltage = 12.0;

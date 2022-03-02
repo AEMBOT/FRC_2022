@@ -10,13 +10,13 @@ public class AutonomousPathing extends SequentialCommandGroup {
     public AutonomousPathing(DriveSubsystem drive) { 
         addCommands(
             
-            new DriveStraightSmart(Units.inchesToMeters(-80), drive),
-            new DriveStraightSmart(Units.inchesToMeters(80), drive),
+            new DriveStraightSmart(-80/12.0, drive),
+            new DriveStraightSmart(80/12.0, drive),
             //shoot
             //turn 70 degrees clockwise
-            new DriveStraightSmart(Units.inchesToMeters(-275) , drive),
+            new DriveStraightSmart(-275/12.0, drive),
             //intake
-            new DriveStraightSmart(Units.inchesToMeters(275), drive)
+            new DriveStraightSmart(275/12.0, drive)
             //shoot twice
             );//end command list
     }
