@@ -15,12 +15,12 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    
+
   public static final class ShooterConstants {
     public static final int LeftMotorCANId = 27;
     public static final int RightMotorCANId = 28;
 
-    public static final double kvVolts = 0.00018;//0.002181818182; // Volts per RPM
+    public static final double kvVolts = 0.00018; // 0.002181818182; // Volts per RPM
     public static final double P = 0.0000;
     public static final double I = 0.0000001;
     public static final double D = 0.0000;
@@ -28,10 +28,14 @@ public final class Constants {
 
   public static final class DriveConstants {
     // Wheels are 8 inches in diameter, so their circumference can be calculated
-    public static final double kWheelCircumferenceMeters = Units.inchesToMeters(Math.PI * 7.736); // inches to meters
-    public static final double kMotorRotationsPerWheelRotation = 7.56 * 2.8;
+    public static final double kWheelCircumferenceMeters = Units.inchesToMeters(Math.PI * 7.736);
+    public static final double kMotorRotationsPerWheelRotation = 7.56;
 
-    public static final double nominalVoltage = 12.0;
+    // Spark Max conversion factors
+    public static final double kMetersPerMotorRotation =
+        kWheelCircumferenceMeters / kMotorRotationsPerWheelRotation;
+    public static final double kRPMToMetersPerSecond =
+        kMetersPerMotorRotation * 60; // 60 seconds per minute
 
     // Motor controller ports (on 2019 bot)
     public static final int kLeftFront = 8;
@@ -41,8 +45,6 @@ public final class Constants {
     public static final int kRightFront = 1;
     public static final int kRightCenter = 2;
     public static final int kRightBack = 3;
-  
-    
 
     // Split PID-related constants based on whether robot is turning/going straight
     public static final class StraightPID {
@@ -66,7 +68,6 @@ public final class Constants {
 
     public static final class TurnPID {
       public static final double kMetersPerDegree = 0.0055;
-
 
       public static final double kP = 0;
       public static final double kI = 0;

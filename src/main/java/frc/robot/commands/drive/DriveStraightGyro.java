@@ -11,72 +11,65 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class DriveStraightGyro extends CommandBase {
-    private final Timer m_timer = new Timer();
-    private final PIDController m_gyroPID = new PIDController(0.01, 0, 0);
+  private final Timer m_timer = new Timer();
+  private final PIDController m_gyroPID = new PIDController(0.01, 0, 0);
 
-    private TrapezoidProfile m_profile;
-    private double m_distance;
-    private DriveSubsystem m_drive;
-    private double m_conversion;
+  private TrapezoidProfile m_profile;
+  private double m_distance;
+  private DriveSubsystem m_drive;
 
-    public DriveStraightGyro(double distance, double offsetAngle, DriveSubsystem drive) {
-        // Create a trapezoidal motion profile
-        m_profile = new TrapezoidProfile(
+  public DriveStraightGyro(double distance, double offsetAngle, DriveSubsystem drive) {
+    // Create a trapezoidal motion profile
+    m_profile =
+        new TrapezoidProfile(
             // TODO: Tune these constraints, since they were arbitrary
-            new TrapezoidProfile.Constraints(3, 2),
-            new TrapezoidProfile.State(distance, 0)
-        );
+            new TrapezoidProfile.Constraints(1.5, 1.0), new TrapezoidProfile.State(distance, 0));
 
-        // Set the gyro PID setpoint to the desired offset angle
-        m_gyroPID.setSetpoint(offsetAngle);
+    // Set the gyro PID setpoint to the desired offset angle
+    m_gyroPID.setSetpoint(offsetAngle);
 
-        m_distance = distance;
-        m_drive = drive;
+    m_distance = distance;
+    m_drive = drive;
 
-        // Add drive subsystem as a requirement
-        addRequirements(m_drive);
+    // Add drive subsystem as a requirement
+    addRequirements(m_drive);
+  }
 
-        // Conversion factors stolen from DriveSubsystem.java
-        double positionConversionFactor = 1 / (kWheelCircumferenceMeters * kMotorRotationsPerWheelRotation);
-        double rpmToMetersPerSecond = positionConversionFactor / 60;
-        m_conversion = rpmToMetersPerSecond;
-    }
+  @Override
+  public void initialize() {
+    // Ensure motors are in brake mode
+    m_drive.setBrakeMode();
 
-    @Override
-    public void initialize() {
-        // Ensure motors are in brake mode
-        m_drive.setBrakeMode();
+    // Reset the drive motor encoders
+    m_drive.resetEncoders();
 
-        // Reset the drive motor encoders
-        m_drive.resetEncoders();
+    // Start the timer for profiling purposes
+    m_timer.start();
+  }
 
-        // Start the timer for profiling purposes
-        m_timer.start();
-    }
+  @Override
+  public void execute() {
+    // Calculate the setpoint velocity from the motion profile
+    double profileVelocity = m_profile.calculate(m_timer.get()).velocity / kRPMToMetersPerSecond;
+    SmartDashboard.putNumber("DriveStraightGyro Velocity", profileVelocity);
 
-    @Override
-    public void execute() {
-        // Calculate the setpoint velocity from the motion profile
-        double profileVelocity = m_profile.calculate(m_timer.get()).velocity / m_conversion;
-        SmartDashboard.putNumber("DriveStraightGyro Velocity", profileVelocity);
+    // Use a PID controller to adjust the velocities to ensure the robot drives at the right angle
+    double angleAdjustment = m_gyroPID.calculate(m_drive.getHeading());
+    m_drive.driveAtVelocity(profileVelocity - angleAdjustment, profileVelocity + angleAdjustment);
+  }
 
-        // Use a PID controller to adjust the velocities to ensure the robot drives at the right angle
-        double angleAdjustment = m_gyroPID.calculate(m_drive.getHeading());
-        m_drive.driveAtVelocity(profileVelocity - angleAdjustment, profileVelocity + angleAdjustment);
-    }
+  @Override
+  public void end(boolean _interrupted) {
+    // Stop the motors
+    m_drive.driveAtVelocity(0, 0);
 
-    @Override
-    public void end(boolean _interrupted) {
-        // Stop the motors
-        m_drive.driveAtVelocity(0, 0);
+    // Stop and reset the timer
+    m_timer.stop();
+    m_timer.reset();
+  }
 
-        // Stop and reset the timer
-        m_timer.stop();
-        m_timer.reset();
-    }
-
-    @Override
-    public boolean isFinished() {
-        return m_drive.smartMotionAtGoal(m_distance);
-    }
+  @Override
+  public boolean isFinished() {
+    return m_drive.smartMotionAtGoal(m_distance);
+  }
 }

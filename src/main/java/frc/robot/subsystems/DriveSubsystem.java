@@ -11,7 +11,6 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
@@ -215,20 +214,18 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Changes encoder readings to meters and meters per second for position and
-   * velocity, respectively.
+   * Changes encoder readings to meters and meters per second for position and velocity,
+   * respectively.
    */
   private void setupEncoderConversions() {
     // TODO: Maybe compensate for lower right encoder readings?
     // Convert revolutions to meters
-    double positionConversionFactor = 1 / (kWheelCircumferenceMeters * kMotorRotationsPerWheelRotation);
-    m_centerLeftEncoder.setPositionConversionFactor(positionConversionFactor);
-    m_centerRightEncoder.setPositionConversionFactor(positionConversionFactor);
+    m_centerLeftEncoder.setPositionConversionFactor(kMetersPerMotorRotation);
+    m_centerRightEncoder.setPositionConversionFactor(kMetersPerMotorRotation);
 
     // Convert RPM to meters per second
-    double velocityConversionFactor = positionConversionFactor / 60;
-    m_centerLeftEncoder.setVelocityConversionFactor(velocityConversionFactor);
-    m_centerRightEncoder.setVelocityConversionFactor(velocityConversionFactor);
+    m_centerLeftEncoder.setVelocityConversionFactor(kRPMToMetersPerSecond);
+    m_centerRightEncoder.setVelocityConversionFactor(kRPMToMetersPerSecond);
   }
 
   // SMARTMOTION METHODS
@@ -242,7 +239,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   /**
    * Runs the motors on both sides of the robot using SmartMotion.
-   * 
+   *
    * @param left The distance to move the left motor
    * @param right The distance to move the right motor
    */
@@ -288,8 +285,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Gets the angle the robot has rotated since the last gyro reset. Can be
-   * greater than 360
+   * Gets the angle the robot has rotated since the last gyro reset. Can be greater than 360
    * degrees.
    */
   public double getAngle() {
@@ -327,10 +323,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   // ODOMETRY METHODS (might not be necessary)
 
-  /**
-   * Gets the displacent of the robot relative to the last time the odometry was
-   * reset
-   */
+  /** Gets the displacent of the robot relative to the last time the odometry was reset */
   public double getResetDisplacement() {
     return -1;
     /*
@@ -341,10 +334,8 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Updates the DifferentialDriveOdometry instance variable. It keeps track of
-   * where the robot is
-   * on the field, but can get thrown off if the robot is bumped into/bumps into
-   * something.
+   * Updates the DifferentialDriveOdometry instance variable. It keeps track of where the robot is
+   * on the field, but can get thrown off if the robot is bumped into/bumps into something.
    */
   private void updateOdometry() {
     double currentLeftPosition = getLeftEncoderPosition();

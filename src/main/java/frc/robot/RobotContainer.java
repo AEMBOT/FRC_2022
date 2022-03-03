@@ -10,11 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.Constants.ShooterConstants;
-import frc.robot.subsystems.LimeLightTargeting;
-import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.commands.autonomous.AutonomousPathing;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.drive.DriveStraightGyro;
@@ -22,6 +18,7 @@ import frc.robot.commands.drive.DriveStraightSmart;
 import frc.robot.commands.drive.TurnToAngleProfiled;
 import frc.robot.commands.drive.TurnToAngleSmart;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.LimeLightTargeting;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -31,20 +28,22 @@ import frc.robot.subsystems.DriveSubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  //private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(ShooterConstants.LeftMotorCANId, ShooterConstants.RightMotorCANId);
+  // private final ShooterSubsystem m_shooterSubsystem = new
+  // ShooterSubsystem(ShooterConstants.LeftMotorCANId, ShooterConstants.RightMotorCANId);
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
-  private AutonomousPathing m_autoCommand = 
-      new AutonomousPathing(m_robotDrive);
-  private final DriveStraightSmart m_driveForward = new DriveStraightSmart(Units.feetToMeters(3), m_robotDrive);
-  private final DriveStraightGyro m_gyroDrive = new DriveStraightGyro(3, 5, m_robotDrive);
+  private AutonomousPathing m_autoCommand = new AutonomousPathing(m_robotDrive);
+  private final DriveStraightSmart m_driveForward =
+      new DriveStraightSmart(Units.feetToMeters(3), m_robotDrive);
+  private final DriveStraightGyro m_gyroDrive =
+      new DriveStraightGyro(Units.feetToMeters(6), 5, m_robotDrive);
   private final TurnToAngleSmart m_turn90 = new TurnToAngleSmart(90, m_robotDrive);
 
-/*
-  private DriveStraightSmart m_autoCommand =
-      new AutonomousPathing(m_robotDrive);
-      //new DriveStraightSmart(Units.feetToMeters(6), m_robotDrive);
-*/
+  /*
+    private DriveStraightSmart m_autoCommand =
+        new AutonomousPathing(m_robotDrive);
+        //new DriveStraightSmart(Units.feetToMeters(6), m_robotDrive);
+  */
   private final LimeLightTargeting m_targeting = new LimeLightTargeting();
 
   // TODO: Move port to constants?
@@ -84,16 +83,17 @@ public class RobotContainer {
 
     new JoystickButton(m_driverController, Button.kRightBumper.value)
         .whenPressed(new TurnToAngleProfiled(-10, m_robotDrive).withTimeout(3));
-        
-    // NOTE: Doesn't have requirement of m_targeting subsystem. Could not figure out how to include
-      // it. Can't add it as an additional argument for some reason, even though the function uses "..."
-      // (variable-length arguments)
-      /*
-      RunCommand targetCommand = new RunCommand(() -> m_shooterSubsystem.shootFlywheels(m_targeting.getDistance()));
-      targetCommand.addRequirements(m_targeting,m_shooterSubsystem);
 
-      new JoystickButton(m_driverController, XboxController.Button.kA.value).whileHeld(targetCommand);
-      */
+    // NOTE: Doesn't have requirement of m_targeting subsystem. Could not figure out how to include
+    // it. Can't add it as an additional argument for some reason, even though the function uses
+    // "..."
+    // (variable-length arguments)
+    /*
+    RunCommand targetCommand = new RunCommand(() -> m_shooterSubsystem.shootFlywheels(m_targeting.getDistance()));
+    targetCommand.addRequirements(m_targeting,m_shooterSubsystem);
+
+    new JoystickButton(m_driverController, XboxController.Button.kA.value).whileHeld(targetCommand);
+    */
   }
 
   /**
