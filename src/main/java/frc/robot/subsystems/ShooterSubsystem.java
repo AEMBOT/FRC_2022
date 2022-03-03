@@ -13,6 +13,7 @@ import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -26,11 +27,11 @@ public class ShooterSubsystem extends SubsystemBase {
   private double targetPower = 0;
 
   /** Creates a new ArcShooter. */
-  public ShooterSubsystem(int leftMotor, int rightMotor) {
+  public ShooterSubsystem() {
 
     // Construct both flywheel motor objects
-    flywheelMotor = new CANSparkMax(leftMotor, MotorType.kBrushless);
-    flywheelMotor2 = new CANSparkMax(rightMotor, MotorType.kBrushless);
+    flywheelMotor = new CANSparkMax(Constants.ShooterConstants.LeftMotorCANId, MotorType.kBrushless);
+    flywheelMotor2 = new CANSparkMax(Constants.ShooterConstants.RightMotorCANId, MotorType.kBrushless);
 
     CANSparkMax maxes[] = {flywheelMotor, flywheelMotor2};
 
