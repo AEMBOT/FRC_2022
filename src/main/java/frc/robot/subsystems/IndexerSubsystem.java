@@ -88,10 +88,27 @@ public class IndexerSubsystem extends SubsystemBase {
         m_entrySideBelt.runToSetPoint(rotations);
     }
 
-    /** Advances the belt on the shooter end of the indexer */
-    public void advanceExitSide() {
-        double rotations = 10;
-        m_exitSideBelt.runToSetPoint(rotations);
+    /** turns on exit belt */
+    public void advanceExitSide(double motorPower) {
+        m_exitSideBelt.set(motorPower);
+    }
+
+    /** turns exit belts on or off */
+    public void toggleExitSide(){
+        if(exitIsRunning()){
+            advanceExitSide(.5);
+        }
+        else{
+            advanceExitSide(0);
+        }
+    }
+
+    /** checks if belt is running */
+    public boolean exitIsRunning(){
+        if (Math.abs(m_exitSideBelt.get()) > 0.05) {
+            return true;
+          }
+          return false;
     }
 
     private double[] readSensorHSV() {
