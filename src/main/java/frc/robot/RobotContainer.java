@@ -83,12 +83,9 @@ public class RobotContainer {
     new JoystickButton(m_driverController, Button.kX.value)
         .whenPressed(new TurnToAngleProfiled(90, m_robotDrive).withTimeout(3));*/
 
-    // Turn right 90 degrees with a 3 second timeout
-    new JoystickButton(m_driverController, Button.kY.value)
-        .whenPressed(new InstantCommand(() -> m_indexerSubsystem.advanceExitSide(), m_indexerSubsystem));
-    // Reset the robot's heading & odometry
+    // toggle the exit side of the indexer
     new JoystickButton(m_driverController, Button.kB.value)
-        .whenPressed(new InstantCommand(() -> m_indexerSubsystem.advanceEntrySide(), m_indexerSubsystem));
+        .whenPressed(new InstantCommand(() -> m_indexerSubsystem.toggleExitSide(), m_indexerSubsystem));
 
     new JoystickButton(m_driverController, Button.kA.value)
         .whenPressed(new InstantCommand(() -> m_intakeSubsystem.toggleRoller(), m_intakeSubsystem));
@@ -97,11 +94,9 @@ public class RobotContainer {
       new RunCommand(() -> m_shooterSubsystem.incrementTargetPower(-.05), m_shooterSubsystem)
     );
 
-    new JoystickButton(m_driverController, Button.kRightBumper.value)
-    .whileHeld(new IntakeControl(m_intakeSubsystem, false));
-
-    new JoystickButton(m_driverController, Button.kLeftBumper.value)
-    .whileHeld(new IntakeControl(m_intakeSubsystem, true));
+    new JoystickButton(m_driverController, Button.kRightBumper.value).whileHeld(
+      new RunCommand(() -> m_shooterSubsystem.incrementTargetPower(.05), m_shooterSubsystem)
+    );
       
     // NOTE: Doesn't have requirement of m_targeting subsystem. Could not figure out how to include
     // it. Can't add it as an additional argument for some reason, even though the function uses "..."

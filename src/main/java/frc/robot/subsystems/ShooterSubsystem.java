@@ -64,7 +64,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-      updateDashboard();
+    flywheelMotor.set(targetPower);
+    updateDashboard();
   }
 
   private void updateDashboard(){
@@ -126,7 +127,7 @@ public class ShooterSubsystem extends SubsystemBase {
   * Run the shooter motor at target power
   */
   public void runShooter() {
-    //flywheelMotor.set(targetPower);
+    flywheelMotor.set(targetPower);
     
 
   }

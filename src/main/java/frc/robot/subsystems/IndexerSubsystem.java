@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.hardware.ClosedLoopSparkMax;
 
 import com.revrobotics.CANSparkMax;
@@ -24,15 +25,17 @@ public class IndexerSubsystem extends SubsystemBase {
 
     private final ColorSensorV3 m_sensor;
 
-    private final ClosedLoopSparkMax m_entrySideBelt;
-    private final ClosedLoopSparkMax m_exitSideBelt;
+    private final ClosedLoopSparkMax m_lowerBelt;
+    private final ClosedLoopSparkMax m_upperBelt;
 
     //creates new ExampleSubsystem
     public IndexerSubsystem(){
         m_sensor = new ColorSensorV3(PORT);
 
-        m_entrySideBelt = new ClosedLoopSparkMax(99, MotorType.kBrushless);
-        m_exitSideBelt = new ClosedLoopSparkMax(100, MotorType.kBrushless);
+        m_lowerBelt = new ClosedLoopSparkMax(Constants.IntakeConstants.kIndexerLowerBottomBeltPort, MotorType.kBrushless);
+        m_upperBelt = new ClosedLoopSparkMax(Constants.IntakeConstants.kIndexerUpperBottomBeltPort, MotorType.kBrushless);
+
+        m_upperBelt.follow(m_lowerBelt);
     }
 
     @Override
@@ -82,30 +85,24 @@ public class IndexerSubsystem extends SubsystemBase {
         return true;
     }
 
-    /** Advances the belt on the intake end of the indexer */
-    public void advanceEntrySide() {
-        double rotations = 10;
-        m_entrySideBelt.runToSetPoint(rotations);
-    }
-
     /** turns on exit belt */
-    public void advanceExitSide(double motorPower) {
-        m_exitSideBelt.set(motorPower);
+    public void powerExitSide(double motorPower) {
+        m_upperBelt.set(motorPower);
     }
 
     /** turns exit belts on or off */
     public void toggleExitSide(){
         if(exitIsRunning()){
-            advanceExitSide(.5);
+            powerExitSide(.5);
         }
         else{
-            advanceExitSide(0);
+            powerExitSide(0);
         }
     }
 
     /** checks if belt is running */
     public boolean exitIsRunning(){
-        if (Math.abs(m_exitSideBelt.get()) > 0.05) {
+        if (Math.abs(m_upperBelt.get()) > 0.05) {
             return true;
           }
           return false;

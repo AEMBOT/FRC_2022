@@ -16,14 +16,25 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public static final class ShooterConstants {
-    public static final int LeftMotorCANId = 27;
-    public static final int RightMotorCANId = 28;
+    public static final int LeftMotorCANId = 13;
+    public static final int RightMotorCANId = 14;
 
     public static final double kvVolts = 0.000163;//0.002181818182; // Volts per RPM
     public static final double P = 0.0000;
     public static final double I = 0.0000001;
     public static final double D = 0.0000;
 
+  }
+
+  public static final class IntakeConstants {
+    public static final int kLiftLeftPort = 7;
+    public static final int kLiftRightPort = 8;
+    public static final int kRollerPort = 9;
+
+    public static final int kIndexerLowerBottomBeltPort = 11;
+    public static final int kIndexerUpperBottomBeltPort = 12;
+
+    public static final int kIndexerTopBeltPort = 10;
   }
 
 
