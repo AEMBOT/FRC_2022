@@ -35,7 +35,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(ShooterConstants.LeftMotorCANId, ShooterConstants.RightMotorCANId);
+  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final IndexerSubsystem m_indexerSubsystem = new IndexerSubsystem();
 
@@ -43,8 +43,6 @@ public class RobotContainer {
       new TimeRotation(0.3, m_robotDrive); // = new TurnToAngleProfiled(10, m_robotDrive);
   private DriveStraightProfiled m_autoCommand = new DriveStraightProfiled(-1.0, m_robotDrive);
   private final LimeLightTargeting m_targeting = new LimeLightTargeting();
-
-  private final XboxController m_Controller = new XboxController(0);
 
   // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);
@@ -90,7 +88,7 @@ public class RobotContainer {
     new JoystickButton(m_driverController, Button.kA.value)
         .whenPressed(new InstantCommand(() -> m_intakeSubsystem.toggleRoller(), m_intakeSubsystem));
 
-    new JoystickButton(m_Controller, XboxController.Button.kLeftBumper.value).whileHeld(
+    new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value).whileHeld(
       new RunCommand(() -> m_shooterSubsystem.incrementTargetPower(-.05), m_shooterSubsystem)
     );
 
