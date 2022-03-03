@@ -3,20 +3,17 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.hardware.ClosedLoopSparkMax;
 
 public class IntakeSubsystem extends SubsystemBase{
-    // TODO: move these later 
-    private static final int kLiftLeftPort = 7;
-    private static final int kLiftRightPort = 8;
-    private static final int kRollerPort = 9;
-  
 
     // motor controllers
-    private final CANSparkMax liftLeft = new CANSparkMax(kLiftLeftPort, MotorType.kBrushless);
-    private final CANSparkMax liftRight = new CANSparkMax(kLiftRightPort, MotorType.kBrushless);
+    private final CANSparkMax liftLeft = new CANSparkMax(Constants.IntakeConstants.kLiftLeftPort, MotorType.kBrushless);
+    private final CANSparkMax liftRight = new CANSparkMax(Constants.IntakeConstants.kLiftRightPort, MotorType.kBrushless);
     
-    private final ClosedLoopSparkMax roller = new ClosedLoopSparkMax(kRollerPort, MotorType.kBrushless);
+    private final ClosedLoopSparkMax intakeRoller = new ClosedLoopSparkMax(Constants.IntakeConstants.kRollerPort, MotorType.kBrushless);
+    private final ClosedLoopSparkMax indexEntryRoller = new ClosedLoopSparkMax(Constants.IntakeConstants.kIndexerLowerBottomBeltPort, MotorType.kBrushless);
 
     // whether the subsystem is successfully homed to its max point
     private boolean homingComplete = false;
@@ -34,7 +31,10 @@ public class IntakeSubsystem extends SubsystemBase{
         double factor = 1;
 
         // I value needs to be nonzero in order for closed loop PID to work
-        roller.kI(000001);
+        intakeRoller.kI(000001);
+
+        // upper/inner roller follows the outside
+        indexEntryRoller.follow(intakeRoller);
 
         // set the left side to follow the right side, invert=false
         liftLeft.follow(liftRight, true);
@@ -46,16 +46,16 @@ public class IntakeSubsystem extends SubsystemBase{
     /** set the intake mechanism to run at the target RPM */
     public void setRPM(double rpm) {
         final double kGearRatio = 1/12;
-        roller.setVelocity(rpm * kGearRatio);
+        intakeRoller.setVelocity(rpm * kGearRatio);
     }
 
     private void runRollerAtMaxPower() {
-        roller.set(0.5);
+        intakeRoller.set(0.5);
     }
 
     public void toggleRoller() {
         if (rollerRunning) {
-            roller.set(0);
+            intakeRoller.set(0);
             rollerRunning = false;
         }
 
