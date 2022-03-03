@@ -80,7 +80,7 @@ public class DriveSubsystem extends SubsystemBase {
     setSmartMotionConstants(m_leftController);
     setSmartMotionConstants(m_rightController);
 
-    // Reset the encoders & change their position readings to feet
+    // Reset the encoders & change their position readings to meters
     resetEncoders();
     setupEncoderConversions();
 
@@ -141,11 +141,11 @@ public class DriveSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Robot Heading", getHeading());
       SmartDashboard.putNumber("Rotation Velocity", getRotationRate());
 
-      // Motor positions (feet)
+      // Motor positions (meters)
       SmartDashboard.putNumber("Left Position", getLeftEncoderPosition());
       SmartDashboard.putNumber("Right Position", getRightEncoderPosition());
 
-      // Motor velocities (feet per second)
+      // Motor velocities (meters per second)
       SmartDashboard.putNumber("Left Velocity", m_centerLeftEncoder.getVelocity());
       SmartDashboard.putNumber("Right Velocity", m_centerRightEncoder.getVelocity());
 
@@ -195,12 +195,12 @@ public class DriveSubsystem extends SubsystemBase {
 
   // ENCODER METHODS
 
-  /** Gets the position of the center left encoder in feet. */
+  /** Gets the position of the center left encoder in meters. */
   public double getLeftEncoderPosition() {
     return m_centerLeftEncoder.getPosition();
   }
 
-  /** Gets the position of the center right encoder in feet. */
+  /** Gets the position of the center right encoder in meters. */
   public double getRightEncoderPosition() {
     return m_centerRightEncoder.getPosition();
   }
@@ -215,18 +215,17 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Changes encoder readings to feet and feet per second for position and
-   * velocity,
-   * respectively.
+   * Changes encoder readings to meters and meters per second for position and
+   * velocity, respectively.
    */
   private void setupEncoderConversions() {
     // TODO: Maybe compensate for lower right encoder readings?
-    // Convert revolutions to feet
-    double positionConversionFactor = 1 / (kWheelCircumferenceFeet * kMotorRotationsPerWheelRotation);
+    // Convert revolutions to meters
+    double positionConversionFactor = 1 / (kWheelCircumferenceMeters * kMotorRotationsPerWheelRotation);
     m_centerLeftEncoder.setPositionConversionFactor(positionConversionFactor);
     m_centerRightEncoder.setPositionConversionFactor(positionConversionFactor);
 
-    // Convert RPM to feet per second
+    // Convert RPM to meters per second
     double velocityConversionFactor = positionConversionFactor / 60;
     m_centerLeftEncoder.setVelocityConversionFactor(velocityConversionFactor);
     m_centerRightEncoder.setVelocityConversionFactor(velocityConversionFactor);
@@ -249,7 +248,7 @@ public class DriveSubsystem extends SubsystemBase {
   /**
    * Runs the motors on both sides of the robot using SmartMotion.
    *
-   * @param distance The distance to drive (in feet)
+   * @param distance The distance to drive (in meters)
    */
   public void smartMotionToPosition(double distance) {
     smartMotionToPosition(distance, distance);

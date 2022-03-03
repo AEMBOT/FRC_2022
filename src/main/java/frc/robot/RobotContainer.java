@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.LimeLightTargeting;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.commands.drive.AutonomousPathing;
+import frc.robot.commands.autonomous.AutonomousPathing;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.drive.DriveStraightSmart;
 import frc.robot.commands.drive.TurnToAngleProfiled;
@@ -100,6 +100,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return m_turn90;
+    return m_driveForward;
   }
 }

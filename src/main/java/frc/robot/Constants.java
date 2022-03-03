@@ -24,12 +24,11 @@ public final class Constants {
     public static final double P = 0.0000;
     public static final double I = 0.0000001;
     public static final double D = 0.0000;
-
   }
 
   public static final class DriveConstants {
     // Wheels are 8 inches in diameter, so their circumference can be calculated
-    public static final double kWheelCircumferenceFeet = Math.PI * 7.736 / 12.0; // inches to feet
+    public static final double kWheelCircumferenceMeters = Units.inchesToMeters(Math.PI * 7.736); // inches to meters
     public static final double kMotorRotationsPerWheelRotation = 7.56 * 2.8;
 
     public static final double nominalVoltage = 12.0;
@@ -66,7 +65,7 @@ public final class Constants {
     }
 
     public static final class TurnPID {
-      public static final double kFeetPerDegree = 0.0055;
+      public static final double kMetersPerDegree = 0.0055;
 
 
       public static final double kP = 0;

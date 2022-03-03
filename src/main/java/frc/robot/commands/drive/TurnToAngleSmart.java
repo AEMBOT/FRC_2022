@@ -17,7 +17,7 @@ public class TurnToAngleSmart extends CommandBase {
    * @param drive The robot's DriveSubsystem
    */
   public TurnToAngleSmart(double angle, DriveSubsystem drive) {
-    m_left = angle * kFeetPerDegree;
+    m_left = angle * kMetersPerDegree;
     m_right = -m_left;
 
     m_drive = drive;
