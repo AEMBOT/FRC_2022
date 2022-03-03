@@ -41,7 +41,7 @@ public class IndexerSubsystem extends SubsystemBase {
     @Override
     public void periodic(){
         //called once per scheduler run
-        readSensorHSV();
+        //readSensorHSV();
     }
 
     @Override
