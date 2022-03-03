@@ -110,12 +110,12 @@ public class ShooterSubsystem extends SubsystemBase {
    * Run the shooter motor given a manual power
    */
   public void runShooter(double motorPower) {
-    /*
+    
     if (motorPower > 0.1) {
       flywheelMotor.set(motorPower);
-    } else
+    } else {
       flywheelMotor.set(0);
-      */
+    }
     //flywheelMotor.setVoltage(10);
     
     //flywheelMotor.setVoltage(SmartDashboard.getNumber("Shooter Voltage", 10));
@@ -130,7 +130,13 @@ public class ShooterSubsystem extends SubsystemBase {
     
 
   }
-
+  public void toggleShooter(){
+    if(isRunning()){
+      runShooter(0);
+    }else{
+      runShooter(0.5);
+    }
+  }
   public void incrementTargetPower(double v) {
     targetPower += v;
     if (targetPower < 0) {

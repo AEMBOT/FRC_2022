@@ -84,13 +84,13 @@ public class IndexerSubsystem extends SubsystemBase {
 
     /** Advances the belt on the intake end of the indexer */
     public void advanceEntrySide() {
-        double rotations = 1;
+        double rotations = 10;
         m_entrySideBelt.runToSetPoint(rotations);
     }
 
     /** Advances the belt on the shooter end of the indexer */
     public void advanceExitSide() {
-        double rotations = 1;
+        double rotations = 10;
         m_exitSideBelt.runToSetPoint(rotations);
     }
 
