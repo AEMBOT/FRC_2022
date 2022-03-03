@@ -32,8 +32,8 @@ public class IndexerSubsystem extends SubsystemBase {
     public IndexerSubsystem(){
         m_sensor = new ColorSensorV3(PORT);
 
-        m_lowerBelt = new ClosedLoopSparkMax(Constants.IntakeConstants.kIndexerLowerBottomBeltPort, MotorType.kBrushless);
-        m_upperBelt = new ClosedLoopSparkMax(Constants.IntakeConstants.kIndexerUpperBottomBeltPort, MotorType.kBrushless);
+        m_lowerBelt = new ClosedLoopSparkMax(Constants.IntakeConstants.kIndexerUpperBottomBeltPort, MotorType.kBrushless);
+        m_upperBelt = new ClosedLoopSparkMax(Constants.IntakeConstants.kIndexerTopBeltPort, MotorType.kBrushless);
 
         m_upperBelt.follow(m_lowerBelt);
     }
