@@ -21,6 +21,7 @@ import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.TimeRotation;
 import frc.robot.commands.TurnToAngleProfiled;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimeLightTargeting;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -35,7 +36,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(ShooterConstants.LeftMotorCANId, ShooterConstants.RightMotorCANId);
-  private IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+  private final IndexerSubsystem m_indexerSubsystem = new IndexerSubsystem();
 
   private TimeRotation m_timeRotation =
       new TimeRotation(0.3, m_robotDrive); // = new TurnToAngleProfiled(10, m_robotDrive);
@@ -76,18 +78,17 @@ public class RobotContainer {
     // Turn left 90 degrees with a 3 second timeout
 
     new JoystickButton(m_driverController, Button.kX.value)
-      .whenPressed(new InstantCommand(()-> m_shooterSubsystem.test(12.2), m_shooterSubsystem));
+      .whenPressed(new InstantCommand(()-> m_shooterSubsystem.toggleShooter(), m_shooterSubsystem));
     /*
     new JoystickButton(m_driverController, Button.kX.value)
         .whenPressed(new TurnToAngleProfiled(90, m_robotDrive).withTimeout(3));*/
 
     // Turn right 90 degrees with a 3 second timeout
     new JoystickButton(m_driverController, Button.kY.value)
-        .whenPressed(new TurnToAngleProfiled(-90, m_robotDrive).withTimeout(3));
-
+        .whenPressed(new InstantCommand(() -> m_indexerSubsystem.advanceExitSide(), m_indexerSubsystem));
     // Reset the robot's heading & odometry
     new JoystickButton(m_driverController, Button.kB.value)
-        .whenPressed(new InstantCommand(() -> m_robotDrive.resetHeading(), m_robotDrive));
+        .whenPressed(new InstantCommand(() -> m_indexerSubsystem.advanceEntrySide(), m_indexerSubsystem));
 
     new JoystickButton(m_driverController, Button.kA.value)
         .whenPressed(new InstantCommand(() -> m_intakeSubsystem.toggleRoller(), m_intakeSubsystem));
