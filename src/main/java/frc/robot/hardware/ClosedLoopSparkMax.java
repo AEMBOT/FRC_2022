@@ -19,6 +19,9 @@ public class ClosedLoopSparkMax extends CANSparkMax {
         m_pidController = getPIDController();
         m_encoder = getEncoder();
 
+        // need to restore factory defaults
+        restoreFactoryDefaults();
+
         //initialize PID coefficients
         m_pidController.setI(kI);
         m_pidController.setD(kD);
