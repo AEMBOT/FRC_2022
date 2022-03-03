@@ -233,6 +233,13 @@ public class DriveSubsystem extends SubsystemBase {
 
   // SMARTMOTION METHODS
 
+  /** Use the internal Spark Max velocity control */
+  public void driveAtVelocity(double left, double right) {
+    m_drive.feed();
+    m_leftController.setReference(left, ControlType.kVelocity);
+    m_rightController.setReference(right, ControlType.kVelocity);
+  }
+
   /**
    * Runs the motors on both sides of the robot using SmartMotion.
    * 
