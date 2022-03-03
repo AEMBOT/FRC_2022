@@ -22,7 +22,7 @@ public class IntakeSubsystem extends SubsystemBase{
     private double m_lowestAllowedPosition;
     private double m_highestAllowedPosition;
 
-    private boolean rollerRunning = true;
+    private boolean rollerRunning = false;
 
     // motor geared 125:1 -> 24:72 gearing
     public IntakeSubsystem() {
