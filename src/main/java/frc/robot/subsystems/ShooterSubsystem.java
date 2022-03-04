@@ -41,7 +41,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   /** Creates a new ArcShooter. */
   public ShooterSubsystem() {
-
+    tyRPMMap();
     // Construct both flywheel motor objects
     flywheelMotor = new CANSparkMax(Constants.ShooterConstants.LeftMotorCANId, MotorType.kBrushless);
     flywheelMotor2 = new CANSparkMax(Constants.ShooterConstants.RightMotorCANId, MotorType.kBrushless);
@@ -81,6 +81,11 @@ public class ShooterSubsystem extends SubsystemBase {
     targetPower = SmartDashboard.getNumber("Fly-Wheel-Target-Power", targetPower);
     flywheelMotor.set(targetPower);
     updateDashboard();
+
+    NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+    NetworkTableEntry ty = limelightTable.getEntry("ty");
+    double y = ty.getDouble(0.0);
+    SmartDashboard.putNumber("LimelightY",y);
   }
 
   private void updateDashboard(){
@@ -229,25 +234,56 @@ public class ShooterSubsystem extends SubsystemBase {
     return desiredRPM;
   }
 
-  public void Dict(String[] args){
-    NavigableMap<Double, Double> map = new TreeMap<>();
+  public void tyRPMMap(){
+    map.put(-60.0,0.3);
     map.put(1.0,1.0);
     map.put(2.0,3.0);
+    map.put(3.0, 4.0);
+    map.put(42.0,3.0);
+    map.put(15.0, 4.0);
+    map.put(16.0,1.0);
+    map.put(21.0,3.0);
+    map.put(36.0, 4.0);
+    map.put(24.0,3.0);
+    map.put(32.0, 4.0);
+    map.put(17.0,1.0);
+    map.put(22.0,3.0);
+    map.put(13.0, 4.0);
+    map.put(12.0,3.0);
+    map.put(60.0, 4.0); 
   }
   
   public double returnRPM(double ty){
-    double above = map.ceilingKey(ty);
-    double below = map.floorKey(ty);
+    double above;
+    double below; 
+    try{
+      above = map.ceilingKey(ty);
+    }
+    catch(Exception e){
+      above = -1;
+    }
+
+    try{
+      below = map.floorKey(ty);
+    }
+    catch(Exception e){
+      below = -1;
+    }
+
     double slope = ExtrapolateSlope(above, map.get(above), below, map.get(below));
     double rpm = slope * ty;
     return rpm;
   }
 
   public void test(){
-    limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+    NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
 
-    ty = limelightTable.getEntry("ty"); // Y degrees
-    returnRPM(ty.getDouble(0.0));
+    NetworkTableEntry ty = limelightTable.getEntry("ty"); // Y degrees
+    double y = ty.getDouble(0.0);
+    double rpm = returnRPM(y);
+    SmartDashboard.putNumber("rpmVal",rpm);
+
+
   }
   /*
   private static Dictionary<Double, Double> dictionary = new Hashtable<>();

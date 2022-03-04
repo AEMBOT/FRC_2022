@@ -51,7 +51,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
-
+    /*
     // Set default drivetrain command to arcade driving (happens during teleop)
     m_robotDrive.setDefaultCommand(
         new DefaultDrive(
@@ -63,7 +63,7 @@ public class RobotContainer {
     m_shooterSubsystem.setDefaultCommand(new ShooterCommand(m_shooterSubsystem, m_driverController::getRightTriggerAxis));
 
     //m_shooterSubsystem.setDefaultCommand(new InstantCommand(()-> m_shooterSubsystem.test(12.2), m_shooterSubsystem));
-
+*/
   }
 
   /**
@@ -82,20 +82,9 @@ public class RobotContainer {
     new JoystickButton(m_driverController, Button.kX.value)
         .whenPressed(new TurnToAngleProfiled(90, m_robotDrive).withTimeout(3));*/
 
-    // toggle the exit side of the indexer
-    new JoystickButton(m_driverController, Button.kB.value)
-        .whenPressed(new InstantCommand(() -> m_indexerSubsystem.toggleExitSide(), m_indexerSubsystem));
-
-    new JoystickButton(m_driverController, Button.kA.value)
-        .whenPressed(new InstantCommand(() -> m_intakeSubsystem.toggleRoller(), m_intakeSubsystem));
-
-    new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value).whileHeld(
-      new IntakeControl(m_intakeSubsystem, false)
-    );
-
-    new JoystickButton(m_driverController, Button.kRightBumper.value).whileHeld(
-      new IntakeControl(m_intakeSubsystem, true)
-    );
+    new JoystickButton(m_driverController, Button.kX.value)
+    .whenPressed(new InstantCommand(()-> m_shooterSubsystem.test(),m_shooterSubsystem));
+    
       
     // NOTE: Doesn't have requirement of m_targeting subsystem. Could not figure out how to include
     // it. Can't add it as an additional argument for some reason, even though the function uses "..."
