@@ -14,11 +14,9 @@ import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.DriveStraightProfiled;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.ShooterCommand;
-import frc.robot.commands.TimeRotation;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LimeLightTargeting;
 import frc.robot.subsystems.ShooterSubsystem;
 
 /**
@@ -34,10 +32,7 @@ public class RobotContainer {
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final IndexerSubsystem m_indexerSubsystem = new IndexerSubsystem();
 
-  private TimeRotation m_timeRotation =
-      new TimeRotation(0.3, m_robotDrive); // = new TurnToAngleProfiled(10, m_robotDrive);
   private DriveStraightProfiled m_autoCommand = new DriveStraightProfiled(-1.0, m_robotDrive);
-  private final LimeLightTargeting m_targeting = new LimeLightTargeting();
 
   // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);

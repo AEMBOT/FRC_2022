@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
@@ -60,6 +58,8 @@ public class ShooterSubsystem extends SubsystemBase {
       m_pidController.setD(ShooterConstants.D);
       m_pidController.setFF(ShooterConstants.kvVolts);
 
+      limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+      ty = limelightTable.getEntry("ty");
     }
 
     // Set the pid controller to reference the first spark max
@@ -82,8 +82,6 @@ public class ShooterSubsystem extends SubsystemBase {
     flywheelMotor.set(targetPower);
     updateDashboard();
 
-    NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
-    NetworkTableEntry ty = limelightTable.getEntry("ty");
     double y = ty.getDouble(0.0);
     SmartDashboard.putNumber("LimelightY",y);
   }

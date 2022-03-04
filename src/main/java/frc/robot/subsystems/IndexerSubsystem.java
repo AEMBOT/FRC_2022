@@ -9,12 +9,10 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.hardware.ClosedLoopSparkMax;
 
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -50,9 +48,7 @@ public class IndexerSubsystem extends SubsystemBase {
         //this method will be called 1 per scheduler during sim
     }
 
-    /** Return the alliance that the loaded cargo belongs to 
-     * TODO: Need to test this on the indexer
-    */
+    /** Return the alliance that the loaded cargo belongs to */
     public Alliance getCargoAllianceColor(){
         double[] hsv = readSensorHSV();
 
