@@ -89,11 +89,11 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(() -> m_intakeSubsystem.toggleRoller(), m_intakeSubsystem));
 
     new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value).whileHeld(
-      new RunCommand(() -> m_shooterSubsystem.incrementTargetPower(-.05), m_shooterSubsystem)
+      new IntakeControl(m_intakeSubsystem, false)
     );
 
     new JoystickButton(m_driverController, Button.kRightBumper.value).whileHeld(
-      new RunCommand(() -> m_shooterSubsystem.incrementTargetPower(.05), m_shooterSubsystem)
+      new IntakeControl(m_intakeSubsystem, true)
     );
       
     // NOTE: Doesn't have requirement of m_targeting subsystem. Could not figure out how to include
