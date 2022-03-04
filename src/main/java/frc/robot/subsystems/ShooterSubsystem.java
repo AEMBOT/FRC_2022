@@ -6,11 +6,16 @@ package frc.robot.subsystems;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -25,6 +30,14 @@ public class ShooterSubsystem extends SubsystemBase {
   private SparkMaxPIDController m_pidController;
 
   private double targetPower = 0;
+
+  private NetworkTable limelightTable;
+  private NetworkTableEntry tx;
+  private NetworkTableEntry ty;
+  private NetworkTableEntry ta;
+  private NetworkTableEntry tv; 
+
+  private NavigableMap<Double, Double> map = new TreeMap<>();
 
   /** Creates a new ArcShooter. */
   public ShooterSubsystem() {
@@ -220,10 +233,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public double ExtrapolateSlope(double ty1, double rpm1, double ty2, double rpm2){
     //make linaer model between rpm1 and rpm2
+    double slope1 = rpm1/ ty1;
+    double slope2 = rpm2/ ty2;
+    double extrapolate = (slope1 + slope2)/2;
+    /*
     double deltaRPM = rpm2 - rpm1;
     double deltaTy = ty2 - ty1;
-    double slope = deltaRPM / deltaTy;
-    return slope; 
+    double slope = deltaRPM / deltaTy;*/
+    return extrapolate;
   }
 
   public double rpmFromSlope(double ty, double slope){
@@ -231,7 +248,26 @@ public class ShooterSubsystem extends SubsystemBase {
     return desiredRPM;
   }
 
+  public void Dict(String[] args){
+    NavigableMap<Double, Double> map = new TreeMap<>();
+    map.put(1.0,1.0);
+  }
   
+  public double returnRPM(double ty){
+    double above = map.ceilingKey(ty);
+    double below = map.floorKey(ty);
+    double slope = ExtrapolateSlope(above, map.get(above), below, map.get(below));
+    double rpm = slope * ty;
+    return rpm;
+  }
+
+  public void test(){
+    limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+
+    ty = limelightTable.getEntry("ty"); // Y degrees
+    returnRPM(ty.getDouble(0.0));
+  }
+  /*
   private static Dictionary<Double, Double> dictionary = new Hashtable<>();
 
   static {
@@ -239,9 +275,10 @@ public class ShooterSubsystem extends SubsystemBase {
     dictionary.put(12.0, 2000.0);
     dictionary.put(12.5, 2200.0);
     dictionary.put(13.0, 2500.0);
-  }
+  }*/
 
-  
+
+  /*
   public double returnRPM(double ty){
     double lowTy = 0.5 * Math.floor(Math.abs(ty/0.5));
     double highTy = 0.5 * Math.ceil(Math.abs(ty/0.5));
@@ -273,5 +310,6 @@ public class ShooterSubsystem extends SubsystemBase {
     System.out.println(returnRPM(ty));
     return 0;
     }
-  }
+  }*/
 
+}
