@@ -15,6 +15,9 @@ public class DefaultDrive extends CommandBase {
   // Drive at full speed for driver practice
   private double speedMultiplier = 1.0;
 
+  //Deadzone, choose number from range (0,1)
+  private double deadzone = 0.4;
+
   public DefaultDrive(DriveSubsystem drive, DoubleSupplier left, DoubleSupplier right) {
     m_drive = drive;
     m_left = left;
@@ -25,11 +28,34 @@ public class DefaultDrive extends CommandBase {
   @Override
   public void execute() {
     // Log the powers to the dashboard
-    double forwardPower = speedMultiplier * m_left.getAsDouble();
+    SmartDashboard.putNumber("LEFT", m_left.getAsDouble() );
+    SmartDashboard.putNumber("RIGHT", m_right.getAsDouble() );
+
+    double forwardPower = speedMultiplier * leftSitck();
     SmartDashboard.putNumber("power", forwardPower);
-    double rotationPower = speedMultiplier * -m_right.getAsDouble();
+    double rotationPower = speedMultiplier * rightSitck();
     SmartDashboard.putNumber("rotation", rotationPower);
 
     m_drive.arcadeDrive(forwardPower, rotationPower, true);
   }
+
+  //establish deadzones
+  public double leftSitck() {
+    if (Math.abs(m_left.getAsDouble()) > deadzone){
+      return ((m_left.getAsDouble() - deadzone) * 1.6);
+    }
+    else {
+      return 0;
+    }
+  }
+  //establish deadzones
+  public double rightSitck() {
+    if (Math.abs(m_right.getAsDouble()) > deadzone){
+      return -((m_right.getAsDouble() - deadzone) * 1.6);
+    }
+    else {
+      return 0;
+    }
+  }
+
 }
