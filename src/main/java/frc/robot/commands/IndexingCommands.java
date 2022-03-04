@@ -33,14 +33,14 @@ public class IndexingCommands extends CommandBase {
     
     @Override
     public void initialize() {
-        if (m_index.getColor() == teamColor){
-            if (m_index.shooterIsEmpty()){
-                m_index.advanceBall();
+        if (m_index.getColorString() == teamColor){
+            if (m_index.ballDetectedAtEntry()){
+
             }
         }
         else
         {
-            if(m_index.shooterIsEmpty()){
+            if(!m_index.ballDetectedAtEntry()){
                 rumbleController();
             }
         }

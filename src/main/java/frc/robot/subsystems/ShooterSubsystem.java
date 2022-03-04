@@ -232,17 +232,16 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   
-  Dictionary<Double, Double> dictionary = new Hashtable<>();
-  public void Dict(String[] args){
-    
-    //dictionary.put(ty value, rpm value) 
-    // do every 6 inches -> about every 3 degress 
+  private static Dictionary<Double, Double> dictionary = new Hashtable<>();
+
+  static {
     dictionary.put(1.0,1.0);
-    dictionary.put(27.3,2000.0);
     dictionary.put(12.0, 2000.0);
     dictionary.put(12.5, 2200.0);
-    dictionary.put(13.0, 25000.0);
+    dictionary.put(13.0, 2500.0);
   }
+
+  
   public double returnRPM(double ty){
     double lowTy = 0.5 * Math.floor(Math.abs(ty/0.5));
     double highTy = 0.5 * Math.ceil(Math.abs(ty/0.5));
@@ -271,7 +270,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public double test(double ty){
-    System.out.print(returnRPM(ty));
+    System.out.println(returnRPM(ty));
     return 0;
     }
   }
