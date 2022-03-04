@@ -35,7 +35,7 @@ public class IndexerSubsystem extends SubsystemBase {
         m_lowerBelt = new ClosedLoopSparkMax(Constants.IntakeConstants.kIndexerUpperBottomBeltPort, MotorType.kBrushless);
         m_upperBelt = new ClosedLoopSparkMax(Constants.IntakeConstants.kIndexerTopBeltPort, MotorType.kBrushless);
 
-        m_upperBelt.follow(m_lowerBelt);
+        m_lowerBelt.follow(m_upperBelt);
     }
 
     @Override
