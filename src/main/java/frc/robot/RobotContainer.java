@@ -55,8 +55,6 @@ public class RobotContainer {
     // Tried to write this without creating a separate file, but failed.
     // Please correct as some point
 
-    m_shooterSubsystem.setDefaultCommand(new ShooterCommand(m_shooterSubsystem, m_driverController::getRightTriggerAxis));
-
     //m_shooterSubsystem.setDefaultCommand(new InstantCommand(()-> m_shooterSubsystem.test(12.2), m_shooterSubsystem));
 
   }
