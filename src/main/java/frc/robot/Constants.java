@@ -35,7 +35,7 @@ public final class Constants {
     public static final double kMetersPerMotorRotation =
         kWheelCircumferenceMeters / kMotorRotationsPerWheelRotation;
     public static final double kRPMToMetersPerSecond =
-        kMetersPerMotorRotation * 60; // 60 seconds per minute
+        kMetersPerMotorRotation / 60; // 60 seconds per minute
 
     // Motor controller ports (on 2019 bot)
     public static final int kLeftFront = 8;
