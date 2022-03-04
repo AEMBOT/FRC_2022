@@ -75,11 +75,15 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // Turn left 90 degrees with a 3 second timeout
 
+/*
+    new JoystickButton(m_driverController, Button.kX.value)
+      .whenPressed(new InstantCommand(()-> m_shooterSubsystem.test(), m_shooterSubsystem));*/
+      
     new JoystickButton(m_driverController, Button.kX.value)
       .whenPressed(new InstantCommand(()-> m_shooterSubsystem.toggleShooter(), m_shooterSubsystem));
-    /*
+    
     new JoystickButton(m_driverController, Button.kX.value)
-        .whenPressed(new TurnToAngleProfiled(90, m_robotDrive).withTimeout(3));*/
+        .whenPressed(new TurnToAngleProfiled(90, m_robotDrive).withTimeout(3));
 
     // toggle the exit side of the indexer
     new JoystickButton(m_driverController, Button.kB.value)

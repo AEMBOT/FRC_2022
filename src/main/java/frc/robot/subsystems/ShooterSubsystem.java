@@ -235,12 +235,12 @@ public class ShooterSubsystem extends SubsystemBase {
     //make linaer model between rpm1 and rpm2
     double slope1 = rpm1/ ty1;
     double slope2 = rpm2/ ty2;
-    double extrapolate = (slope1 + slope2)/2;
+    double extraplolate = (slope1 + slope2)/2;
     /*
     double deltaRPM = rpm2 - rpm1;
     double deltaTy = ty2 - ty1;
     double slope = deltaRPM / deltaTy;*/
-    return extrapolate;
+    return extraplolate;
   }
 
   public double rpmFromSlope(double ty, double slope){
@@ -251,6 +251,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public void Dict(String[] args){
     NavigableMap<Double, Double> map = new TreeMap<>();
     map.put(1.0,1.0);
+    map.put(2.0,3.0);
   }
   
   public double returnRPM(double ty){
