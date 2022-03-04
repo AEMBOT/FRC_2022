@@ -5,21 +5,16 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.DriveStraightProfiled;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.TimeRotation;
-import frc.robot.commands.TurnToAngleProfiled;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -51,7 +46,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
-    /*
+
     // Set default drivetrain command to arcade driving (happens during teleop)
     m_robotDrive.setDefaultCommand(
         new DefaultDrive(
@@ -63,7 +58,7 @@ public class RobotContainer {
     m_shooterSubsystem.setDefaultCommand(new ShooterCommand(m_shooterSubsystem, m_driverController::getRightTriggerAxis));
 
     //m_shooterSubsystem.setDefaultCommand(new InstantCommand(()-> m_shooterSubsystem.test(12.2), m_shooterSubsystem));
-*/
+
   }
 
   /**
@@ -75,16 +70,26 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // Turn left 90 degrees with a 3 second timeout
 
-/*
     new JoystickButton(m_driverController, Button.kX.value)
       .whenPressed(new InstantCommand(()-> m_shooterSubsystem.toggleShooter(), m_shooterSubsystem));
-    /*
-    new JoystickButton(m_driverController, Button.kX.value)
-        .whenPressed(new TurnToAngleProfiled(90, m_robotDrive).withTimeout(3));*/
 
-    new JoystickButton(m_driverController, Button.kX.value)
-    .whenPressed(new InstantCommand(()-> m_shooterSubsystem.test(),m_shooterSubsystem));
-    
+    new JoystickButton(m_driverController, Button.kY.value)
+        .whenPressed(new InstantCommand(()-> m_shooterSubsystem.test(), m_shooterSubsystem));
+
+    // toggle the exit side of the indexer
+    new JoystickButton(m_driverController, Button.kB.value)
+        .whenPressed(new InstantCommand(() -> m_indexerSubsystem.toggleExitSide(), m_indexerSubsystem));
+
+    new JoystickButton(m_driverController, Button.kA.value)
+        .whenPressed(new InstantCommand(() -> m_intakeSubsystem.toggleRoller(), m_intakeSubsystem));
+
+    new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value).whileHeld(
+      new IntakeControl(m_intakeSubsystem, false)
+    );
+
+    new JoystickButton(m_driverController, Button.kRightBumper.value).whileHeld(
+      new IntakeControl(m_intakeSubsystem, true)
+    );
       
     // NOTE: Doesn't have requirement of m_targeting subsystem. Could not figure out how to include
     // it. Can't add it as an additional argument for some reason, even though the function uses "..."

@@ -134,25 +134,11 @@ public class ShooterSubsystem extends SubsystemBase {
   public void toggleShooter(){
     if(isRunning()){
       runShooter(0);
-    }else{
-      runShooter(0.5);
-    }
-  }
-  public void incrementTargetPower(double v) {
-    targetPower += v;
-    if (targetPower < 0) {
-        targetPower = 0;
-    }
-    
-    else if (targetPower > 1) {
-        targetPower = 1;
     }
 
-    //flywheelMotor.set(targetPower);
-    //flywheelMotor.setVoltage(10);
-    //flywheelMotor.setVoltage(10);//);
-    m_pidController.setReference(SmartDashboard.getNumber("Shooter RPM", 3500), CANSparkMax.ControlType.kVelocity);
-    
+    else{
+      runShooter(0.5);
+    }
   }
 
   public double RPM;
@@ -283,51 +269,6 @@ public class ShooterSubsystem extends SubsystemBase {
     double rpm = returnRPM(y);
     SmartDashboard.putNumber("rpmVal",rpm);
 
-
   }
-  /*
-  private static Dictionary<Double, Double> dictionary = new Hashtable<>();
-
-  static {
-    dictionary.put(1.0,1.0);
-    dictionary.put(12.0, 2000.0);
-    dictionary.put(12.5, 2200.0);
-    dictionary.put(13.0, 2500.0);
-  }*/
-
-
-  /*
-  public double returnRPM(double ty){
-    double lowTy = 0.5 * Math.floor(Math.abs(ty/0.5));
-    double highTy = 0.5 * Math.ceil(Math.abs(ty/0.5));
-    double higherTy = highTy + 0.5;
-    double rpm = 0;
-    if (Math.abs(ty - lowTy) > Math.abs(ty - highTy)){
-      //double slope = ExtrapolateSlope(lowTy, )
-      double slope = ExtrapolateSlope(lowTy, dictionary.get(lowTy), highTy, dictionary.get(highTy));
-      rpm = ty * slope;
-      return rpm;
-    }
-    else if (Math.abs(ty - highTy) > Math.abs(ty - lowTy)){
-      double slope = ExtrapolateSlope(highTy, dictionary.get(highTy), higherTy, dictionary.get(higherTy));
-      rpm = ty * slope;
-      return rpm;
-    }
-    else if (ty == highTy){
-      rpm = dictionary.get(highTy);
-      return rpm;
-    }
-    else{
-      rpm = dictionary.get(lowTy);
-      return rpm;
-    }
-  
-  }
-
-  public double test(double ty){
-    System.out.println(returnRPM(ty));
-    return 0;
-    }
-  }*/
 
 }
