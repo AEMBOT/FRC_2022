@@ -77,13 +77,10 @@ public class RobotContainer {
 
 /*
     new JoystickButton(m_driverController, Button.kX.value)
-      .whenPressed(new InstantCommand(()-> m_shooterSubsystem.test(), m_shooterSubsystem));*/
-      
-    new JoystickButton(m_driverController, Button.kX.value)
       .whenPressed(new InstantCommand(()-> m_shooterSubsystem.toggleShooter(), m_shooterSubsystem));
-    
+    /*
     new JoystickButton(m_driverController, Button.kX.value)
-        .whenPressed(new TurnToAngleProfiled(90, m_robotDrive).withTimeout(3));
+        .whenPressed(new TurnToAngleProfiled(90, m_robotDrive).withTimeout(3));*/
 
     // toggle the exit side of the indexer
     new JoystickButton(m_driverController, Button.kB.value)
@@ -93,11 +90,11 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(() -> m_intakeSubsystem.toggleRoller(), m_intakeSubsystem));
 
     new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value).whileHeld(
-      new RunCommand(() -> m_shooterSubsystem.incrementTargetPower(-.05), m_shooterSubsystem)
+      new IntakeControl(m_intakeSubsystem, false)
     );
 
     new JoystickButton(m_driverController, Button.kRightBumper.value).whileHeld(
-      new RunCommand(() -> m_shooterSubsystem.incrementTargetPower(.05), m_shooterSubsystem)
+      new IntakeControl(m_intakeSubsystem, true)
     );
       
     // NOTE: Doesn't have requirement of m_targeting subsystem. Could not figure out how to include

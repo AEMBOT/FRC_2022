@@ -68,8 +68,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
 
     // Invert the first motor and have the second motor follow also inverted
-    flywheelMotor.setInverted(true);
-    flywheelMotor2.follow(flywheelMotor, false);
+    flywheelMotor.setInverted(false);
+    flywheelMotor2.follow(flywheelMotor, true);
 
     // Set the open loop ramp rate, really should be using closed loop but that is
     // currently not important

@@ -28,6 +28,7 @@ public class IndexerSubsystem extends SubsystemBase {
     private final ClosedLoopSparkMax m_lowerBelt;
     private final ClosedLoopSparkMax m_upperBelt;
 
+    private boolean running = false;
     //creates new ExampleSubsystem
     public IndexerSubsystem(){
         m_sensor = new ColorSensorV3(PORT);
@@ -35,7 +36,7 @@ public class IndexerSubsystem extends SubsystemBase {
         m_lowerBelt = new ClosedLoopSparkMax(Constants.IntakeConstants.kIndexerUpperBottomBeltPort, MotorType.kBrushless);
         m_upperBelt = new ClosedLoopSparkMax(Constants.IntakeConstants.kIndexerTopBeltPort, MotorType.kBrushless);
 
-        m_upperBelt.follow(m_lowerBelt);
+        m_lowerBelt.follow(m_upperBelt);
     }
 
     @Override
@@ -92,20 +93,13 @@ public class IndexerSubsystem extends SubsystemBase {
 
     /** turns exit belts on or off */
     public void toggleExitSide(){
-        if(exitIsRunning()){
+        if(!running) {
             powerExitSide(.5);
         }
-        else{
+        
+        else {
             powerExitSide(0);
         }
-    }
-
-    /** checks if belt is running */
-    public boolean exitIsRunning(){
-        if (Math.abs(m_upperBelt.get()) > 0.05) {
-            return true;
-          }
-          return false;
     }
 
     private double[] readSensorHSV() {
