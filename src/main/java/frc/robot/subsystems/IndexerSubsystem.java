@@ -92,7 +92,7 @@ public class IndexerSubsystem extends SubsystemBase {
 
     /** turns exit belts on or off */
     public void toggleExitSide(){
-        if(exitIsRunning()){
+        if(!exitIsRunning()){
             powerExitSide(.5);
         }
         else{
