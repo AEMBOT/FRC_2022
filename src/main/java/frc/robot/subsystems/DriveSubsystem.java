@@ -11,7 +11,6 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
@@ -210,7 +209,8 @@ public class DriveSubsystem extends SubsystemBase {
     m_centerLeftEncoder.setPosition(0);
     m_centerRightEncoder.setPosition(0);
 
-    // TODO: If odometry is added back in, previous positions also have to be updated
+    // TODO: If odometry is added back in, previous positions also have to be
+    // updated
   }
 
   /**
@@ -220,22 +220,26 @@ public class DriveSubsystem extends SubsystemBase {
   private void setupEncoderConversions() {
     // TODO: Maybe compensate for lower right encoder readings?
     // Convert revolutions to meters
-    double positionConversionFactor =
-        1 / (kWheelCircumferenceMeters * kMotorRotationsPerWheelRotation);
-    m_centerLeftEncoder.setPositionConversionFactor(positionConversionFactor);
-    m_centerRightEncoder.setPositionConversionFactor(positionConversionFactor);
+    m_centerLeftEncoder.setPositionConversionFactor(kMetersPerMotorRotation);
+    m_centerRightEncoder.setPositionConversionFactor(kMetersPerMotorRotation);
 
     // Convert RPM to meters per second
-    double velocityConversionFactor = positionConversionFactor / 60;
-    m_centerLeftEncoder.setVelocityConversionFactor(velocityConversionFactor);
-    m_centerRightEncoder.setVelocityConversionFactor(velocityConversionFactor);
+    m_centerLeftEncoder.setVelocityConversionFactor(kRPMToMetersPerSecond);
+    m_centerRightEncoder.setVelocityConversionFactor(kRPMToMetersPerSecond);
   }
 
   // SMARTMOTION METHODS
 
+  /** Use the internal Spark Max velocity control */
+  public void driveAtVelocity(double left, double right) {
+    m_drive.feed();
+    m_leftController.setReference(left, ControlType.kVelocity);
+    m_rightController.setReference(right, ControlType.kVelocity);
+  }
+
   /**
    * Runs the motors on both sides of the robot using SmartMotion.
-   * 
+   *
    * @param left The distance to move the left motor
    * @param right The distance to move the right motor
    */
@@ -275,7 +279,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Gets the heading of the robot. Ranges from -180 to 180 degrees. */
   public double getHeading() {
-    // Negated to mirror signs on a coordinate plane (+ -> counterclockwise and vice versa)
+    // Negated to mirror signs on a coordinate plane (+ -> counterclockwise and vice
+    // versa)
     return -m_ahrs.getYaw();
   }
 
@@ -289,7 +294,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Gets the rate of change of the yaw of the robot. */
   public double getRotationRate() {
-    // getRate only returns the difference in angles, so it has to be multiplied by the NavX update
+    // getRate only returns the difference in angles, so it has to be multiplied by
+    // the NavX update
     // frequency
     // (see https://github.com/kauailabs/navxmxp/issues/69)
     return -m_ahrs.getRate() * m_ahrs.getActualUpdateRate();
@@ -297,26 +303,34 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Resets the robot heading to 0 degrees, as well as the odometry. */
   public void resetHeading() {
-    // TODO: This fails if the NavX is calibrating, so it might be a good idea to check for that
+    // TODO: This fails if the NavX is calibrating, so it might be a good idea to
+    // check for that
     m_ahrs.zeroYaw();
 
     // Resetting the odometry also requires zeroing the encoders
     // TODO: Either mention this in the method documentation or call it separately
     resetEncoders();
 
-    /*  TODO: Determine if this is appropriate for this year
-    // Reuse the previous pose on the field, compensating for the change in heading
-    Pose2d prev_pose = m_odometry.getPoseMeters();
-    m_odometry.resetPosition(prev_pose, new Rotation2d(Units.degreesToRadians(getHeading())));
-    */
+    /*
+     * TODO: Determine if this is appropriate for this year
+     * // Reuse the previous pose on the field, compensating for the change in
+     * heading
+     * Pose2d prev_pose = m_odometry.getPoseMeters();
+     * m_odometry.resetPosition(prev_pose, new
+     * Rotation2d(Units.degreesToRadians(getHeading())));
+     */
   }
 
   // ODOMETRY METHODS (might not be necessary)
 
   /** Gets the displacent of the robot relative to the last time the odometry was reset */
   public double getResetDisplacement() {
+    return -1;
+    /*
+    // TODO: Convert to use feet
     Pose2d currentOffset = m_odometry.getPoseMeters().relativeTo(m_lastResetPose);
     return currentOffset.getTranslation().getDistance(new Translation2d());
+    */
   }
 
   /**
