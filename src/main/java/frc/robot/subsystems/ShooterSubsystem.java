@@ -78,27 +78,16 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    targetPower = SmartDashboard.getNumber("Fly-Wheel-Target-Power", targetPower);
     flywheelMotor.set(targetPower);
     updateDashboard();
   }
 
   private void updateDashboard(){
 
-    // Whether or not the fly wheel has reached full speed
-    SmartDashboard.putBoolean("Fly-Wheel-Speed-Status", isFullSpeed());
-
     // The current flywheel speed
     SmartDashboard.putNumber("Fly-Wheel-RPM", getFlywheelRPM());
     SmartDashboard.putNumber("Fly-Wheel-Target-Power", targetPower);
-  }
-
-  /**
-   * Check if the geared up motor is at max rpm or > than 9000 rpm
-   * 
-   * @return status of full motor speed
-   */
-  public boolean isFullSpeed() {
-    return Math.abs(getFlywheelRPM()) > 9000;
   }
 
   /**
@@ -137,14 +126,6 @@ public class ShooterSubsystem extends SubsystemBase {
     
   }
 
-/**
-  * Run the shooter motor at target power
-  */
-  public void runShooter() {
-    flywheelMotor.set(targetPower);
-    
-
-  }
   public void toggleShooter(){
     if(isRunning()){
       runShooter(0);

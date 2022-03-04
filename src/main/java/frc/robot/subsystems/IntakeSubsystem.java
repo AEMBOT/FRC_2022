@@ -50,7 +50,7 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     private void runRollerAtMaxPower() {
-        intakeRoller.set(0.5);
+        intakeRoller.set(0.75);
     }
 
     public void toggleRoller() {

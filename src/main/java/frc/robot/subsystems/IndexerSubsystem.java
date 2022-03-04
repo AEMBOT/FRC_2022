@@ -36,7 +36,7 @@ public class IndexerSubsystem extends SubsystemBase {
         m_lowerBelt = new ClosedLoopSparkMax(Constants.IntakeConstants.kIndexerUpperBottomBeltPort, MotorType.kBrushless);
         m_upperBelt = new ClosedLoopSparkMax(Constants.IntakeConstants.kIndexerTopBeltPort, MotorType.kBrushless);
 
-        m_lowerBelt.follow(m_upperBelt);
+        m_lowerBelt.follow(m_upperBelt, true);
     }
 
     @Override
@@ -88,17 +88,19 @@ public class IndexerSubsystem extends SubsystemBase {
 
     /** turns on exit belt */
     public void powerExitSide(double motorPower) {
-        m_upperBelt.set(motorPower);
+        m_upperBelt.set(-motorPower);
     }
 
     /** turns exit belts on or off */
     public void toggleExitSide(){
         if(!running) {
-            powerExitSide(.5);
+            powerExitSide(.7);
+            running = true;
         }
         
         else {
             powerExitSide(0);
+            running = false;
         }
     }
 
