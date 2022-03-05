@@ -43,32 +43,16 @@ public class DefaultDrive extends CommandBase {
   //establish deadzones
   public double leftSitck() {
     if (Math.abs(m_left.getAsDouble()) > deadzone){
-      if (m_left.getAsDouble() > 0)
-      {
-        return (MathUtil.applyDeadband(m_left.getAsDouble(), deadzone));
-      }
-      else
-      {
-        //negative deadzone for negative inputs
-        return (MathUtil.applyDeadband(m_left.getAsDouble(), -deadzone));
-      }
+      return (MathUtil.applyDeadband(m_left.getAsDouble(), deadzone));
     }
     else {
       return 0;
     }
   }
-  //establish deadzones
+  //establish deadzones and turning speed multipliers
   public double rightSitck() {
     if (Math.abs(m_right.getAsDouble()) > deadzone){
-      if (m_right.getAsDouble() > 0)
-      {
-        return ((MathUtil.applyDeadband(m_right.getAsDouble(), deadzone)) / steeringDenominator);
-      }
-      else
-      {
-        //negative deadzone for negative inputs
-        return ((MathUtil.applyDeadband(m_right.getAsDouble(), -deadzone)) / steeringDenominator);
-      }
+      return ((MathUtil.applyDeadband(m_right.getAsDouble(), deadzone)) / steeringDenominator);
     }
     else {
       return 0;
