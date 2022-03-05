@@ -55,6 +55,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
+    // Restore the default settings for all of the motors
+    restoreMotorFactoryDefaults();
+
     // Invert the left motors to drive in the correct direction
     // m_leftMotors.setInverted(true);
     m_centerLeftMotor.setInverted(true);
@@ -190,6 +193,16 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Output Voltage (r)", speeds.right* DifferentialDrive.kDefaultMaxOutput * nominalBatteryVoltage);
     SmartDashboard.putNumber("Output Voltage (l)", speeds.left * DifferentialDrive.kDefaultMaxOutput * nominalBatteryVoltage);
     */
+  }
+
+  private void restoreMotorFactoryDefaults() {
+    m_backLeftMotor.restoreFactoryDefaults();
+    m_centerLeftMotor.restoreFactoryDefaults();
+    m_frontLeftMotor.restoreFactoryDefaults();
+
+    m_backRightMotor.restoreFactoryDefaults();
+    m_centerRightMotor.restoreFactoryDefaults();
+    m_frontRightMotor.restoreFactoryDefaults();
   }
 
   // ENCODER METHODS

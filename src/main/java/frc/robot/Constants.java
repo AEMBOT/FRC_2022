@@ -64,6 +64,10 @@ public final class Constants {
       public static final double kMinVel = 0;
       public static final double kMaxVel = 2000;
       public static final double kMaxAcc = 1500;
+
+      // TODO: Tune these values; I just stole them from a previous commit
+      public static final double kSVolts = 0.03125;
+      public static final double kVVoltMetersPerSecond = 0.269 / 0.8856;
     }
 
     public static final class TurnPID {
