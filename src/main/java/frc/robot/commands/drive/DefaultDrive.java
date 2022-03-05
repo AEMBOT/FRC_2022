@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.function.DoubleSupplier;
+import edu.wpi.first.math.MathUtil;
 
 public class DefaultDrive extends CommandBase {
   private final DriveSubsystem m_drive;
@@ -18,6 +19,9 @@ public class DefaultDrive extends CommandBase {
   //Deadzone, choose number from range (0,1)
   private double deadzone = 0.4;
 
+  //Steering denominator
+  private double steeringDenominator = 2;
+
   public DefaultDrive(DriveSubsystem drive, DoubleSupplier left, DoubleSupplier right) {
     m_drive = drive;
     m_left = left;
@@ -28,9 +32,6 @@ public class DefaultDrive extends CommandBase {
   @Override
   public void execute() {
     // Log the powers to the dashboard
-    SmartDashboard.putNumber("LEFT", m_left.getAsDouble() );
-    SmartDashboard.putNumber("RIGHT", m_right.getAsDouble() );
-
     double forwardPower = speedMultiplier * leftSitck();
     SmartDashboard.putNumber("power", forwardPower);
     double rotationPower = speedMultiplier * rightSitck();
@@ -42,7 +43,15 @@ public class DefaultDrive extends CommandBase {
   //establish deadzones
   public double leftSitck() {
     if (Math.abs(m_left.getAsDouble()) > deadzone){
-      return ((m_left.getAsDouble() - deadzone) * 1.6);
+      if (m_left.getAsDouble() > 0)
+      {
+        return (MathUtil.applyDeadband(m_left.getAsDouble(), deadzone));
+      }
+      else
+      {
+        //negative deadzone for negative inputs
+        return (MathUtil.applyDeadband(m_left.getAsDouble(), -deadzone));
+      }
     }
     else {
       return 0;
@@ -51,7 +60,15 @@ public class DefaultDrive extends CommandBase {
   //establish deadzones
   public double rightSitck() {
     if (Math.abs(m_right.getAsDouble()) > deadzone){
-      return -((m_right.getAsDouble() - deadzone) * 1.6);
+      if (m_right.getAsDouble() > 0)
+      {
+        return ((MathUtil.applyDeadband(m_right.getAsDouble(), deadzone)) / steeringDenominator);
+      }
+      else
+      {
+        //negative deadzone for negative inputs
+        return ((MathUtil.applyDeadband(m_right.getAsDouble(), -deadzone)) / steeringDenominator);
+      }
     }
     else {
       return 0;
