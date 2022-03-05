@@ -13,6 +13,10 @@ public class DefaultDrive extends CommandBase {
   private final DoubleSupplier m_left;
   private final DoubleSupplier m_right;
 
+  //ramping constants
+  private final double rampNew = 0.9;
+  private final double rampOld = 1 - rampNew;
+
   // Drive at full speed for driver practice
   private double speedMultiplier = 1.0;
 
@@ -28,13 +32,19 @@ public class DefaultDrive extends CommandBase {
     m_right = right;
     addRequirements(drive);
   }
+double forwardPowerPrev = 0;
+double rotationPowerPrev = 0;
 
   @Override
   public void execute() {
     // Log the powers to the dashboard
     double forwardPower = speedMultiplier * (MathUtil.applyDeadband(m_left.getAsDouble(), deadzone));
+    forwardPower = forwardPower * rampOld + forwardPowerPrev * rampNew;
+    forwardPowerPrev = forwardPower;
     SmartDashboard.putNumber("power", forwardPower);
+    
     double rotationPower = speedMultiplier * ((MathUtil.applyDeadband(m_right.getAsDouble(), deadzone)) / steeringDenominator);
+    rotationPower = rotationPower * rampOld + rotationPowerPrev + rampNew;
     SmartDashboard.putNumber("rotation", rotationPower);
 
     m_drive.arcadeDrive(forwardPower, rotationPower, true);
