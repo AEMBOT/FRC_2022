@@ -17,7 +17,7 @@ public class DefaultDrive extends CommandBase {
   private double speedMultiplier = 1.0;
 
   //Deadzone, choose number from range (0,1)
-  private double deadzone = 0.4;
+  private double deadzone = 0.1;
 
   //Steering denominator
   private double steeringDenominator = 2;
@@ -32,31 +32,12 @@ public class DefaultDrive extends CommandBase {
   @Override
   public void execute() {
     // Log the powers to the dashboard
-    double forwardPower = speedMultiplier * leftSitck();
+    double forwardPower = speedMultiplier * (MathUtil.applyDeadband(m_left.getAsDouble(), deadzone));
     SmartDashboard.putNumber("power", forwardPower);
-    double rotationPower = speedMultiplier * rightSitck();
+    double rotationPower = speedMultiplier * ((MathUtil.applyDeadband(m_right.getAsDouble(), deadzone)) / steeringDenominator);
     SmartDashboard.putNumber("rotation", rotationPower);
 
     m_drive.arcadeDrive(forwardPower, rotationPower, true);
-  }
-
-  //establish deadzones
-  public double leftSitck() {
-    if (Math.abs(m_left.getAsDouble()) > deadzone){
-      return (MathUtil.applyDeadband(m_left.getAsDouble(), deadzone));
-    }
-    else {
-      return 0;
-    }
-  }
-  //establish deadzones and turning speed multipliers
-  public double rightSitck() {
-    if (Math.abs(m_right.getAsDouble()) > deadzone){
-      return ((MathUtil.applyDeadband(m_right.getAsDouble(), deadzone)) / steeringDenominator);
-    }
-    else {
-      return 0;
-    }
   }
 
 }
