@@ -32,22 +32,37 @@ public class DefaultDrive extends CommandBase {
     m_right = right;
     addRequirements(drive);
   }
-double forwardPowerPrev = 0;
-double rotationPowerPrev = 0;
+
+  double forwardPowerPrev = 0;
+  double rotationPowerPrev = 0;
 
   @Override
   public void execute() {
     // Log the powers to the dashboard
     double forwardPower = speedMultiplier * (MathUtil.applyDeadband(m_left.getAsDouble(), deadzone));
-    forwardPower = forwardPower * rampOld + forwardPowerPrev * rampNew;
+    forwardPower = forwardPower * rampNew + forwardPowerPrev * rampOld;
     forwardPowerPrev = forwardPower;
     SmartDashboard.putNumber("power", forwardPower);
     
     double rotationPower = speedMultiplier * ((MathUtil.applyDeadband(m_right.getAsDouble(), deadzone)) / steeringDenominator);
-    rotationPower = rotationPower * rampOld + rotationPowerPrev + rampNew;
+    rotationPower = rotationPower * rampNew + rotationPowerPrev + rampOld;
     SmartDashboard.putNumber("rotation", rotationPower);
 
     m_drive.arcadeDrive(forwardPower, rotationPower, true);
   }
+
+  /*
+    linear teleop profiling
+    if accellerating
+      while not at goal speed
+        current speed += 0.2
+        pass speed to drive control
+    else (deccelerating)
+      while not at goal speed
+        current speed -= 0.2
+        pass speed to drive control
+
+    Notes: by using a slop of .02, the robot should thearetically take 1 seccond to reach full speed from 0
+  */
 
 }
