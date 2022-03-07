@@ -19,11 +19,10 @@ public final class Constants {
     public static final int LeftMotorCANId = 13;
     public static final int RightMotorCANId = 14;
 
-    public static final double kvVolts = 0.000163;//0.002181818182; // Volts per RPM
+    public static final double kvVolts = 0.000163; // 0.002181818182; // Volts per RPM
     public static final double P = 0.0000;
     public static final double I = 0.0000001;
     public static final double D = 0.0000;
-
   }
 
   public static final class IntakeConstants {
@@ -37,14 +36,15 @@ public final class Constants {
     public static final int kIndexerTopBeltPort = 10;
   }
 
-
   public static final class DriveConstants {
-    // Wheels are 8 inches in diameter, so their circumference can be calculated
-    // (converted to meters for convenience)
     public static final double kWheelCircumferenceMeters = Units.inchesToMeters(Math.PI * 7.736);
-    public static final double kMotorRotationsPerWheelRotation = 7.56 * 2.8;
+    public static final double kMotorRotationsPerWheelRotation = 7.56;
 
-    public static final double nominalVoltage = 12.0;
+    // Spark MAX conversion factors
+    public static final double kMetersPerMotorRotation =
+        kWheelCircumferenceMeters / kMotorRotationsPerWheelRotation;
+    public static final double kRPMToMetersPerSecond =
+        kMetersPerMotorRotation / 60; // 60 seconds per minute
 
     // Motor controller ports (on 2022 bot)
     public static final int kLeftFront = 4;
@@ -73,6 +73,26 @@ public final class Constants {
       // PID tolerances
       public static final double kDriveToleranceMeters = 0.1;
       public static final double kDriveVelocityToleranceMetersPerSecond = 0.2;
+    }
+
+    // Spark MAX Smart Motion constants
+    // TODO: Tune these for the 2022 chassis
+    public static final class SmartMotion {
+      public static final double kP = 0;
+      public static final double kI = 0;
+      public static final double kD = 0;
+      public static final double kIz = 0;
+
+      public static final double kFF = 0.000457;
+      public static final double kMaxOutput = 1;
+      public static final double kMinOutput = -1;
+      public static final double kAllowedErr = 0.01; // meters
+
+      // All of these are measured in RPM
+      public static final double kMaxRPM = 5676;
+      public static final double kMinVel = 0;
+      public static final double kMaxVel = 2000;
+      public static final double kMaxAcc = 1500;
     }
 
     public static final class TurnPID {
