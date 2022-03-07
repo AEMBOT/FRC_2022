@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.IndexerConstants;
 import frc.robot.hardware.ClosedLoopSparkMax;
 
 import com.revrobotics.ColorSensorV3;
@@ -28,11 +29,11 @@ public class IndexerSubsystem extends SubsystemBase {
 
     private boolean running = false;
     //creates new ExampleSubsystem
-    public IndexerSubsystem(){
+    public IndexerSubsystem(IndexerConstants constants){
         m_sensor = new ColorSensorV3(PORT);
 
-        m_lowerBelt = new ClosedLoopSparkMax(Constants.IntakeConstants.kIndexerUpperBottomBeltPort, MotorType.kBrushless);
-        m_upperBelt = new ClosedLoopSparkMax(Constants.IntakeConstants.kIndexerTopBeltPort, MotorType.kBrushless);
+        m_lowerBelt = new ClosedLoopSparkMax(constants.kIndexerUpperBottomBeltPort, MotorType.kBrushless);
+        m_upperBelt = new ClosedLoopSparkMax(constants.kIndexerTopBeltPort, MotorType.kBrushless);
 
         m_lowerBelt.follow(m_upperBelt, true);
     }

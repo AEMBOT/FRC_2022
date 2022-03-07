@@ -16,30 +16,30 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.DriveConstants;
 
 public class DriveSubsystem extends SubsystemBase {
-  private final CANSparkMax m_frontLeftMotor = new CANSparkMax(kLeftFront, MotorType.kBrushless);
-  private final CANSparkMax m_centerLeftMotor = new CANSparkMax(kLeftCenter, MotorType.kBrushless);
-  private final CANSparkMax m_backLeftMotor = new CANSparkMax(kLeftBack, MotorType.kBrushless);
-  private final CANSparkMax m_frontRightMotor = new CANSparkMax(kRightFront, MotorType.kBrushless);
-  private final CANSparkMax m_centerRightMotor =
-      new CANSparkMax(kRightCenter, MotorType.kBrushless);
-  private final CANSparkMax m_backRightMotor = new CANSparkMax(kRightBack, MotorType.kBrushless);
 
-  private final RelativeEncoder m_centerLeftEncoder = m_centerLeftMotor.getEncoder();
-  private final RelativeEncoder m_centerRightEncoder = m_centerRightMotor.getEncoder();
+  private final DriveConstants m_constants;
+  private final CANSparkMax m_frontLeftMotor;
+  private final CANSparkMax m_centerLeftMotor;
+  private final CANSparkMax m_backLeftMotor;
+  private final CANSparkMax m_frontRightMotor;
+  private final CANSparkMax m_centerRightMotor;
+  private final CANSparkMax m_backRightMotor;
+
+  private final RelativeEncoder m_centerLeftEncoder; 
+  private final RelativeEncoder m_centerRightEncoder;
 
   // Group together drive motors on the same side of the drivetrain (left/right)
-  private final MotorControllerGroup m_leftMotors =
-      new MotorControllerGroup(m_frontLeftMotor, m_centerLeftMotor, m_backLeftMotor);
-  private final MotorControllerGroup m_rightMotors =
-      new MotorControllerGroup(m_frontRightMotor, m_centerRightMotor, m_backRightMotor);
+  private final MotorControllerGroup m_leftMotors;
+  private final MotorControllerGroup m_rightMotors;
 
   // This allows us to read angle information from the NavX
   private final AHRS m_ahrs = new AHRS(SerialPort.Port.kMXP);
 
   // WPILib provides a convenience class for differential drive
-  private final DifferentialDrive m_drive = new DifferentialDrive(m_leftMotors, m_rightMotors);
+  private final DifferentialDrive m_drive;
 
   // This allows the robot to keep track of where it is on the field
   private DifferentialDriveOdometry m_odometry;
@@ -51,7 +51,27 @@ public class DriveSubsystem extends SubsystemBase {
   private final boolean m_debug = true;
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem() {
+  public DriveSubsystem(DriveConstants constants) {
+
+    // store constants in an instance variable to use throughout the class
+    m_constants = constants;
+    
+    // Initialize hardware
+    m_frontLeftMotor = new CANSparkMax(constants.kLeftFront, MotorType.kBrushless);
+    m_centerLeftMotor = new CANSparkMax(constants.kLeftCenter, MotorType.kBrushless);
+    m_backLeftMotor = new CANSparkMax(constants.kLeftBack, MotorType.kBrushless);
+    m_frontRightMotor = new CANSparkMax(constants.kRightFront, MotorType.kBrushless);
+    m_centerRightMotor = new CANSparkMax(constants.kRightCenter, MotorType.kBrushless);
+    m_backRightMotor = new CANSparkMax(constants.kRightBack, MotorType.kBrushless);
+
+    m_centerLeftEncoder = m_centerLeftMotor.getEncoder();
+    m_centerRightEncoder = m_centerRightMotor.getEncoder();
+
+    m_leftMotors = new MotorControllerGroup(m_frontLeftMotor, m_centerLeftMotor, m_backLeftMotor);
+    m_rightMotors = new MotorControllerGroup(m_frontRightMotor, m_centerRightMotor, m_backRightMotor);
+
+    m_drive = new DifferentialDrive(m_leftMotors, m_rightMotors);
+
     // Invert the left motors to drive in the correct direction
     m_leftMotors.setInverted(true);
 
@@ -159,7 +179,7 @@ public class DriveSubsystem extends SubsystemBase {
    * respectively.
    */
   private void setupEncoderConversions() {
-    double conversionFactor = 1 / (kWheelCircumferenceMeters * kMotorRotationsPerWheelRotation);
+    double conversionFactor = 1 / (m_constants.kWheelCircumferenceMeters * m_constants.kMotorRotationsPerWheelRotation);
     m_centerLeftEncoder.setPositionConversionFactor(conversionFactor);
     m_centerLeftEncoder.setVelocityConversionFactor(conversionFactor);
 

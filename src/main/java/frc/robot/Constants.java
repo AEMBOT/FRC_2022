@@ -15,85 +15,92 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final class ShooterConstants {
-    public static final int LeftMotorCANId = 13;
-    public static final int RightMotorCANId = 14;
+  public final class ShooterConstants {
+    public int LeftMotorCANId = 13;
+    public int RightMotorCANId = 14;
 
-    public static final double kvVolts = 0.000163;//0.002181818182; // Volts per RPM
-    public static final double P = 0.0000;
-    public static final double I = 0.0000001;
-    public static final double D = 0.0000;
+    public double kvVolts = 0.000163;//0.002181818182; // Volts per RPM
+    public double P = 0.0000;
+    public double I = 0.0000001;
+    public double D = 0.0000;
 
   }
 
-  public static final class IntakeConstants {
-    public static final int kLiftLeftPort = 7;
-    public static final int kLiftRightPort = 8;
-    public static final int kRollerPort = 9;
+  public final class IntakeConstants {
+    public int kLiftLeftPort = 7;
+    public int kLiftRightPort = 8;
+    public int kRollerPort = 9;
 
-    public static final int kIndexerLowerBottomBeltPort = 11;
-    public static final int kIndexerUpperBottomBeltPort = 12;
+    public int kIndexerLowerBottomBeltPort = 11;
+    public int kIndexerUpperBottomBeltPort = 12;
 
-    public static final int kIndexerTopBeltPort = 10;
+    public int kIndexerTopBeltPort = 10;
+  }
+
+  public final class IndexerConstants {
+    public int kIndexerLowerBottomBeltPort = 11;
+    public int kIndexerUpperBottomBeltPort = 12;
+
+    public int kIndexerTopBeltPort = 10;
   }
 
 
-  public static final class DriveConstants {
+  public final class DriveConstants {
     // Wheels are 8 inches in diameter, so their circumference can be calculated
     // (converted to meters for convenience)
-    public static final double kWheelCircumferenceMeters = Units.inchesToMeters(Math.PI * 7.736);
-    public static final double kMotorRotationsPerWheelRotation = 7.56 * 2.8;
+    public double kWheelCircumferenceMeters = Units.inchesToMeters(Math.PI * 7.736);
+    public double kMotorRotationsPerWheelRotation = 7.56 * 2.8;
 
-    public static final double nominalVoltage = 12.0;
+    public double nominalVoltage = 12.0;
 
     // Motor controller ports (on 2022 bot)
-    public static final int kLeftFront = 4;
-    public static final int kLeftCenter = 5;
-    public static final int kLeftBack = 6;
+    public int kLeftFront = 4;
+    public int kLeftCenter = 5;
+    public int kLeftBack = 6;
 
-    public static final int kRightFront = 1;
-    public static final int kRightCenter = 2;
-    public static final int kRightBack = 3;
+    public int kRightFront = 1;
+    public int kRightCenter = 2;
+    public int kRightBack = 3;
 
     // Split PID-related constants based on whether robot is turning/going straight
-    public static final class StraightPID {
+    public final class StraightPID {
       // Basic PID constants
-      public static final double kP = 0;
-      public static final double kI = 0;
-      public static final double kD = 0;
+      public double kP = 0;
+      public double kI = 0;
+      public double kD = 0;
 
       // Profiling
-      public static final double kMaxVelocityMetersPerSecond = .1;
-      public static final double kMaxAccelerationMeterPerSecondSquared = 5;
+      public double kMaxVelocityMetersPerSecond = .1;
+      public double kMaxAccelerationMeterPerSecondSquared = 5;
 
       // Feedforward
-      public static final double kSVolts = 0.05; // Power!! for now
-      public static final double kVVoltMetersPerSecond = 0.269 / 0.8856;
+      public double kSVolts = 0.05; // Power!! for now
+      public double kVVoltMetersPerSecond = 0.269 / 0.8856;
 
       // PID tolerances
-      public static final double kDriveToleranceMeters = 0.1;
-      public static final double kDriveVelocityToleranceMetersPerSecond = 0.2;
+      public double kDriveToleranceMeters = 0.1;
+      public double kDriveVelocityToleranceMetersPerSecond = 0.2;
     }
 
-    public static final class TurnPID {
-      public static final double kP = 0.006;
-      public static final double kI = 0;
-      public static final double kD = 0;
+    public final class TurnPID {
+      public double kP = 0.006;
+      public double kI = 0;
+      public double kD = 0;
 
       // Profiling
-      public static final double kMaxVelocityDegreesPerSecond = 360 / 5;
-      public static final double kMaxAccelerationDegreesPerSecondSquared = 120;
+      public double kMaxVelocityDegreesPerSecond = 360 / 5;
+      public double kMaxAccelerationDegreesPerSecondSquared = 120;
 
       // Feedforward
-      private static final double kSecondsPerRotation = .85; // works for dead-er battery
-      private static final double kTestPower = 0.4;
+      private double kSecondsPerRotation = .85; // works for dead-er battery
+      private double kTestPower = 0.4;
 
-      public static final double kSVolts = 0.045;
-      public static final double kVVoltDegreesPerSecond =
+      public double kSVolts = 0.045;
+      public double kVVoltDegreesPerSecond =
           (kTestPower - kSVolts) / (356.494 / kSecondsPerRotation);
 
-      public static final double kTurnToleranceDeg = 3.0;
-      public static final double kTurnRateToleranceDegPerS = 20.0;
+      public double kTurnToleranceDeg = 3.0;
+      public double kTurnRateToleranceDegPerS = 20.0;
     }
   }
 }

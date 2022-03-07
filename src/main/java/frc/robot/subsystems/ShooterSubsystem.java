@@ -36,13 +36,13 @@ public class ShooterSubsystem extends SubsystemBase {
   private NetworkTableEntry tv; 
 
   private NavigableMap<Double, Double> map = new TreeMap<>();
-
+  
   /** Creates a new ArcShooter. */
-  public ShooterSubsystem() {
+  public ShooterSubsystem(ShooterConstants constants) {
     tyRPMMap();
     // Construct both flywheel motor objects
-    flywheelMotor = new CANSparkMax(Constants.ShooterConstants.LeftMotorCANId, MotorType.kBrushless);
-    flywheelMotor2 = new CANSparkMax(Constants.ShooterConstants.RightMotorCANId, MotorType.kBrushless);
+    flywheelMotor = new CANSparkMax(constants.LeftMotorCANId, MotorType.kBrushless);
+    flywheelMotor2 = new CANSparkMax(constants.RightMotorCANId, MotorType.kBrushless);
 
     CANSparkMax maxes[] = {flywheelMotor, flywheelMotor2};
 
@@ -53,10 +53,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
       // Set closed loop constants
       m_pidController = max.getPIDController();
-      m_pidController.setP(ShooterConstants.P);
-      m_pidController.setI(ShooterConstants.I);
-      m_pidController.setD(ShooterConstants.D);
-      m_pidController.setFF(ShooterConstants.kvVolts);
+      m_pidController.setP(constants.P);
+      m_pidController.setI(constants.I);
+      m_pidController.setD(constants.D);
+      m_pidController.setFF(constants.kvVolts);
 
       limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
       ty = limelightTable.getEntry("ty");

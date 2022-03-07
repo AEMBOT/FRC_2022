@@ -7,27 +7,26 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
+import frc.robot.Constants.DriveConstants.StraightPID;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class DriveStraightProfiled extends ProfiledPIDCommand {
-  private static SimpleMotorFeedforward m_feedforward =
-      new SimpleMotorFeedforward(kSVolts, kVVoltMetersPerSecond);
 
-  public DriveStraightProfiled(double distance, DriveSubsystem drive) {
+  public DriveStraightProfiled(double distance, DriveSubsystem drive, StraightPID constants) {
     super(
         new ProfiledPIDController(
-            kP,
-            kI,
-            kD,
+            constants.kP,
+            constants.kI,
+            constants.kD,
             new TrapezoidProfile.Constraints(
-                kMaxVelocityMetersPerSecond, kMaxAccelerationMeterPerSecondSquared)),
+                constants.kMaxVelocityMetersPerSecond, constants.kMaxAccelerationMeterPerSecondSquared)),
         drive::getLeftEncoderPosition,
         distance,
         (output, setpoint) ->
-            drive.arcadeDrive(-(output + m_feedforward.calculate(setpoint.velocity)), 0, false),
+            drive.arcadeDrive(-(output + new SimpleMotorFeedforward(constants.kSVolts, constants.kVVoltMetersPerSecond).calculate(setpoint.velocity)), 0, false),
         drive);
     
-    getController().setTolerance(kDriveToleranceMeters, kDriveVelocityToleranceMetersPerSecond);
+    getController().setTolerance(constants.kDriveToleranceMeters, constants.kDriveVelocityToleranceMetersPerSecond);
 
   }
 

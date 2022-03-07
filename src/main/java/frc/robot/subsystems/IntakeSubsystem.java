@@ -3,18 +3,17 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.hardware.ClosedLoopSparkMax;
 
 public class IntakeSubsystem extends SubsystemBase{
 
     // motor controllers
-    private final CANSparkMax liftLeft = new CANSparkMax(Constants.IntakeConstants.kLiftLeftPort, MotorType.kBrushless);
-    private final CANSparkMax liftRight = new CANSparkMax(Constants.IntakeConstants.kLiftRightPort, MotorType.kBrushless);
+    private final CANSparkMax liftLeft;
+    private final CANSparkMax liftRight;
     
-    private final ClosedLoopSparkMax intakeRoller = new ClosedLoopSparkMax(Constants.IntakeConstants.kRollerPort, MotorType.kBrushless);
-    private final ClosedLoopSparkMax indexEntryRoller = new ClosedLoopSparkMax(Constants.IntakeConstants.kIndexerLowerBottomBeltPort, MotorType.kBrushless);
-
+    private final ClosedLoopSparkMax intakeRoller;
+    private final ClosedLoopSparkMax indexEntryRoller;
     // whether the subsystem is successfully homed to its max point
     private boolean homingComplete = false;
 
@@ -25,7 +24,13 @@ public class IntakeSubsystem extends SubsystemBase{
     private boolean rollerRunning = false;
 
     // motor geared 125:1 -> 24:72 gearing
-    public IntakeSubsystem() {
+    public IntakeSubsystem(IntakeConstants constants) {
+
+        liftLeft = new CANSparkMax(constants.kLiftLeftPort, MotorType.kBrushless);
+        liftRight = new CANSparkMax(constants.kLiftRightPort, MotorType.kBrushless);
+
+        intakeRoller = new ClosedLoopSparkMax(constants.kRollerPort, MotorType.kBrushless);
+        indexEntryRoller = new ClosedLoopSparkMax(constants.kIndexerLowerBottomBeltPort, MotorType.kBrushless);
 
         // TODO: set position conversion factor
         double factor = 1;

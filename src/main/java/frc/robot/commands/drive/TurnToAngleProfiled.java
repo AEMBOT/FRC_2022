@@ -7,36 +7,36 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
+import frc.robot.Constants.DriveConstants.TurnPID;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class TurnToAngleProfiled extends ProfiledPIDCommand {
-
-  private static final SimpleMotorFeedforward m_feedforward =
-      new SimpleMotorFeedforward(kSVolts, kVVoltDegreesPerSecond);
   private DriveSubsystem m_drive;
+  private TurnPID m_constants;
 
-  public TurnToAngleProfiled(double goalAngle, DriveSubsystem drive) {
+  public TurnToAngleProfiled(double goalAngle, DriveSubsystem drive, TurnPID constants) {
     super(
         new ProfiledPIDController(
-            kP,
-            kI,
-            kD,
+            constants.kP,
+            constants.kI,
+            constants.kD,
             new TrapezoidProfile.Constraints(
-                kMaxVelocityDegreesPerSecond, kMaxAccelerationDegreesPerSecondSquared)),
+                constants.kMaxVelocityDegreesPerSecond, constants.kMaxAccelerationDegreesPerSecondSquared)),
         drive::getHeading,
         goalAngle,
         (output, setpoint) ->
-            drive.arcadeDrive(0, output + m_feedforward.calculate(setpoint.velocity), false),
+            drive.arcadeDrive(0, output + new SimpleMotorFeedforward(constants.kSVolts, constants.kVVoltDegreesPerSecond).calculate(setpoint.velocity), false),
         drive);
 
     m_drive = drive;
+    m_constants = constants;
 
     // Make gyro values wrap around to avoid taking the long route to an angle
     getController().enableContinuousInput(-180, 180);
 
     // Set the controller tolerance - the delta tolerance ensures the robot is stationary at the
     // setpoint before it is considered as having reached the reference
-    getController().setTolerance(kTurnToleranceDeg, kTurnRateToleranceDegPerS);
+    getController().setTolerance(constants.kTurnToleranceDeg, constants.kTurnRateToleranceDegPerS);
   }
 
   @Override
@@ -52,8 +52,6 @@ public class TurnToAngleProfiled extends ProfiledPIDCommand {
     SmartDashboard.putNumber(
         "Current Velocity",
         super.getController().getSetpoint().velocity + getController().getVelocityError());
-    SmartDashboard.putNumber(
-        "Profiled turn power", m_feedforward.calculate(getController().getSetpoint().velocity));
 
     super.execute();
   }
