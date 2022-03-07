@@ -4,8 +4,8 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.IntakeSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.IntakeSubsystem;
 
 /** Homes the intake to its "max" point. */
 public class IntakeControl extends CommandBase {
@@ -29,8 +29,8 @@ public class IntakeControl extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-      int direction = (shouldInvert ? -1 : 1);
-      double power = .3 * direction;
+    int direction = (shouldInvert ? -1 : 1);
+    double power = .3 * direction;
     m_subsystem.setLiftPower(power);
   }
 
