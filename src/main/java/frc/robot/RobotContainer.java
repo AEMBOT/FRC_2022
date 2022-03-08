@@ -89,7 +89,7 @@ public class RobotContainer {
             new InstantCommand(() -> m_shooterSubsystem.toggleShooter(), m_shooterSubsystem));*/
     
     new JoystickButton(m_driverController, Button.kX.value)
-    .whenPressed(
+    .whileHeld(
         new TeleOpShooter(m_shooterSubsystem));
 
     new JoystickButton(m_driverController, Button.kY.value)
