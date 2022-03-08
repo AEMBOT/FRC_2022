@@ -236,6 +236,11 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void tyRPMMap() {
+    map.put(-0.266,2650.0);
+    map.put(-5.10,2885.0);
+    map.put(-8.55,3100.0);
+    map.put(-11.15,3325.0);
+    /*
     map.put(-60.0, 0.3);
     map.put(1.0, 1.0);
     map.put(2.0, 3.0);
@@ -251,7 +256,7 @@ public class ShooterSubsystem extends SubsystemBase {
     map.put(22.0, 3.0);
     map.put(13.0, 4.0);
     map.put(12.0, 3.0);
-    map.put(60.0, 4.0);
+    map.put(60.0, 4.0);*/
   }
 
   public double returnRPM(double ty) {
@@ -294,7 +299,8 @@ public class ShooterSubsystem extends SubsystemBase {
     double y = ty.getDouble(0.0);
     double rpm = returnRPM(y);
     SmartDashboard.putNumber("rpmVal", rpm);
-    flywheelMotor.set(rpm);
+    m_pidController.setReference(rpm, CANSparkMax.ControlType.kVelocity);
+    //flywheelMotor.set(rpm);
     //flywheelMotor2.set(rpm);
 
     NetworkTableEntry tx = limelightTable.getEntry("tx");
