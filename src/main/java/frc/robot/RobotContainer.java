@@ -17,8 +17,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.IntakeControl;
+import frc.robot.commands.TeleOpShooter;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.drive.DriveStraightProfiled;
+import frc.robot.commands.drive.HomeOnHub;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -48,6 +50,7 @@ public class RobotContainer {
 
   // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);
+  private final XboxController m_driverController2 = new XboxController(1);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -80,10 +83,14 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // Turn left 90 degrees with a 3 second timeout
-
+/*
     new JoystickButton(m_driverController, Button.kX.value)
         .whenPressed(
-            new InstantCommand(() -> m_shooterSubsystem.toggleShooter(), m_shooterSubsystem));
+            new InstantCommand(() -> m_shooterSubsystem.toggleShooter(), m_shooterSubsystem));*/
+    
+    new JoystickButton(m_driverController, Button.kX.value)
+    .whenPressed(
+        new TeleOpShooter(m_shooterSubsystem));
 
     new JoystickButton(m_driverController, Button.kY.value)
         .whenPressed(new InstantCommand(() -> m_shooterSubsystem.test(), m_shooterSubsystem));
@@ -101,6 +108,9 @@ public class RobotContainer {
 
     new JoystickButton(m_driverController, Button.kRightBumper.value)
         .whileHeld(new IntakeControl(m_intakeSubsystem, true));
+
+    new JoystickButton(m_driverController2, Button.kA.value)
+    .whenPressed(new HomeOnHub(m_limelight, m_robotDrive));
 
     // NOTE: Doesn't have requirement of m_targeting subsystem. Could not figure out how to include
     // it. Can't add it as an additional argument for some reason, even though the function uses
