@@ -44,7 +44,7 @@ public final class Constants {
   }
 
   public static final class DriveConstants {
-    public static final double kWheelCircumferenceMeters = Units.inchesToMeters(Math.PI * 7.736);
+    public static final double kWheelCircumferenceMeters = Units.inchesToMeters(Math.PI * 6);
     public static final double kMotorRotationsPerWheelRotation = 7.56;
 
     // Spark MAX conversion factors

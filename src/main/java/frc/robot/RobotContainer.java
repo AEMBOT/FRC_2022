@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.TeleOpShooter;
+import frc.robot.commands.autonomous.TwoBallAuto;
+import frc.robot.commands.autonomous.FiveBallAuto;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.drive.DriveStraightProfiled;
 import frc.robot.commands.drive.HomeOnHub;
@@ -42,8 +44,8 @@ public class RobotContainer {
   private final LimeLightTargeting m_limelight = new LimeLightTargeting();
 
   //TODO: Replace these with short and long autonomous modes
-  private DriveStraightProfiled m_autoCommand1 = new DriveStraightProfiled(-1.0, m_robotDrive);
-  private DriveStraightProfiled m_autoCommand2 = new DriveStraightProfiled(1, m_robotDrive);
+  private TwoBallAuto m_autoCommand1 = new TwoBallAuto(m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
+  private FiveBallAuto m_autoCommand2 = new FiveBallAuto(m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
 
   //sets up driver controlled auto choices
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -58,8 +60,8 @@ public class RobotContainer {
     configureButtonBindings();
 
     //set up chooser
-    m_chooser.setDefaultOption("CHOICE 1", m_autoCommand1);
-    m_chooser.addOption("CHOICE @", m_autoCommand2);
+    m_chooser.setDefaultOption("Two Ball Auto", m_autoCommand1);
+    m_chooser.addOption("Five Ball Auto*", m_autoCommand2);
     SmartDashboard.putData(m_chooser);
 
     // Set default drivetrain command to arcade driving (happens during teleop)
