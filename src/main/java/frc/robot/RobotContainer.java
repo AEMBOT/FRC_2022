@@ -4,9 +4,15 @@
 
 package frc.robot;
 
+import javax.swing.plaf.synth.Region;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -33,7 +39,12 @@ public class RobotContainer {
   private final IndexerSubsystem m_indexerSubsystem = new IndexerSubsystem();
   private final LimeLightTargeting m_limelight = new LimeLightTargeting();
 
-  private DriveStraightProfiled m_autoCommand = new DriveStraightProfiled(-1.0, m_robotDrive);
+  //TODO: Replace these with short and long autonomous modes
+  private DriveStraightProfiled m_autoCommand1 = new DriveStraightProfiled(-1.0, m_robotDrive);
+  private DriveStraightProfiled m_autoCommand2 = new DriveStraightProfiled(1, m_robotDrive);
+
+  //sets up driver controlled auto choices
+  SendableChooser<Command> m_chooser = new SendableChooser<>();
 
   // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);
@@ -42,6 +53,11 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+
+    //set up chooser
+    m_chooser.setDefaultOption("CHOICE 1", m_autoCommand1);
+    m_chooser.addOption("CHOICE @", m_autoCommand2);
+    SmartDashboard.putData(m_chooser);
 
     // Set default drivetrain command to arcade driving (happens during teleop)
     m_robotDrive.setDefaultCommand(
@@ -108,6 +124,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // Not sure whether we want to leave this here or not. Test with the joystick first
     // m_autoCommand = new TurnToAngleProfiled(10, m_robotDrive);
-    return m_autoCommand;
+    return m_chooser.getSelected();
   }
 }
