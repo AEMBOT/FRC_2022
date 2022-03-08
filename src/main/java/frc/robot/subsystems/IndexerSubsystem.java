@@ -58,34 +58,37 @@ public class IndexerSubsystem extends SubsystemBase {
     double sat = hsv[1];
     double val = hsv[2];
 
+    Alliance color = Alliance.Invalid;
+
     // TODO: This will likely need to be updated with actual color values from the robot
     if ((hue > 200 && hue < 260) && (val > 50) && (sat > 75)) {
-      return Alliance.Red;
+      color = Alliance.Red;
     }
     // TODO: This will likely need to be updated with actual color values from the robot
     else if ((hue < 15 || hue > 350) && (val > 50) && (sat > 75)) {
-      return Alliance.Blue;
+      color = Alliance.Blue;
     } else {
-      return Alliance.Invalid;
+      color = Alliance.Invalid;
     }
+
+    SmartDashboard.putString("Color:", getColorString(color));
+
+    return color;
   }
 
-  public String getColorString() {
+  public String getColorString(Alliance color) {
 
     switch (getCargoAllianceColor()) {
       case Blue:
         return "BLUE";
       case Red:
         return "RED";
-      default:
+      case Invalid:
         return "NONE";
+      default:
+        return "IDK";
     }
   }
-
-  public boolean ballDetectedAtEntry() {
-    return true;
-  }
-
   /** turns on exit belt */
   public void powerExitSide(double motorPower) {
     m_upperBelt.set(-motorPower);
@@ -147,8 +150,6 @@ public class IndexerSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Hue", h);
     SmartDashboard.putNumber("Saturation", s);
     SmartDashboard.putNumber("Value", v);
-
-    SmartDashboard.putString("Color:", getColorString());
 
     return new double[] {h, s, v};
   }
