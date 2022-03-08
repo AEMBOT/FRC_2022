@@ -218,16 +218,20 @@ public class ShooterSubsystem extends SubsystemBase {
     return RPM;
   }
 
-  public double ExtrapolateSlope(double ty1, double rpm1, double ty2, double rpm2) {
+  public double ExtrapolateSlope(double ty1, double rpm1, double ty2, double rpm2, double findty) {
+    double slope = (rpm2 - rpm1 ) /(ty2 - ty1);
+    double rpm = rpm1 + slope * (findty - ty1);
+
     // make linaer model between rpm1 and rpm2
+    /*
     double slope1 = rpm1 / ty1;
     double slope2 = rpm2 / ty2;
-    double extraplolate = (slope1 + slope2) / 2;
+    double extraplolate = (slope1 + slope2) / 2;*/
     /*
     double deltaRPM = rpm2 - rpm1;
     double deltaTy = ty2 - ty1;
     double slope = deltaRPM / deltaTy;*/
-    return extraplolate;
+    return rpm;
   }
 
   public double rpmFromSlope(double ty, double slope) {
@@ -274,8 +278,7 @@ public class ShooterSubsystem extends SubsystemBase {
       below = -1;
     }
 
-    double slope = ExtrapolateSlope(above, map.get(above), below, map.get(below));
-    double rpm = slope * ty;
+    double rpm = ExtrapolateSlope(above, map.get(above), below, map.get(below),ty);
     return rpm;
   }
 
