@@ -283,13 +283,13 @@ public class ShooterSubsystem extends SubsystemBase {
     double rpm = returnRPM(y);
     SmartDashboard.putNumber("rpmVal", rpm);
     flywheelMotor.set(rpm);
-    flywheelMotor2.set(rpm);
+    //flywheelMotor2.set(rpm);
 
     NetworkTableEntry tx = limelightTable.getEntry("tx");
     double angle = tx.getDouble(0.0);
     SmartDashboard.putNumber("xFixDegrees", angle);
     
-    TurnToAngleProfiled turn = new TurnToAngleProfiled(angle,m_driveSubsystem);
+    //TurnToAngleProfiled turn = new TurnToAngleProfiled(angle,m_driveSubsystem);
     // turn.TurnToAngleProfiled(angle,m_driveSubsystem); 
     
     //these are now being outputted periodically in the smart dashboard 
