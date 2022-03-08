@@ -10,13 +10,13 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.DefaultDrive;
-import frc.robot.commands.DriveStraightProfiled;
 import frc.robot.commands.IntakeControl;
-import frc.robot.commands.ShooterCommand;
+import frc.robot.commands.drive.DefaultDrive;
+import frc.robot.commands.drive.DriveStraightProfiled;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LimeLightTargeting;
 import frc.robot.subsystems.ShooterSubsystem;
 
 /**
@@ -31,6 +31,7 @@ public class RobotContainer {
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final IndexerSubsystem m_indexerSubsystem = new IndexerSubsystem();
+  private final LimeLightTargeting m_limelight = new LimeLightTargeting();
 
   private DriveStraightProfiled m_autoCommand = new DriveStraightProfiled(-1.0, m_robotDrive);
 
@@ -50,7 +51,8 @@ public class RobotContainer {
     // Tried to write this without creating a separate file, but failed.
     // Please correct as some point
 
-    //m_shooterSubsystem.setDefaultCommand(new InstantCommand(()-> m_shooterSubsystem.test(12.2), m_shooterSubsystem));
+    // m_shooterSubsystem.setDefaultCommand(new InstantCommand(()-> m_shooterSubsystem.test(12.2),
+    // m_shooterSubsystem));
 
   }
 
@@ -64,28 +66,29 @@ public class RobotContainer {
     // Turn left 90 degrees with a 3 second timeout
 
     new JoystickButton(m_driverController, Button.kX.value)
-      .whenPressed(new InstantCommand(()-> m_shooterSubsystem.toggleShooter(), m_shooterSubsystem));
+        .whenPressed(
+            new InstantCommand(() -> m_shooterSubsystem.toggleShooter(), m_shooterSubsystem));
 
     new JoystickButton(m_driverController, Button.kY.value)
-        .whenPressed(new InstantCommand(()-> m_shooterSubsystem.test(), m_shooterSubsystem));
+        .whenPressed(new InstantCommand(() -> m_shooterSubsystem.test(), m_shooterSubsystem));
 
     // toggle the exit side of the indexer
     new JoystickButton(m_driverController, Button.kB.value)
-        .whenPressed(new InstantCommand(() -> m_indexerSubsystem.toggleExitSide(), m_indexerSubsystem));
+        .whenPressed(
+            new InstantCommand(() -> m_indexerSubsystem.toggleExitSide(), m_indexerSubsystem));
 
     new JoystickButton(m_driverController, Button.kA.value)
         .whenPressed(new InstantCommand(() -> m_intakeSubsystem.toggleRoller(), m_intakeSubsystem));
 
-    new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value).whileHeld(
-      new IntakeControl(m_intakeSubsystem, false)
-    );
+    new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
+        .whileHeld(new IntakeControl(m_intakeSubsystem, false));
 
-    new JoystickButton(m_driverController, Button.kRightBumper.value).whileHeld(
-      new IntakeControl(m_intakeSubsystem, true)
-    );
-      
+    new JoystickButton(m_driverController, Button.kRightBumper.value)
+        .whileHeld(new IntakeControl(m_intakeSubsystem, true));
+
     // NOTE: Doesn't have requirement of m_targeting subsystem. Could not figure out how to include
-    // it. Can't add it as an additional argument for some reason, even though the function uses "..."
+    // it. Can't add it as an additional argument for some reason, even though the function uses
+    // "..."
     // (variable-length arguments)
     /*
     RunCommand targetCommand = new RunCommand(() -> m_shooterSubsystem.shootFlywheels(m_targeting.getDistance()));
@@ -94,7 +97,6 @@ public class RobotContainer {
     new JoystickButton(m_Controller, XboxController.Button.kA.value).whileHeld(targetCommand);
 
     */
-
 
   }
 

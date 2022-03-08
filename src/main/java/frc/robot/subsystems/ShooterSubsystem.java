@@ -4,13 +4,10 @@
 
 package frc.robot.subsystems;
 
-import java.util.NavigableMap;
-import java.util.TreeMap;
-
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController;
-
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -18,6 +15,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -25,15 +24,20 @@ public class ShooterSubsystem extends SubsystemBase {
   private static CANSparkMax flywheelMotor;
   private static CANSparkMax flywheelMotor2;
 
+  private RelativeEncoder flywheelEncoder;
+  private RelativeEncoder flywheel2Encoder;
+
   private SparkMaxPIDController m_pidController;
 
+  private DriveSubsystem m_driveSubsystem;
+  
   private double targetPower = 0;
 
   private NetworkTable limelightTable;
   private NetworkTableEntry tx;
   private NetworkTableEntry ty;
   private NetworkTableEntry ta;
-  private NetworkTableEntry tv; 
+  private NetworkTableEntry tv;
 
   private NavigableMap<Double, Double> map = new TreeMap<>();
 
@@ -41,8 +45,10 @@ public class ShooterSubsystem extends SubsystemBase {
   public ShooterSubsystem() {
     tyRPMMap();
     // Construct both flywheel motor objects
-    flywheelMotor = new CANSparkMax(Constants.ShooterConstants.LeftMotorCANId, MotorType.kBrushless);
-    flywheelMotor2 = new CANSparkMax(Constants.ShooterConstants.RightMotorCANId, MotorType.kBrushless);
+    flywheelMotor =
+        new CANSparkMax(Constants.ShooterConstants.LeftMotorCANId, MotorType.kBrushless);
+    flywheelMotor2 =
+        new CANSparkMax(Constants.ShooterConstants.RightMotorCANId, MotorType.kBrushless);
 
     CANSparkMax maxes[] = {flywheelMotor, flywheelMotor2};
 
@@ -57,6 +63,12 @@ public class ShooterSubsystem extends SubsystemBase {
       m_pidController.setI(ShooterConstants.I);
       m_pidController.setD(ShooterConstants.D);
       m_pidController.setFF(ShooterConstants.kvVolts);
+      m_pidController.setOutputRange(ShooterConstants.minOutput, ShooterConstants.maxOutput);
+      int smartMotionSlot = 0;
+      m_pidController.setSmartMotionMaxVelocity(ShooterConstants.maxVel,smartMotionSlot);
+      m_pidController.setSmartMotionMinOutputVelocity(ShooterConstants.minVel, smartMotionSlot);
+      m_pidController.setSmartMotionMaxAccel(ShooterConstants.maxAcc, smartMotionSlot);
+      //m_pidController.setSmartMotionAllowedClosedLoopError(ShooterConstants.allowedError, smartMotionSlot);
 
       limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
       ty = limelightTable.getEntry("ty");
@@ -65,15 +77,16 @@ public class ShooterSubsystem extends SubsystemBase {
     // Set the pid controller to reference the first spark max
     m_pidController = flywheelMotor.getPIDController();
 
-
-
     // Invert the first motor and have the second motor follow also inverted
     flywheelMotor.setInverted(false);
     flywheelMotor2.follow(flywheelMotor, true);
 
+    flywheelEncoder = flywheelMotor.getEncoder();
+    flywheel2Encoder = flywheelMotor2.getEncoder();
+
     // Set the open loop ramp rate, really should be using closed loop but that is
     // currently not important
-    //flywheelMotor.setOpenLoopRampRate(0.01);
+    // flywheelMotor.setOpenLoopRampRate(0.01);
   }
 
   @Override
@@ -83,10 +96,16 @@ public class ShooterSubsystem extends SubsystemBase {
     updateDashboard();
 
     double y = ty.getDouble(0.0);
-    SmartDashboard.putNumber("LimelightY",y);
+
+    SmartDashboard.putNumber("LimelightY", y);
+
+    double fwhlM1ActualRpm = flywheelEncoder.getVelocity();
+    double fwhlM2ActualRpm = flywheel2Encoder.getVelocity();
+    SmartDashboard.putNumber("Flywheel1 RPM", fwhlM1ActualRpm);
+    SmartDashboard.putNumber("Flywheel2 RPM", fwhlM2ActualRpm);
   }
 
-  private void updateDashboard(){
+  private void updateDashboard() {
 
     // The current flywheel speed
     SmartDashboard.putNumber("Fly-Wheel-RPM", getFlywheelRPM());
@@ -95,15 +114,16 @@ public class ShooterSubsystem extends SubsystemBase {
 
   /**
    * Get the current flywheel RPM
+   *
    * @return
    */
-  public double getFlywheelRPM(){
+  public double getFlywheelRPM() {
     return flywheelMotor.getEncoder().getVelocity();
   }
 
   /**
    * Determines whether or not the shooter is running
-   * 
+   *
    * @return shooter status
    */
   public boolean isRunning() {
@@ -113,28 +133,24 @@ public class ShooterSubsystem extends SubsystemBase {
     return false;
   }
 
-  /**
-   * Run the shooter motor given a manual power
-   */
+  /** Run the shooter motor given a manual power */
   public void runShooter(double motorPower) {
-    
+
     if (motorPower > 0.1) {
       flywheelMotor.set(motorPower);
     } else {
       flywheelMotor.set(0);
     }
-    //flywheelMotor.setVoltage(10);
-    
-    //flywheelMotor.setVoltage(SmartDashboard.getNumber("Shooter Voltage", 10));
-    
+    // flywheelMotor.setVoltage(10);
+
+    // flywheelMotor.setVoltage(SmartDashboard.getNumber("Shooter Voltage", 10));
+
   }
 
-  public void toggleShooter(){
-    if(isRunning()){
+  public void toggleShooter() {
+    if (isRunning()) {
       runShooter(0);
-    }
-
-    else{
+    } else {
       runShooter(0.5);
     }
   }
@@ -143,69 +159,70 @@ public class ShooterSubsystem extends SubsystemBase {
   public double maxRPM = 5676;
   public double distance;
   public int angle = 24;
-  public double slope24 = 4000/24;
-  public double slope4 = 1400/4;
-  private double maxHeight; 
+  public double slope24 = 4000 / 24;
+  public double slope4 = 1400 / 4;
+  private double maxHeight;
   private int shooterAngle = 24;
   private double shooterHeight = 0.3048;
   private final double gravity = 9.8;
   private int flywheelRadius = 4;
   private double targetHeight = 2.7432;
 
-
-  public double getRelativeRPM(double dist){
-    if (dist > 12){
+  public double getRelativeRPM(double dist) {
+    if (dist > 12) {
       RPM = slope24 * dist;
-    }
-    else if (dist > 24){
+    } else if (dist > 24) {
       dist = 24;
       RPM = slope24 * dist;
-    }
-    else{
+    } else {
       RPM = slope4 * dist;
     }
-    return RPM/ maxRPM;
+    return RPM / maxRPM;
   }
 
-  public void shootFlywheels(double dst){
+  public void shootFlywheels(double dst) {
     runShooter(getRelativeRPM(dst));
   }
 
-
-  public double RPMtoAngularVelocity(int rpm){
-      double omega = (2 * Math.PI * rpm) / 60;
-      return omega;
-  }
-  public double angularToLinearVelocity(double angularVelocity){
-      //two flywheels 
-      double velocity = RPMtoAngularVelocity(4000) * flywheelRadius; 
-      return velocity; 
+  public double RPMtoAngularVelocity(int rpm) {
+    double omega = (2 * Math.PI * rpm) / 60;
+    return omega;
   }
 
-  public double linearToRPM(double v){
-      double angular = v / flywheelRadius;
-      double rpm = (angular * 60) / (2 * Math.PI);
-      return rpm;
+  public double angularToLinearVelocity(double angularVelocity) {
+    // two flywheels
+    double velocity = RPMtoAngularVelocity(4000) * flywheelRadius;
+    return velocity;
   }
 
-  public double ballMaxHeight(double dist, double initalVelocity, int launchAngle, double launchHeight){
-      double maxHeight = ((dist * Math.tan(launchAngle)) + (0.5 * gravity * Math.pow(Math.cos(launchAngle),2)) + launchHeight);
-      return maxHeight;
+  public double linearToRPM(double v) {
+    double angular = v / flywheelRadius;
+    double rpm = (angular * 60) / (2 * Math.PI);
+    return rpm;
   }
 
-  public double RPMforDistanceX(double dist, double launchAngle){
-      //2 flywheels, rpm / 2 
-      //dist is limelighttargeting.getdistance()
-      double neededVelocity = Math.sqrt((dist * 9.8) / (Math.sin(2 * launchAngle)));
-      double RPM = linearToRPM(neededVelocity);
-      return RPM;
-  }    
+  public double ballMaxHeight(
+      double dist, double initalVelocity, int launchAngle, double launchHeight) {
+    double maxHeight =
+        ((dist * Math.tan(launchAngle))
+            + (0.5 * gravity * Math.pow(Math.cos(launchAngle), 2))
+            + launchHeight);
+    return maxHeight;
+  }
 
-  public double ExtrapolateSlope(double ty1, double rpm1, double ty2, double rpm2){
-    //make linaer model between rpm1 and rpm2
-    double slope1 = rpm1/ ty1;
-    double slope2 = rpm2/ ty2;
-    double extraplolate = (slope1 + slope2)/2;
+  public double RPMforDistanceX(double dist, double launchAngle) {
+    // 2 flywheels, rpm / 2
+    // dist is limelighttargeting.getdistance()
+    double neededVelocity = Math.sqrt((dist * 9.8) / (Math.sin(2 * launchAngle)));
+    double RPM = linearToRPM(neededVelocity);
+    return RPM;
+  }
+
+  public double ExtrapolateSlope(double ty1, double rpm1, double ty2, double rpm2) {
+    // make linaer model between rpm1 and rpm2
+    double slope1 = rpm1 / ty1;
+    double slope2 = rpm2 / ty2;
+    double extraplolate = (slope1 + slope2) / 2;
     /*
     double deltaRPM = rpm2 - rpm1;
     double deltaTy = ty2 - ty1;
@@ -213,44 +230,42 @@ public class ShooterSubsystem extends SubsystemBase {
     return extraplolate;
   }
 
-  public double rpmFromSlope(double ty, double slope){
-    double desiredRPM = slope * ty; 
+  public double rpmFromSlope(double ty, double slope) {
+    double desiredRPM = slope * ty;
     return desiredRPM;
   }
 
-  public void tyRPMMap(){
-    map.put(-60.0,0.3);
-    map.put(1.0,1.0);
-    map.put(2.0,3.0);
+  public void tyRPMMap() {
+    map.put(-60.0, 0.3);
+    map.put(1.0, 1.0);
+    map.put(2.0, 3.0);
     map.put(3.0, 4.0);
-    map.put(42.0,3.0);
+    map.put(42.0, 3.0);
     map.put(15.0, 4.0);
-    map.put(16.0,1.0);
-    map.put(21.0,3.0);
+    map.put(16.0, 1.0);
+    map.put(21.0, 3.0);
     map.put(36.0, 4.0);
-    map.put(24.0,3.0);
+    map.put(24.0, 3.0);
     map.put(32.0, 4.0);
-    map.put(17.0,1.0);
-    map.put(22.0,3.0);
+    map.put(17.0, 1.0);
+    map.put(22.0, 3.0);
     map.put(13.0, 4.0);
-    map.put(12.0,3.0);
-    map.put(60.0, 4.0); 
+    map.put(12.0, 3.0);
+    map.put(60.0, 4.0);
   }
-  
-  public double returnRPM(double ty){
+
+  public double returnRPM(double ty) {
     double above;
-    double below; 
-    try{
+    double below;
+    try {
       above = map.ceilingKey(ty);
-    }
-    catch(Exception e){
+    } catch (Exception e) {
       above = -1;
     }
 
-    try{
+    try {
       below = map.floorKey(ty);
-    }
-    catch(Exception e){
+    } catch (Exception e) {
       below = -1;
     }
 
@@ -259,14 +274,26 @@ public class ShooterSubsystem extends SubsystemBase {
     return rpm;
   }
 
-  public void test(){
+  public void test() {
     NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+    
 
     NetworkTableEntry ty = limelightTable.getEntry("ty"); // Y degrees
     double y = ty.getDouble(0.0);
     double rpm = returnRPM(y);
-    SmartDashboard.putNumber("rpmVal",rpm);
+    SmartDashboard.putNumber("rpmVal", rpm);
+    flywheelMotor.set(rpm);
+    //flywheelMotor2.set(rpm);
 
+    NetworkTableEntry tx = limelightTable.getEntry("tx");
+    double angle = tx.getDouble(0.0);
+    SmartDashboard.putNumber("xFixDegrees", angle);
+    
+    //TurnToAngleProfiled turn = new TurnToAngleProfiled(angle,m_driveSubsystem);
+    // turn.TurnToAngleProfiled(angle,m_driveSubsystem); 
+    
+    //these are now being outputted periodically in the smart dashboard 
+    //double fwhlM1ActualRpm = flywheelEncoder.getVelocity();
+    //double fwhlM2ActualRpm = flywheel2Encoder.getVelocity();
   }
-
 }

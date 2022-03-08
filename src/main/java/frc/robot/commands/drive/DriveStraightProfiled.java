@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.drive;
 
 import static frc.robot.Constants.DriveConstants.StraightPID.*;
 
@@ -26,16 +26,16 @@ public class DriveStraightProfiled extends ProfiledPIDCommand {
         (output, setpoint) ->
             drive.arcadeDrive(-(output + m_feedforward.calculate(setpoint.velocity)), 0, false),
         drive);
-    
+
     getController().setTolerance(kDriveToleranceMeters, kDriveVelocityToleranceMetersPerSecond);
-
   }
-
 
   @Override
   public void execute() {
     SmartDashboard.putNumber("Setpoint Velocity", getController().getSetpoint().velocity);
-    SmartDashboard.putNumber("Actual Velocity", getController().getSetpoint().velocity + getController().getVelocityError());
+    SmartDashboard.putNumber(
+        "Actual Velocity",
+        getController().getSetpoint().velocity + getController().getVelocityError());
     SmartDashboard.putNumber("Measurement", m_measurement.getAsDouble());
     SmartDashboard.putBoolean("At goal", getController().atGoal());
     SmartDashboard.putNumber("Goal: ", getController().getGoal().position);

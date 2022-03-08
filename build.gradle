@@ -1,6 +1,7 @@
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2022.3.1"
+    id "com.diffplug.spotless" version "6.3.0"
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -87,45 +88,48 @@ wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
 
 // Spotless formatter configuration
-// spotless {
-//     java {
-//         target fileTree('.') {
-//             include '**/*.java'
-//             exclude '**/build/**', '**/build-*/**'
-//         }
-//         toggleOffOn(
-//         googleJavaFormat()
-//         removeUnusedImports()
-//         trimTrailingWhitespace()
-//         endWithNewline()
-//     }
-//     groovyGradle {
-//         target fileTree('.') {
-//             include '**/*.gradle'
-//             exclude '**/build/**', '**/build-*/**'
-//         }
-//         greclipse()
-//         indentWithSpaces(4)
-//         trimTrailingWhitespace()
-//         endWithNewline()
-//     }
-//     format 'xml', {
-//         target fileTree('.') {
-//             include '**/*.xml'
-//             exclude '**/build/**', '**/build-*/**'
-//         }
-//         eclipseWtp('xml')
-//         trimTrailingWhitespace()
-//         indentWithSpaces(2)
-//         endWithNewline()
-//     }
-//     format 'misc', {
-//         target fileTree('.') {
-//             include '**/*.md', '**/.gitignore'
-//             exclude '**/build/**', '**/build-*/**'
-//         }
-//         trimTrailingWhitespace()
-//         indentWithSpaces(2)
-//         endWithNewline()
-//     }
-// }
+spotless {
+    java {
+        target fileTree('.') {
+            include '**/*.java'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        toggleOffOn()
+        googleJavaFormat()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    groovyGradle {
+        target fileTree('.') {
+            include '**/*.gradle'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        greclipse()
+        indentWithSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    format 'xml', {
+        target fileTree('.') {
+            include '**/*.xml'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        eclipseWtp('xml')
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
+    format 'misc', {
+        target fileTree('.') {
+            include '**/*.md', '**/.gitignore'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
+}
+
+// Format code before building or deploying
+compileJava.dependsOn(tasks.spotlessApply)

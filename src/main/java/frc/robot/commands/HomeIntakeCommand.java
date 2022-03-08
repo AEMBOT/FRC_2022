@@ -4,8 +4,8 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.IntakeSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.IntakeSubsystem;
 
 /** Homes the intake to its "max" point. */
 public class HomeIntakeCommand extends CommandBase {
