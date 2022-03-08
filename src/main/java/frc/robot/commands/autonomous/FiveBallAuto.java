@@ -4,6 +4,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.HomeIntakeCommand;
 import frc.robot.commands.RunShooterForTime;
 import frc.robot.commands.drive.DriveStraightProfiled;
@@ -25,34 +26,46 @@ public class FiveBallAuto extends SequentialCommandGroup {
             // 1
             //back up into ball nearest hub
             new DriveStraightSmart(Units.inchesToMeters(-55.5), drive),
+            new WaitCommand(2),
+
             //--intake here
             
             // 2
             //drive forwards to line up shot
             new DriveStraightSmart(Units.inchesToMeters(84), drive),
+            new WaitCommand(2),
+
             //--shoot here
             
             // turn 1
             //rotate to align with 2 far balls
             new TurnToAngleSmart(-75, drive),
-            
+            new WaitCommand(2),
+
             // 3
             //drive back to first ball
             new DriveStraightSmart(Units.inchesToMeters(-87), drive),
+            new WaitCommand(2),
+
             //--intake here
             
             // 4
             //drive back to second ball
             new DriveStraightSmart(Units.inchesToMeters(-157), drive),
+            new WaitCommand(2),
+
             //--intake here
 
             // 5
             //return to hub          
             new DriveStraightSmart(Units.inchesToMeters(244), drive),
+            new WaitCommand(2),
+
             
             // turn 2
             //line up shot, shoot
             new TurnToAngleSmart(-285, drive),
+            new WaitCommand(2),
             new DriveStraightSmart(-1, drive),
             new HomeOnHub(limelight, drive)
             //--shoot here
