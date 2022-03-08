@@ -274,6 +274,18 @@ public class ShooterSubsystem extends SubsystemBase {
     return rpm;
   }
 
+  public void runAtMapRPM() {
+    NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+    NetworkTableEntry ty = limelightTable.getEntry("ty"); // Y degrees
+    double yAngle = ty.getDouble(0.0);
+    double rpm = returnRPM(yAngle);
+    m_pidController.setReference(rpm, CANSparkMax.ControlType.kVelocity);
+  }
+
+  public void stopShooter() {
+    flywheelMotor.set(0);
+  }
+
   public void test() {
     NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
     
