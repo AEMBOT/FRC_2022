@@ -16,6 +16,7 @@ public class RunShooterForTime extends CommandBase {
     m_duration = duration;
     m_shooter = shooter;
     addRequirements(shooter);
+    m_timer = new Timer();
   }
 
   @Override

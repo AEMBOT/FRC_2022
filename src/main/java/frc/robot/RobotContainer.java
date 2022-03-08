@@ -59,6 +59,7 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
+
     //set up chooser
     m_chooser.setDefaultOption("Two Ball Auto", m_autoCommand1);
     m_chooser.addOption("Five Ball Auto*", m_autoCommand2);

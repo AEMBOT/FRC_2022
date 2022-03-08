@@ -16,12 +16,12 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimeLightTargeting;
 import frc.robot.subsystems.ShooterSubsystem;
 
-//command list for autopathing. doesn't do anything yet
+//command list for autopathing
 public class FiveBallAuto extends SequentialCommandGroup {
     public FiveBallAuto(DriveSubsystem drive, ShooterSubsystem shooter, IndexerSubsystem indexer, IntakeSubsystem intake, LimeLightTargeting limelight) { 
+        drive.setBrakeMode();
         addCommands(
             //Starting position is determined by jig - see discord for specifics
-
             // 1
             //back up into ball nearest hub
             new DriveStraightSmart(Units.inchesToMeters(-55.5), drive),
@@ -34,7 +34,7 @@ public class FiveBallAuto extends SequentialCommandGroup {
             
             // turn 1
             //rotate to align with 2 far balls
-            new TurnToAngleSmart(75, drive),
+            new TurnToAngleSmart(-75, drive),
             
             // 3
             //drive back to first ball
@@ -52,7 +52,8 @@ public class FiveBallAuto extends SequentialCommandGroup {
             
             // turn 2
             //line up shot, shoot
-            new TurnToAngleSmart(105, drive),
+            new TurnToAngleSmart(-285, drive),
+            new DriveStraightSmart(-1, drive),
             new HomeOnHub(limelight, drive)
             //--shoot here
 

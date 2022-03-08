@@ -17,6 +17,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 
 public class TwoBallAuto extends SequentialCommandGroup {
     public TwoBallAuto(DriveSubsystem drive, ShooterSubsystem shooter, IndexerSubsystem indexer, IntakeSubsystem intake, LimeLightTargeting limelight) {
+        drive.setBrakeMode();
         addCommands(
             new DriveStraightSmart(Units.inchesToMeters(-55.5), drive),
             // intake
