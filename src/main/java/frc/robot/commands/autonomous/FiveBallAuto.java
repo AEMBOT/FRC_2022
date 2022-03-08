@@ -9,6 +9,7 @@ import frc.robot.commands.RunShooterForTime;
 import frc.robot.commands.drive.DriveStraightProfiled;
 import frc.robot.commands.drive.DriveStraightSmart;
 import frc.robot.commands.drive.HomeOnHub;
+import frc.robot.commands.drive.TurnToAngleSmart;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -33,7 +34,7 @@ public class FiveBallAuto extends SequentialCommandGroup {
             
             // turn 1
             //rotate to align with 2 far balls
-            new InstantCommand(() -> drive.turnDegrees(75), drive),
+            new TurnToAngleSmart(75, drive),
             
             // 3
             //drive back to first ball
@@ -51,7 +52,7 @@ public class FiveBallAuto extends SequentialCommandGroup {
             
             // turn 2
             //line up shot, shoot
-            new InstantCommand(() -> drive.turnDegrees(105), drive),
+            new TurnToAngleSmart(105, drive),
             new HomeOnHub(limelight, drive)
             //--shoot here
 
