@@ -8,6 +8,7 @@ import frc.robot.commands.HomeIntakeCommand;
 import frc.robot.commands.RunShooterForTime;
 import frc.robot.commands.drive.DriveStraightProfiled;
 import frc.robot.commands.drive.DriveStraightSmart;
+import frc.robot.commands.drive.HomeOnHub;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -20,6 +21,9 @@ public class TwoBallAuto extends SequentialCommandGroup {
             new DriveStraightSmart(Units.inchesToMeters(-55.5), drive),
             // intake
             new DriveStraightSmart(Units.inchesToMeters(84), drive),
+
+            // Align with the hub
+            new HomeOnHub(limelight, drive),
 
             // Run indexer into shooter
             new ParallelCommandGroup(
