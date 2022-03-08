@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.networktables.NetworkTable;
@@ -23,8 +24,13 @@ public class ShooterSubsystem extends SubsystemBase {
   private static CANSparkMax flywheelMotor;
   private static CANSparkMax flywheelMotor2;
 
+  private RelativeEncoder flywheelEncoder;
+  private RelativeEncoder flywheel2Encoder;
+
   private SparkMaxPIDController m_pidController;
 
+  private DriveSubsystem m_driveSubsystem;
+  
   private double targetPower = 0;
 
   private NetworkTable limelightTable;
@@ -57,6 +63,12 @@ public class ShooterSubsystem extends SubsystemBase {
       m_pidController.setI(ShooterConstants.I);
       m_pidController.setD(ShooterConstants.D);
       m_pidController.setFF(ShooterConstants.kvVolts);
+      m_pidController.setOutputRange(ShooterConstants.minOutput, ShooterConstants.maxOutput);
+      int smartMotionSlot = 0;
+      m_pidController.setSmartMotionMaxVelocity(ShooterConstants.maxVel,smartMotionSlot);
+      m_pidController.setSmartMotionMinOutputVelocity(ShooterConstants.minVel, smartMotionSlot);
+      m_pidController.setSmartMotionMaxAccel(ShooterConstants.maxAcc, smartMotionSlot);
+      //m_pidController.setSmartMotionAllowedClosedLoopError(ShooterConstants.allowedError, smartMotionSlot);
 
       limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
       ty = limelightTable.getEntry("ty");
@@ -68,6 +80,9 @@ public class ShooterSubsystem extends SubsystemBase {
     // Invert the first motor and have the second motor follow also inverted
     flywheelMotor.setInverted(false);
     flywheelMotor2.follow(flywheelMotor, true);
+
+    flywheelEncoder = flywheelMotor.getEncoder();
+    flywheel2Encoder = flywheelMotor2.getEncoder();
 
     // Set the open loop ramp rate, really should be using closed loop but that is
     // currently not important
@@ -81,7 +96,13 @@ public class ShooterSubsystem extends SubsystemBase {
     updateDashboard();
 
     double y = ty.getDouble(0.0);
+
     SmartDashboard.putNumber("LimelightY", y);
+
+    double fwhlM1ActualRpm = flywheelEncoder.getVelocity();
+    double fwhlM2ActualRpm = flywheel2Encoder.getVelocity();
+    SmartDashboard.putNumber("Flywheel1 RPM", fwhlM1ActualRpm);
+    SmartDashboard.putNumber("Flywheel2 RPM", fwhlM2ActualRpm);
   }
 
   private void updateDashboard() {
@@ -255,10 +276,24 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void test() {
     NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+    
 
     NetworkTableEntry ty = limelightTable.getEntry("ty"); // Y degrees
     double y = ty.getDouble(0.0);
     double rpm = returnRPM(y);
     SmartDashboard.putNumber("rpmVal", rpm);
+    flywheelMotor.set(rpm);
+    flywheelMotor2.set(rpm);
+
+    NetworkTableEntry tx = limelightTable.getEntry("tx");
+    double angle = tx.getDouble(0.0);
+    SmartDashboard.putNumber("xFixDegrees", angle);
+    
+    TurnToAngleProfiled turn = new TurnToAngleProfiled(angle,m_driveSubsystem);
+    // turn.TurnToAngleProfiled(angle,m_driveSubsystem); 
+    
+    //these are now being outputted periodically in the smart dashboard 
+    //double fwhlM1ActualRpm = flywheelEncoder.getVelocity();
+    //double fwhlM2ActualRpm = flywheel2Encoder.getVelocity();
   }
 }

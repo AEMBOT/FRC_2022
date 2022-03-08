@@ -19,10 +19,17 @@ public final class Constants {
     public static final int LeftMotorCANId = 13;
     public static final int RightMotorCANId = 14;
 
-    public static final double kvVolts = 0.000163; // 0.002181818182; // Volts per RPM
-    public static final double P = 0.0000;
-    public static final double I = 0.0000001;
+    public static final double kvVolts = 0.000163;//0.002181818182; // Volts per RPM
+    public static final double P = 5e-5;
+    public static final double I = 1e-6;
     public static final double D = 0.0000;
+    //public static final double FF = 0.000156;
+    public static final double maxVel = 5700;
+    public static final double minVel = 2400;
+    public static final double maxAcc = 1500;
+    public static final double maxOutput = 1;
+    public static final double minOutput = -1;
+    public static final double allowedError = 2; //read more on this and change the value probably
   }
 
   public static final class IntakeConstants {
