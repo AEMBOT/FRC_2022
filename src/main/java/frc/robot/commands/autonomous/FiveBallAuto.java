@@ -51,7 +51,8 @@ public class FiveBallAuto extends SequentialCommandGroup {
             
             // turn 2
             //line up shot, shoot
-            new InstantCommand(() -> drive.turnDegrees(105), drive)
+            new InstantCommand(() -> drive.turnDegrees(105), drive),
+            new HomeOnHub(limelight, drive)
             //--shoot here
 
         );//end command list
