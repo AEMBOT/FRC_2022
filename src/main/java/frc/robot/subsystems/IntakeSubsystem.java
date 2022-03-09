@@ -83,23 +83,39 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     // Enable forward and reverse soft limits for the lift motors
-    liftLeft.enableSoftLimit(SoftLimitDirection.kForward, true);
-    liftRight.enableSoftLimit(SoftLimitDirection.kForward, true);
-
-    liftLeft.enableSoftLimit(SoftLimitDirection.kReverse, true);
-    liftRight.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    enableLiftSoftLimits();
 
     // Set the soft limits for the lift motors
-    liftLeft.setSoftLimit(SoftLimitDirection.kForward, (float) max);
-    liftRight.setSoftLimit(SoftLimitDirection.kForward, (float) max);
-
-    liftLeft.setSoftLimit(SoftLimitDirection.kReverse, (float) min);
-    liftRight.setSoftLimit(SoftLimitDirection.kReverse, (float) min);
+    setLiftSoftLimits((float) max, (float) min);
 
     m_lowestAllowedPosition = min;
     m_highestAllowedPosition = max;
 
     homingComplete = true;
+  }
+
+  public void enableLiftSoftLimits() {
+    liftLeft.enableSoftLimit(SoftLimitDirection.kForward, true);
+    liftRight.enableSoftLimit(SoftLimitDirection.kForward, true);
+
+    liftLeft.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    liftRight.enableSoftLimit(SoftLimitDirection.kReverse, true);
+  }
+
+  public void disableLiftSoftLimits() {
+    liftLeft.enableSoftLimit(SoftLimitDirection.kForward, false);
+    liftRight.enableSoftLimit(SoftLimitDirection.kForward, false);
+
+    liftLeft.enableSoftLimit(SoftLimitDirection.kReverse, false);
+    liftRight.enableSoftLimit(SoftLimitDirection.kReverse, false);
+  }
+
+  public void setLiftSoftLimits(float max, float min) {
+    liftLeft.setSoftLimit(SoftLimitDirection.kForward, max);
+    liftRight.setSoftLimit(SoftLimitDirection.kForward, max);
+
+    liftLeft.setSoftLimit(SoftLimitDirection.kReverse, min);
+    liftRight.setSoftLimit(SoftLimitDirection.kReverse, min);
   }
 
   public boolean isStopped() {
