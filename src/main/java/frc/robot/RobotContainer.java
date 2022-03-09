@@ -36,7 +36,7 @@ public class RobotContainer {
   private final DriveStraightSmart m_driveForward =
       new DriveStraightSmart(Units.feetToMeters(3), m_robotDrive);
   private final DriveStraightGyro m_gyroDrive =
-      new DriveStraightGyro(Units.feetToMeters(6), 5, m_robotDrive);
+      new DriveStraightGyro(Units.feetToMeters(6), m_robotDrive);
   private final TurnToAngleSmart m_turn90 = new TurnToAngleSmart(90, m_robotDrive);
 
   /*
@@ -102,6 +102,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return m_gyroDrive;
+    return m_turn90;
   }
 }
