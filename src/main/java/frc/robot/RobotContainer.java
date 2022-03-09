@@ -52,7 +52,7 @@ public class RobotContainer {
 
   // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);
-  private final XboxController m_driverController2 = new XboxController(1);
+  private final XboxController m_secondaryController = new XboxController(1);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -85,35 +85,34 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // Turn left 90 degrees with a 3 second timeout
-/*
-    new JoystickButton(m_driverController, Button.kX.value)
-        .whenPressed(
-            new InstantCommand(() -> m_shooterSubsystem.toggleShooter(), m_shooterSubsystem));*/
-    
-    new JoystickButton(m_driverController, Button.kX.value)
-    .whileHeld(
-        new TeleOpShooter(m_shooterSubsystem));
+    // PRIMARY CONTROLLER
 
-    new JoystickButton(m_driverController, Button.kY.value)
-        .whenPressed(new InstantCommand(() -> m_shooterSubsystem.test(), m_shooterSubsystem));
+    // Shooter control based on limelight distance
+    new JoystickButton(m_driverController, Button.kX.value)
+        .whileHeld(new TeleOpShooter(m_shooterSubsystem));
 
     // toggle the exit side of the indexer
     new JoystickButton(m_driverController, Button.kB.value)
         .whenPressed(
             new InstantCommand(() -> m_indexerSubsystem.toggleExitSide(), m_indexerSubsystem));
 
+    // Toggle the intake roller
     new JoystickButton(m_driverController, Button.kA.value)
         .whenPressed(new InstantCommand(() -> m_intakeSubsystem.toggleRoller(), m_intakeSubsystem));
 
-    new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
+    // Move the intake lift up
+    new JoystickButton(m_driverController, Button.kLeftBumper.value)
         .whileHeld(new IntakeControl(m_intakeSubsystem, false));
 
+    // Move the intake lift down
     new JoystickButton(m_driverController, Button.kRightBumper.value)
         .whileHeld(new IntakeControl(m_intakeSubsystem, true));
 
-    new JoystickButton(m_driverController2, Button.kA.value)
-    .whenPressed(new HomeOnHub(m_limelight, m_robotDrive));
+    // SECONDARY CONTROLLER
+
+    // Align the robot with the hub
+    new JoystickButton(m_secondaryController, Button.kA.value)
+        .whenPressed(new HomeOnHub(m_limelight, m_robotDrive));
 
     // NOTE: Doesn't have requirement of m_targeting subsystem. Could not figure out how to include
     // it. Can't add it as an additional argument for some reason, even though the function uses
