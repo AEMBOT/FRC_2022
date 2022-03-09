@@ -86,34 +86,33 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // PRIMARY CONTROLLER
+    //Homing to Hub - A Button
+    new JoystickButton(m_driverController, Button.kA.value)
+        .whenPressed(new HomeOnHub(m_limelight, m_robotDrive));
 
+    //SECONDARY CONTROLLER
     // Shooter control based on limelight distance
-    new JoystickButton(m_driverController, Button.kX.value)
+    new JoystickButton(m_secondaryController, Button.kX.value)
         .whileHeld(new TeleOpShooter(m_shooterSubsystem));
 
     // toggle the exit side of the indexer
-    new JoystickButton(m_driverController, Button.kB.value)
+    new JoystickButton(m_secondaryController, Button.kB.value)
         .whenPressed(
             new InstantCommand(() -> m_indexerSubsystem.toggleExitSide(), m_indexerSubsystem));
 
     // Toggle the intake roller
-    new JoystickButton(m_driverController, Button.kA.value)
+    new JoystickButton(m_secondaryController, Button.kA.value)
         .whenPressed(new InstantCommand(() -> m_intakeSubsystem.toggleRoller(), m_intakeSubsystem));
 
     // Move the intake lift up
-    new JoystickButton(m_driverController, Button.kLeftBumper.value)
+    new JoystickButton(m_secondaryController, Button.kLeftBumper.value)
         .whileHeld(new IntakeControl(m_intakeSubsystem, false));
 
     // Move the intake lift down
-    new JoystickButton(m_driverController, Button.kRightBumper.value)
+    new JoystickButton(m_secondaryController, Button.kRightBumper.value)
         .whileHeld(new IntakeControl(m_intakeSubsystem, true));
 
-    // SECONDARY CONTROLLER
-
-    // Align the robot with the hub
-    new JoystickButton(m_secondaryController, Button.kA.value)
-        .whenPressed(new HomeOnHub(m_limelight, m_robotDrive));
-
+    
     // NOTE: Doesn't have requirement of m_targeting subsystem. Could not figure out how to include
     // it. Can't add it as an additional argument for some reason, even though the function uses
     // "..."
