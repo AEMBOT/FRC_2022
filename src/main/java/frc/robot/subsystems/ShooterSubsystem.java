@@ -161,28 +161,12 @@ public class ShooterSubsystem extends SubsystemBase {
   public int angle = 24;
   public double slope24 = 4000 / 24;
   public double slope4 = 1400 / 4;
-  private double maxHeight;
   private int shooterAngle = 24;
   private double shooterHeight = 0.3048;
   private final double gravity = 9.8;
   private int flywheelRadius = 4;
   private double targetHeight = 2.7432;
 
-  public double getRelativeRPM(double dist) {
-    if (dist > 12) {
-      RPM = slope24 * dist;
-    } else if (dist > 24) {
-      dist = 24;
-      RPM = slope24 * dist;
-    } else {
-      RPM = slope4 * dist;
-    }
-    return RPM / maxRPM;
-  }
-
-  public void shootFlywheels(double dst) {
-    runShooter(getRelativeRPM(dst));
-  }
 
   public double RPMtoAngularVelocity(int rpm) {
     double omega = (2 * Math.PI * rpm) / 60;
@@ -201,36 +185,10 @@ public class ShooterSubsystem extends SubsystemBase {
     return rpm;
   }
 
-  public double ballMaxHeight(
-      double dist, double initalVelocity, int launchAngle, double launchHeight) {
-    double maxHeight =
-        ((dist * Math.tan(launchAngle))
-            + (0.5 * gravity * Math.pow(Math.cos(launchAngle), 2))
-            + launchHeight);
-    return maxHeight;
-  }
-
-  public double RPMforDistanceX(double dist, double launchAngle) {
-    // 2 flywheels, rpm / 2
-    // dist is limelighttargeting.getdistance()
-    double neededVelocity = Math.sqrt((dist * 9.8) / (Math.sin(2 * launchAngle)));
-    double RPM = linearToRPM(neededVelocity);
-    return RPM;
-  }
-
   public double ExtrapolateSlope(double ty1, double rpm1, double ty2, double rpm2, double findty) {
     double slope = (rpm2 - rpm1 ) /(ty2 - ty1);
     double rpm = rpm1 + slope * (findty - ty1);
 
-    // make linaer model between rpm1 and rpm2
-    /*
-    double slope1 = rpm1 / ty1;
-    double slope2 = rpm2 / ty2;
-    double extraplolate = (slope1 + slope2) / 2;*/
-    /*
-    double deltaRPM = rpm2 - rpm1;
-    double deltaTy = ty2 - ty1;
-    double slope = deltaRPM / deltaTy;*/
     return rpm;
   }
 
@@ -244,23 +202,6 @@ public class ShooterSubsystem extends SubsystemBase {
     map.put(-5.10,2885.0);
     map.put(-8.55,3100.0);
     map.put(-11.15,3325.0);
-    /*
-    map.put(-60.0, 0.3);
-    map.put(1.0, 1.0);
-    map.put(2.0, 3.0);
-    map.put(3.0, 4.0);
-    map.put(42.0, 3.0);
-    map.put(15.0, 4.0);
-    map.put(16.0, 1.0);
-    map.put(21.0, 3.0);
-    map.put(36.0, 4.0);
-    map.put(24.0, 3.0);
-    map.put(32.0, 4.0);
-    map.put(17.0, 1.0);
-    map.put(22.0, 3.0);
-    map.put(13.0, 4.0);
-    map.put(12.0, 3.0);
-    map.put(60.0, 4.0);*/
   }
 
   public double returnRPM(double ty) {

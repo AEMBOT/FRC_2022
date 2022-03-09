@@ -23,8 +23,6 @@ public class TwoBallAuto extends SequentialCommandGroup {
             new DriveStraightSmart(Units.inchesToMeters(-55.5), drive),
             new WaitCommand(2),
             // intake
-            new DriveStraightSmart(Units.inchesToMeters(84), drive),
-            new WaitCommand(2),
 
             // Align with the hub
             new HomeOnHub(limelight, drive),

@@ -29,13 +29,12 @@ public class FiveBallAuto extends SequentialCommandGroup {
             new WaitCommand(2),
 
             //--intake here
-            
+            //--shoot here
+
             // 2
             //drive forwards to line up shot
             new DriveStraightSmart(Units.inchesToMeters(84), drive),
             new WaitCommand(2),
-
-            //--shoot here
             
             // turn 1
             //rotate to align with 2 far balls
