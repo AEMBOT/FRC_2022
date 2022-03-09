@@ -46,22 +46,32 @@ public class HomeOnHub extends CommandBase {
     double hubAngle = m_limelight.getX();
     double turnPower;
 
-    // Use the profile if it hasn't finished
-    if (!m_profileFinished) {
-      double velocitySetpoint = m_turnProfile.getSetpoint().velocity;
-      double output = m_turnProfile.calculate(hubAngle);
-      turnPower = velocitySetpoint + output;
+    //Snap to target if it has been found
+    if (m_limelight.hasValidTarget()){
+      // Use the profile if it hasn't finished
+      if (!m_profileFinished) {
+        double velocitySetpoint = m_turnProfile.getSetpoint().velocity;
+        double output = m_turnProfile.calculate(hubAngle);
+        turnPower = velocitySetpoint + output;
 
-      m_profileFinished = m_turnProfile.atSetpoint();
+        m_profileFinished = m_turnProfile.atSetpoint();
+      }
+
+      // Correct any error accumulated in profiled motion with a pure PID controller
+      else {
+        double output = m_turnPID.calculate(hubAngle);
+        turnPower = m_feedforward.calculate(output);
+      }
+
+      m_drive.arcadeDrive(0, turnPower, false);
     }
 
-    // Correct any error accumulated in profiled motion with a pure PID controller
+    //If a target is not found, spin until one is
     else {
-      double output = m_turnPID.calculate(hubAngle);
-      turnPower = m_feedforward.calculate(output);
+      m_drive.arcadeDrive(0, 0.3, false);
     }
 
-    m_drive.arcadeDrive(0, turnPower, false);
+    
   }
 
   @Override
