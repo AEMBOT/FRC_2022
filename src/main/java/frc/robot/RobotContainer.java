@@ -4,25 +4,22 @@
 
 package frc.robot;
 
-import javax.swing.plaf.synth.Region;
-
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.ClimbManual;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.TeleOpShooter;
-import frc.robot.commands.autonomous.TwoBallAuto;
 import frc.robot.commands.autonomous.FiveBallAuto;
+import frc.robot.commands.autonomous.TwoBallAuto;
 import frc.robot.commands.drive.DefaultDrive;
-import frc.robot.commands.drive.DriveStraightProfiled;
 import frc.robot.commands.drive.HomeOnHub;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -42,6 +39,7 @@ public class RobotContainer {
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final IndexerSubsystem m_indexerSubsystem = new IndexerSubsystem();
   private final LimeLightTargeting m_limelight = new LimeLightTargeting();
+  private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
 
   //Automodes - if you add more here, add them to the chooser in the container
   private TwoBallAuto m_autoCommand1 = new TwoBallAuto(m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
@@ -68,6 +66,9 @@ public class RobotContainer {
     m_robotDrive.setDefaultCommand(
         new DefaultDrive(
             m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
+
+    m_climberSubsystem.setDefaultCommand(
+        new ClimbManual(m_climberSubsystem, m_secondaryController::getLeftBumperPressed));            
 
     // Tried to write this without creating a separate file, but failed.
     // Please correct as some point

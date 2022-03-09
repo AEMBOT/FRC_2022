@@ -15,6 +15,19 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public final class ClimberConstants {
+    public static final int ClimbSolenoidLeftExtend = 0;
+    public static final int ClimbSolenoidLeftRetract = 1;
+    public static final int ClimbSolenoidLeftChoke = 2;
+  
+    public static final int ClimbSolenoidRightExtend = 3;
+    public static final int ClimbSolenoidRightRetract = 4;
+    public static final int ClimbSolenoidRightChoke = 5;
+  
+    public static final int AngleSolenoidExtend = 7;
+    public static final int AngleSolenoidRetract = 6;
+  }
+
   public static final class ShooterConstants {
     public static final int LeftMotorCANId = 13;
     public static final int RightMotorCANId = 14;
