@@ -44,8 +44,9 @@ public class DefaultDrive extends CommandBase {
     forwardPowerPrev = forwardPower;
     SmartDashboard.putNumber("power", forwardPower);
     
-    double rotationPower = speedMultiplier * ((MathUtil.applyDeadband(m_right.getAsDouble(), deadzone)) / steeringDenominator);
+    double rotationPower = speedMultiplier * ((MathUtil.applyDeadband(-m_right.getAsDouble(), deadzone)) / steeringDenominator);
     rotationPower = rotationPower * rampNew + rotationPowerPrev + rampOld;
+    //rotationPowerPrev = rotationPower;
     SmartDashboard.putNumber("rotation", rotationPower);
 
     m_drive.arcadeDrive(forwardPower, rotationPower, true);

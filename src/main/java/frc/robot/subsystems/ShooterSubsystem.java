@@ -193,10 +193,12 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void tyRPMMap() {
-    map.put(-0.266,2650.0);
-    map.put(-5.10,2885.0);
-    map.put(-8.55,3100.0);
-    map.put(-11.15,3325.0);
+    map.put(13.3, 2468.0);
+    map.put(9.0, 2680.0);
+    map.put(3.0, 2960.0);
+    map.put(-0.2, 3205.0);
+    map.put(-6.0, 3900.0);
+
   }
 
   public double returnRPM(double ty) {
@@ -214,7 +216,7 @@ public class ShooterSubsystem extends SubsystemBase {
       below = -1;
     }
 
-    double rpm = LinearInterpolation(above, map.get(above), below, map.get(below),ty);
+    double rpm = 400 + LinearInterpolation(above, map.get(above), below, map.get(below),ty);
     return rpm;
   }
 
@@ -229,6 +231,7 @@ public class ShooterSubsystem extends SubsystemBase {
       rpm = 0;
     }
     m_pidController.setReference(rpm, CANSparkMax.ControlType.kVelocity);
+    SmartDashboard.putNumber("RPM", rpm);
   }
 
   public void stopShooter() {

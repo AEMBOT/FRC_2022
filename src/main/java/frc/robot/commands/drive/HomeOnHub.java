@@ -66,7 +66,7 @@ public class HomeOnHub extends CommandBase {
       m_drive.arcadeDrive(0, turnPower, false);
     } else {
       //If a target is not found, spin until one is 
-      m_drive.arcadeDrive(0, 0.3, false);
+      m_drive.arcadeDrive(0, 0.15, false);
     }
 
     
