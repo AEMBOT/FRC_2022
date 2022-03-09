@@ -68,7 +68,7 @@ public class RobotContainer {
             m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
 
     m_climberSubsystem.setDefaultCommand(
-        new ClimbManual(m_climberSubsystem, m_secondaryController::getLeftBumperPressed));            
+        new ClimbManual(m_climberSubsystem, m_secondaryController::getYButtonPressed));            
 
     // Tried to write this without creating a separate file, but failed.
     // Please correct as some point
@@ -111,9 +111,8 @@ public class RobotContainer {
     // Move the intake lift down
     new JoystickButton(m_secondaryController, Button.kRightBumper.value)
         .whileHeld(new IntakeControl(m_intakeSubsystem, true));
-
     
-    // NOTE: Doesn't have requirement of m_targeting subsystem. Could not figure out how to include
+        // NOTE: Doesn't have requirement of m_targeting subsystem. Could not figure out how to include
     // it. Can't add it as an additional argument for some reason, even though the function uses
     // "..."
     // (variable-length arguments)
