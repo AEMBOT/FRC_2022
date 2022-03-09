@@ -43,24 +43,23 @@ public class RobotContainer {
   private final IndexerSubsystem m_indexerSubsystem = new IndexerSubsystem();
   private final LimeLightTargeting m_limelight = new LimeLightTargeting();
 
-  //TODO: Replace these with short and long autonomous modes
+  //Automodes - if you add more here, add them to the chooser in the container
   private TwoBallAuto m_autoCommand1 = new TwoBallAuto(m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
   private FiveBallAuto m_autoCommand2 = new FiveBallAuto(m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
 
-  //sets up driver controlled auto choices
+  //Sets up driver controlled auto choices
   SendableChooser<Command> m_chooser = new SendableChooser<>();
 
   // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);
   private final XboxController m_secondaryController = new XboxController(1);
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /** The container for the robot. Contains subsystems, IO devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
 
-
-    //set up chooser
+    //Set up chooser
     m_chooser.setDefaultOption("Two Ball Auto", m_autoCommand1);
     m_chooser.addOption("Five Ball Auto*", m_autoCommand2);
     SmartDashboard.putData(m_chooser);
