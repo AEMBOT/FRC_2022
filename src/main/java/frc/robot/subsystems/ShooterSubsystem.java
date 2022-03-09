@@ -185,16 +185,11 @@ public class ShooterSubsystem extends SubsystemBase {
     return rpm;
   }
 
-  public double ExtrapolateSlope(double ty1, double rpm1, double ty2, double rpm2, double findty) {
+  public double LinearInterpolation(double ty1, double rpm1, double ty2, double rpm2, double findty) {
     double slope = (rpm2 - rpm1 ) /(ty2 - ty1);
     double rpm = rpm1 + slope * (findty - ty1);
 
     return rpm;
-  }
-
-  public double rpmFromSlope(double ty, double slope) {
-    double desiredRPM = slope * ty;
-    return desiredRPM;
   }
 
   public void tyRPMMap() {
@@ -219,7 +214,7 @@ public class ShooterSubsystem extends SubsystemBase {
       below = -1;
     }
 
-    double rpm = ExtrapolateSlope(above, map.get(above), below, map.get(below),ty);
+    double rpm = LinearInterpolation(above, map.get(above), below, map.get(below),ty);
     return rpm;
   }
 
