@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -19,6 +21,11 @@ public class IntakeSubsystem extends SubsystemBase {
   private final ClosedLoopSparkMax indexEntryRoller =
       new ClosedLoopSparkMax(
           Constants.IntakeConstants.kIndexerLowerBottomBeltPort, MotorType.kBrushless);
+
+  // Encoders
+  private final RelativeEncoder m_liftLeftEncoder = liftLeft.getEncoder();
+  private final RelativeEncoder m_liftRightEncoder = liftRight.getEncoder();
+  private final RelativeEncoder m_indexEntryEncoder = indexEntryRoller.getEncoder();
 
   // whether the subsystem is successfully homed to its max point
   private boolean homingComplete = false;
@@ -45,7 +52,8 @@ public class IntakeSubsystem extends SubsystemBase {
     liftLeft.follow(liftRight, true);
 
     // set the position conversion factors for the lift encoders
-    liftRight.getEncoder().setPositionConversionFactor(factor);
+    m_liftLeftEncoder.setPositionConversionFactor(factor);
+    m_liftRightEncoder.setPositionConversionFactor(factor);
   }
 
   /** set the intake mechanism to run at the target RPM */
@@ -70,10 +78,23 @@ public class IntakeSubsystem extends SubsystemBase {
 
   /** sets the range of motion for the intake lift. */
   public void setHome(double min, double max) {
-
     if (homingComplete) {
       System.out.println("Intake being re-homed!");
     }
+
+    // Enable forward and reverse soft limits for the lift motors
+    liftLeft.enableSoftLimit(SoftLimitDirection.kForward, true);
+    liftRight.enableSoftLimit(SoftLimitDirection.kForward, true);
+
+    liftLeft.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    liftRight.enableSoftLimit(SoftLimitDirection.kReverse, true);
+
+    // Set the soft limits for the lift motors
+    liftLeft.setSoftLimit(SoftLimitDirection.kForward, (float) max);
+    liftRight.setSoftLimit(SoftLimitDirection.kForward, (float) max);
+
+    liftLeft.setSoftLimit(SoftLimitDirection.kReverse, (float) min);
+    liftRight.setSoftLimit(SoftLimitDirection.kReverse, (float) min);
 
     m_lowestAllowedPosition = min;
     m_highestAllowedPosition = max;
