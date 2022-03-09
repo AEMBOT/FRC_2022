@@ -48,6 +48,9 @@ public class IntakeSubsystem extends SubsystemBase {
     // upper/inner roller follows the outside
     indexEntryRoller.follow(intakeRoller);
 
+    liftLeft.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    liftRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    
     // set the left side to follow the right side, invert=false
     liftLeft.follow(liftRight, true);
 
