@@ -16,9 +16,9 @@ public class DefaultDrive extends CommandBase {
   private final DoubleSupplier m_right;
 
   //ramping constants
-  // Creates a SlewRateLimiter that limits the rate of change of the signal to 0.5 units per second
-  SlewRateLimiter forwardSlewLimiter = new SlewRateLimiter(1.0);
-  SlewRateLimiter turningSlewLimiter = new SlewRateLimiter(1.0);
+  // Creates a SlewRateLimiter that limits the rate of change of the signal to X.X units per second
+  SlewRateLimiter forwardSlewLimiter = new SlewRateLimiter(2.0);
+  SlewRateLimiter turningSlewLimiter = new SlewRateLimiter(2.0);
 
   // Drive at full speed for driver practice
   private double speedMultiplier = 1.0;
