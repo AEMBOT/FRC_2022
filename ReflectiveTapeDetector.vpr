@@ -39,7 +39,7 @@ invert_hue:0
 multigroup_max:3
 multigroup_min:1
 multigroup_rejector:1
-pipeline_led_enabled:1
+pipeline_led_enabled:0
 pipeline_led_power:100
 pipeline_res:2
 pipeline_type:0
