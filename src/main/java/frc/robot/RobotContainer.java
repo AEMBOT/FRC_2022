@@ -19,6 +19,7 @@ import frc.robot.commands.autonomous.FiveBallAuto;
 import frc.robot.commands.autonomous.TwoBallAuto;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.drive.HomeOnHub;
+import frc.robot.commands.intake.RunIntake;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
@@ -100,9 +101,9 @@ public class RobotContainer {
         .whenPressed(
             new InstantCommand(() -> m_indexerSubsystem.toggleExitSide(), m_indexerSubsystem));
 
-    // Toggle the intake roller
+    // Run the intake roller when A is held
     new JoystickButton(m_secondaryController, Button.kA.value)
-        .whenPressed(new InstantCommand(() -> m_intakeSubsystem.toggleRoller(), m_intakeSubsystem));
+        .whileHeld(new RunIntake(m_intakeSubsystem));
 
     // Move the intake lift up
     new JoystickButton(m_secondaryController, Button.kLeftBumper.value)

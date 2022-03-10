@@ -118,7 +118,7 @@ public class ShooterSubsystem extends SubsystemBase {
    * @return
    */
   public double getFlywheelRPM() {
-    return flywheelMotor.getEncoder().getVelocity();
+    return flywheelEncoder.getVelocity();
   }
 
   /**

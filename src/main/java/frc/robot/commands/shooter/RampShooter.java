@@ -15,6 +15,7 @@ public class RampShooter extends CommandBase {
 
     public RampShooter(ShooterSubsystem shooter) {
         m_shooter = shooter;
+        addRequirements(m_shooter);
     }
 
     @Override

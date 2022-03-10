@@ -65,7 +65,7 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeRoller.setVelocity(rpm * kGearRatio);
   }
 
-  private void runRollerAtMaxPower() {
+  public void runRollerAtMaxPower() {
     intakeRoller.set(0.75);
   }
 
