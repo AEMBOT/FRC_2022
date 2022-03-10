@@ -5,6 +5,7 @@ import static frc.robot.Constants.DriveConstants.TurnPID.*;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.subsystems.DriveSubsystem;
@@ -15,6 +16,7 @@ public class AlignWithHub extends ProfiledPIDCommand {
       new SimpleMotorFeedforward(kSVolts, kVVoltDegreesPerSecond);
   private DriveSubsystem m_drive;
   private LimeLightTargeting m_limelight;
+  private final Timer m_startupTimer = new Timer();
 
   public AlignWithHub(DriveSubsystem drive, LimeLightTargeting limelight) {
     super(
@@ -43,6 +45,7 @@ public class AlignWithHub extends ProfiledPIDCommand {
     // Make sure to reset the heading before resetting the internal PID controller
     m_drive.resetHeading();
     m_limelight.turnOnLED();
+    m_startupTimer.start();
     super.initialize();
   }
 
@@ -61,11 +64,13 @@ public class AlignWithHub extends ProfiledPIDCommand {
   @Override
   public void end(boolean _interrupted) {
     m_limelight.turnOffLED();
+    m_startupTimer.stop();
+    m_startupTimer.reset();
   }
 
   @Override
   public boolean isFinished() {
     // The command finishes once the robot is done turning
-    return m_controller.atGoal();
+    return m_startupTimer.get() > 0.2 && m_controller.atGoal();
   }
 }

@@ -128,7 +128,7 @@ public final class Constants {
       private static final double kSecondsPerRotation = .85; // works for dead-er battery
       private static final double kTestPower = 0.4;
 
-      public static final double kSVolts = 0.045;
+      public static final double kSVolts = 0.050;
       public static final double kVVoltDegreesPerSecond =
           (kTestPower - kSVolts) / (356.494 / kSecondsPerRotation);
 

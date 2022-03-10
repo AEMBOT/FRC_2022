@@ -71,6 +71,7 @@ public class ShooterSubsystem extends SubsystemBase {
       //m_pidController.setSmartMotionAllowedClosedLoopError(ShooterConstants.allowedError, smartMotionSlot);
 
       limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+      tx = limelightTable.getEntry("tx");
       ty = limelightTable.getEntry("ty");
     }
 

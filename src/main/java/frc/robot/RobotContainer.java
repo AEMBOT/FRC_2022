@@ -17,9 +17,13 @@ import frc.robot.commands.IntakeControl;
 import frc.robot.commands.TeleOpShooter;
 import frc.robot.commands.autonomous.FiveBallAuto;
 import frc.robot.commands.autonomous.TwoBallAuto;
+import frc.robot.commands.drive.TurnToSupplierAngle;
 import frc.robot.commands.drive.AlignWithHub;
+import frc.robot.commands.drive.AlignWithHubSmart;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.drive.HomeOnHub;
+import frc.robot.commands.drive.TurnToAngleProfiled;
+import frc.robot.commands.drive.TurnToAngleSmart;
 import frc.robot.commands.intake.RunIntake;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -90,7 +94,8 @@ public class RobotContainer {
     // PRIMARY CONTROLLER
     //Homing to Hub - A Button
     new JoystickButton(m_driverController, Button.kA.value)
-        .whenPressed(new AlignWithHub(m_robotDrive, m_limelight).withTimeout(0.5));
+        .whenPressed(new AlignWithHubSmart(m_limelight, m_robotDrive));
+        // .whenPressed(new AlignWithHub(m_robotDrive, m_limelight).withTimeout(0.5));
 
     //SECONDARY CONTROLLER
     // Shooter control based on limelight distance
