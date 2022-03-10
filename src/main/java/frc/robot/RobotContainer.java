@@ -17,7 +17,6 @@ import frc.robot.commands.IntakeControl;
 import frc.robot.commands.TeleOpShooter;
 import frc.robot.commands.autonomous.FiveBallAuto;
 import frc.robot.commands.autonomous.TwoBallAuto;
-import frc.robot.commands.drive.TurnToSupplierAngle;
 import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.AlignWithHubSmart;
 import frc.robot.commands.drive.DefaultDrive;
@@ -74,7 +73,7 @@ public class RobotContainer {
             m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
 
     m_climberSubsystem.setDefaultCommand(
-        new ClimbManual(m_climberSubsystem, m_secondaryController::getYButtonPressed));            
+        new ClimbManual(m_climberSubsystem, m_secondaryController::getYButtonPressed));
 
     // Tried to write this without creating a separate file, but failed.
     // Please correct as some point
@@ -118,19 +117,6 @@ public class RobotContainer {
     // Move the intake lift down
     new JoystickButton(m_secondaryController, Button.kRightBumper.value)
         .whileHeld(new IntakeControl(m_intakeSubsystem, true));
-    
-        // NOTE: Doesn't have requirement of m_targeting subsystem. Could not figure out how to include
-    // it. Can't add it as an additional argument for some reason, even though the function uses
-    // "..."
-    // (variable-length arguments)
-    /*
-    RunCommand targetCommand = new RunCommand(() -> m_shooterSubsystem.shootFlywheels(m_targeting.getDistance()));
-    targetCommand.addRequirements(m_targeting,m_shooterSubsystem);
-
-    new JoystickButton(m_Controller, XboxController.Button.kA.value).whileHeld(targetCommand);
-
-    */
-
   }
 
   /**
@@ -139,8 +125,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // Not sure whether we want to leave this here or not. Test with the joystick first
-    // m_autoCommand = new TurnToAngleProfiled(10, m_robotDrive);
+    // Returns the autonomous command selected on the dashboard
     return m_chooser.getSelected();
   }
 }

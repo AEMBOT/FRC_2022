@@ -5,10 +5,25 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 import static frc.robot.Constants.DriveConstants.TurnPID.*;
 
+import java.util.function.DoubleSupplier;
+
 public class TurnToAngleSmart extends CommandBase {
   private DriveSubsystem m_drive;
+  private DoubleSupplier m_getAngle;
   private double m_left;
   private double m_right;
+
+  /**
+   * A command to drive a distance using Smart Motion on the Spark Maxes.
+   *
+   * @param getAngle The method that supplies the goal angle
+   * @param drive The robot's DriveSubsystem
+   */
+  public TurnToAngleSmart(DoubleSupplier getAngle, DriveSubsystem drive) {
+    m_getAngle = getAngle;
+    m_drive = drive;
+    addRequirements(m_drive);
+  }
 
   /**
    * A command to drive a distance using Smart Motion on the Spark Maxes.
@@ -17,13 +32,7 @@ public class TurnToAngleSmart extends CommandBase {
    * @param drive The robot's DriveSubsystem
    */
   public TurnToAngleSmart(double angle, DriveSubsystem drive) {
-    //TODO: make this a constant
-    m_left = angle * 0.0055;
-    m_right = -m_left;
-
-    m_drive = drive;
-
-    addRequirements(m_drive);
+    this(() -> angle, drive);
   }
 
   @Override
@@ -33,6 +42,11 @@ public class TurnToAngleSmart extends CommandBase {
 
     // Reset the encoders & heading before moving
     m_drive.resetHeading();
+
+    // Set the target positions for the motors from the supplier method
+    double angle = m_getAngle.getAsDouble();
+    m_left = angle * kMetersPerDegree;
+    m_right = -m_left;
   }
 
   @Override

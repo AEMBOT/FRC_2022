@@ -120,6 +120,9 @@ public final class Constants {
       public static final double kI = 0;
       public static final double kD = 0;
 
+      // For use with encoder-based turning
+      public static final double kMetersPerDegree = 0.0055;
+
       // Profiling
       public static final double kMaxVelocityDegreesPerSecond = 360 / 5;
       public static final double kMaxAccelerationDegreesPerSecondSquared = 120;

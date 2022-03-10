@@ -13,7 +13,7 @@ public class AlignWithHubSmart extends SequentialCommandGroup {
         addCommands(
             new InstantCommand(limelight::turnOnLED),
             new WaitCommand(0.2),
-            new TurnToSupplierAngle(limelight::getX, drive),
+            new TurnToAngleSmart(limelight::getX, drive),
             new InstantCommand(limelight::turnOffLED)
         );
     }
