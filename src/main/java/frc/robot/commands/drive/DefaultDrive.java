@@ -19,12 +19,10 @@ public class DefaultDrive extends CommandBase {
 
   // Drive at full speed for driver practice
   private double speedMultiplier = 1.0;
+  private double rotationMultiplier = 0.6;
 
   //Deadzone, choose number from range (0,1)
   private double deadzone = 0.1;
-
-  //Steering denominator
-  private double steeringDenominator = 2;
 
   public DefaultDrive(DriveSubsystem drive, DoubleSupplier left, DoubleSupplier right) {
     m_drive = drive;
@@ -44,9 +42,7 @@ public class DefaultDrive extends CommandBase {
     forwardPowerPrev = forwardPower;
     SmartDashboard.putNumber("power", forwardPower);
     
-    double rotationPower = speedMultiplier * ((MathUtil.applyDeadband(-m_right.getAsDouble(), deadzone)) / steeringDenominator);
-    rotationPower = rotationPower * rampNew + rotationPowerPrev + rampOld;
-    //rotationPowerPrev = rotationPower;
+    double rotationPower = rotationMultiplier * (MathUtil.applyDeadband(-m_right.getAsDouble(), deadzone));
     SmartDashboard.putNumber("rotation", rotationPower);
 
     m_drive.arcadeDrive(forwardPower, rotationPower, true);
