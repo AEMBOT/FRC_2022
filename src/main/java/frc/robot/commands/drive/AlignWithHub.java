@@ -14,6 +14,7 @@ public class AlignWithHub extends ProfiledPIDCommand {
   private static final SimpleMotorFeedforward m_feedforward =
       new SimpleMotorFeedforward(kSVolts, kVVoltDegreesPerSecond);
   private DriveSubsystem m_drive;
+  private LimeLightTargeting m_limelight;
 
   public AlignWithHub(DriveSubsystem drive, LimeLightTargeting limelight) {
     super(
@@ -30,6 +31,7 @@ public class AlignWithHub extends ProfiledPIDCommand {
         drive);
 
     m_drive = drive;
+    m_limelight = limelight;
 
     // Set the controller tolerance - the delta tolerance ensures the robot is stationary at the
     // setpoint before it is considered as having reached the reference
@@ -40,6 +42,7 @@ public class AlignWithHub extends ProfiledPIDCommand {
   public void initialize() {
     // Make sure to reset the heading before resetting the internal PID controller
     m_drive.resetHeading();
+    m_limelight.turnOnLED();
     super.initialize();
   }
 
@@ -53,6 +56,11 @@ public class AlignWithHub extends ProfiledPIDCommand {
         "Profiled turn power", m_feedforward.calculate(getController().getSetpoint().velocity));
 
     super.execute();
+  }
+
+  @Override
+  public void end(boolean _interrupted) {
+    m_limelight.turnOffLED();
   }
 
   @Override
