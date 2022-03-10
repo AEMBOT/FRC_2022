@@ -1,10 +1,12 @@
 package frc.robot.commands.drive;
 
+import java.util.function.DoubleSupplier;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
-import java.util.function.DoubleSupplier;
-import edu.wpi.first.math.MathUtil;
 
 public class DefaultDrive extends CommandBase {
   private final DriveSubsystem m_drive;
@@ -14,8 +16,9 @@ public class DefaultDrive extends CommandBase {
   private final DoubleSupplier m_right;
 
   //ramping constants
-  private final double rampNew = 0.9;
-  private final double rampOld = 1 - rampNew;
+  // Creates a SlewRateLimiter that limits the rate of change of the signal to 0.5 units per second
+  SlewRateLimiter forwardSlewLimiter = new SlewRateLimiter(1.0);
+  SlewRateLimiter turningSlewLimiter = new SlewRateLimiter(1.0);
 
   // Drive at full speed for driver practice
   private double speedMultiplier = 1.0;
@@ -38,11 +41,12 @@ public class DefaultDrive extends CommandBase {
   public void execute() {
     // Log the powers to the dashboard
     double forwardPower = speedMultiplier * (MathUtil.applyDeadband(-m_left.getAsDouble(), deadzone));
-    forwardPower = forwardPower * rampNew + forwardPowerPrev * rampOld;
-    forwardPowerPrev = forwardPower;
+    // Slew filter
+    forwardPower = forwardSlewLimiter.calculate(forwardPower);
     SmartDashboard.putNumber("power", forwardPower);
     
     double rotationPower = rotationMultiplier * (MathUtil.applyDeadband(-m_right.getAsDouble(), deadzone));
+    rotationPower = turningSlewLimiter.calculate(rotationPower);
     SmartDashboard.putNumber("rotation", rotationPower);
 
     m_drive.arcadeDrive(forwardPower, rotationPower, true);
