@@ -96,8 +96,6 @@ public class ClimbManual extends SequentialCommandGroup {
         // Choose to not angle and extend at the same time for right now
         new InstantCommand(climber::setExtending, climber),
 
-        // hooks are offset, aligned for second bar
-
         // continue to send main cylinders up (to full length)
         new WaitUntilCommand(condition),
         new InstantCommand(climber::setCoasting, climber),

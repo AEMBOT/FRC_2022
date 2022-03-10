@@ -23,14 +23,19 @@ public class ClimbTimed extends SequentialCommandGroup {
 
         // send hooks up
         new InstantCommand(climber::setExtending, climber),
-        new WaitCommand(2),
-        new InstantCommand(climber::setCoasting, climber),
-        // retract hooks
-        new WaitUntilCommand(condition_button_press),
-        new InstantCommand(climber::setRetracting, climber),
-        new WaitCommand(1.17),
+        new WaitCommand(1.5),
         new InstantCommand(climber::setCoasting, climber),
         new WaitCommand(3),
+
+        new WaitUntilCommand(condition_button_press),
+
+        // retract hooks
+        new InstantCommand(climber::setRetracting, climber),
+        new WaitCommand(1.5),
+        new InstantCommand(climber::setCoasting, climber),
+        new WaitCommand(3),
+
+        new WaitUntilCommand(condition_button_press),
 
         // send hooks up
         new InstantCommand(climber::setExtending, climber),
@@ -38,13 +43,15 @@ public class ClimbTimed extends SequentialCommandGroup {
         // ---attach chin here
         // ---robot should now be hanging from first bar
         // But do it slowly-ish to prevent bouncing!
-        new WaitCommand(0.5),
+        new WaitCommand(0.15),
         new InstantCommand(climber::setCoasting, climber),
+
         new WaitUntilCommand(condition_button_press),
 
         // angle hooks
         // start angling a little after main cylinders start extending (want the hooks to disengage)
         new InstantCommand(climber::angleMainCylinders, climber),
+
         new WaitUntilCommand(condition_button_press),
 
         // Choose to not angle and extend at the same time for right now
@@ -57,16 +64,22 @@ public class ClimbTimed extends SequentialCommandGroup {
         new InstantCommand(climber::setCoasting, climber),
         new WaitCommand(0.7),
 
-        // adjust angle to attatch hooks to second bar
+        new WaitUntilCommand(condition_button_press),
+
+        // adjust angle to attach hooks to second bar
         new InstantCommand(climber::verticalMainCylinders, climber),
-        // give them a little time to extend enough
-        new WaitCommand(0.75),
+        // give them a little time to vertical enough
+
+        new WaitUntilCommand(condition_button_press),
 
         // retract hooks halfway
         new InstantCommand(climber::setRetracting, climber),
-        new WaitCommand(1.5),
+        new WaitCommand(1.0),
         new InstantCommand(climber::setCoasting, climber),
         new WaitCommand(0.35),
+
+        new WaitUntilCommand(condition_button_press),
+
         // retract hooks fully
         new InstantCommand(climber::setRetracting, climber),
         new WaitCommand(1.5),
@@ -74,6 +87,7 @@ public class ClimbTimed extends SequentialCommandGroup {
         new WaitCommand(0.35),
 
         /// REPEATED FROM ABOVE, except for slight "wait" differences
+        new WaitUntilCommand(condition_button_press),
 
         // send hooks up
         new InstantCommand(climber::setExtending, climber),
@@ -93,20 +107,19 @@ public class ClimbTimed extends SequentialCommandGroup {
         // Choose to not angle and extend at the same time for right now
         new InstantCommand(climber::setExtending, climber),
 
-        // hooks are offset, aligned for second bar
-
-        // continue to send main cylinders up (to full length)
-        new WaitCommand(1),
+          // continue to send main cylinders up (to full length)
+        new WaitCommand(1.8),
         new InstantCommand(climber::setCoasting, climber),
         new WaitCommand(0.3),
 
         // Wait for swinging to stop?? Confirm next action with button press
         new WaitUntilCommand(condition_button_press),
 
-        // adjust angle to attatch hooks to second bar
+        // adjust angle to attach hooks to second bar
         new InstantCommand(climber::verticalMainCylinders, climber),
         // give them a little time to extend enough
-        new WaitCommand(0.5),
+
+        new WaitUntilCommand(condition_button_press),
 
         // retract hooks halfway
         new InstantCommand(climber::setRetracting, climber),
