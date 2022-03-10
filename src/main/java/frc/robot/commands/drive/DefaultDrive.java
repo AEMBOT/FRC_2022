@@ -39,7 +39,7 @@ public class DefaultDrive extends CommandBase {
   @Override
   public void execute() {
     // Log the powers to the dashboard
-    double forwardPower = speedMultiplier * (MathUtil.applyDeadband(m_left.getAsDouble(), deadzone));
+    double forwardPower = speedMultiplier * (MathUtil.applyDeadband(-m_left.getAsDouble(), deadzone));
     forwardPower = forwardPower * rampNew + forwardPowerPrev * rampOld;
     forwardPowerPrev = forwardPower;
     SmartDashboard.putNumber("power", forwardPower);

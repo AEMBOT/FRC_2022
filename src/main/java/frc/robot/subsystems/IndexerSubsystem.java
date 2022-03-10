@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorSensorV3;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.I2C;
@@ -35,6 +36,9 @@ public class IndexerSubsystem extends SubsystemBase {
             Constants.IntakeConstants.kIndexerUpperBottomBeltPort, MotorType.kBrushless);
     m_upperBelt =
         new ClosedLoopSparkMax(Constants.IntakeConstants.kIndexerTopBeltPort, MotorType.kBrushless);
+
+    m_lowerBelt.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    m_upperBelt.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
     m_lowerBelt.follow(m_upperBelt, true);
   }
