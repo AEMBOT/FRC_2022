@@ -98,6 +98,7 @@ public class ShooterSubsystem extends SubsystemBase {
     double y = ty.getDouble(0.0);
 
     SmartDashboard.putNumber("LimelightY", y);
+    SmartDashboard.putNumber("LimelightX", tx.getDouble(0.0));
 
     double fwhlM1ActualRpm = flywheelEncoder.getVelocity();
     double fwhlM2ActualRpm = flywheel2Encoder.getVelocity();
