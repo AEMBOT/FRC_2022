@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.ClimbManual;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.autonomous.FiveBallAuto;
+import frc.robot.commands.autonomous.TaxiThenShoot;
 import frc.robot.commands.autonomous.TwoBallAuto;
 import frc.robot.commands.drive.AlignWithHubSmart;
 import frc.robot.commands.drive.DefaultDrive;
@@ -41,16 +42,17 @@ public class RobotContainer {
   private final LimeLightTargeting m_limelight = new LimeLightTargeting();
   private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
 
-  //Automodes - if you add more here, add them to the chooser in the container
-  private TwoBallAuto m_autoCommand1 = new TwoBallAuto(m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
-  private FiveBallAuto m_autoCommand2 = new FiveBallAuto(m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
-
-  //Sets up driver controlled auto choices
-  SendableChooser<Command> m_chooser = new SendableChooser<>();
-
   // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);
   private final XboxController m_secondaryController = new XboxController(1);
+
+  //Automodes - if you add more here, add them to the chooser in the container
+  private TwoBallAuto m_autoCommand1 = new TwoBallAuto(m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
+  private FiveBallAuto m_autoCommand2 = new FiveBallAuto(m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
+  private TaxiThenShoot m_taxiThenShoot = new TaxiThenShoot(m_robotDrive, m_indexerSubsystem, m_shooterSubsystem, m_limelight, m_driverController);
+
+  //Sets up driver controlled auto choices
+  SendableChooser<Command> m_chooser = new SendableChooser<>();
 
   /** The container for the robot. Contains subsystems, IO devices, and commands. */
   public RobotContainer() {
@@ -59,7 +61,9 @@ public class RobotContainer {
 
     //Set up chooser
     m_chooser.setDefaultOption("Two Ball Auto", m_autoCommand1);
+    m_chooser.addOption("Taxi & Shoot", m_taxiThenShoot);
     m_chooser.addOption("Five Ball Auto*", m_autoCommand2);
+
     SmartDashboard.putData(m_chooser);
 
     // Set default drivetrain command to arcade driving (happens during teleop)
