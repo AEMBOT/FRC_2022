@@ -1,9 +1,11 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.hardware.ClosedLoopSparkMax;
@@ -121,10 +123,10 @@ public class IntakeSubsystem extends SubsystemBase {
     liftRight.setSoftLimit(SoftLimitDirection.kReverse, min);
   }
 
-  public boolean isStopped() {
-    final double minVelocityTolerance = 0;
-    return (Math.abs(liftLeft.getEncoder().getVelocity()) <= 0)
-        || (Math.abs(liftRight.getEncoder().getVelocity()) <= 0);
+  public boolean isAtHardLimit() {
+    SmartDashboard.putNumber("Lift Current Draw", liftLeft.getOutputCurrent());
+    return (liftLeft.getOutputCurrent() > Constants.IntakeConstants.kMaxExpectedCurrent ||
+       liftRight.getOutputCurrent() > Constants.IntakeConstants.kMaxExpectedCurrent);
   }
 
   public void setLiftPower(double power) {

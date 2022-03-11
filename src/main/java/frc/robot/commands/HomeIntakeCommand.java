@@ -5,14 +5,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.IntakeSubsystem;
 
 /** Homes the intake to its "max" point. */
 public class HomeIntakeCommand extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final IntakeSubsystem m_subsystem;
-
-  private final double kLiftRangeOfMotion = 50;
 
   /**
    * Creates a new HomeIntakeCommand.
@@ -40,7 +39,7 @@ public class HomeIntakeCommand extends CommandBase {
   public void end(boolean interrupted) {
     if (!interrupted) {
       double max = m_subsystem.getLiftPosition();
-      double min = max - kLiftRangeOfMotion;
+      double min = max - Constants.IntakeConstants.kLiftRangeOfMotion;
       m_subsystem.setHome(min, max);
     }
 
@@ -50,7 +49,6 @@ public class HomeIntakeCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    boolean isStopped = m_subsystem.isStopped();
-    return isStopped;
+    return m_subsystem.isAtHardLimit();
   }
 }

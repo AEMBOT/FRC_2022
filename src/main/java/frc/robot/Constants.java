@@ -50,6 +50,9 @@ public final class Constants {
     public static final int kLiftRightPort = 8;
     public static final int kRollerPort = 9;
 
+    public static final double kMaxExpectedCurrent = 0.1;
+    public static final double kLiftRangeOfMotion = 50;
+
     public static final int kIndexerLowerBottomBeltPort = 11;
     public static final int kIndexerUpperBottomBeltPort = 12;
 
