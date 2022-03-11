@@ -10,24 +10,15 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.ClimbManual;
 import frc.robot.commands.IntakeControl;
-import frc.robot.commands.TeleOpShooter;
 import frc.robot.commands.autonomous.FiveBallAuto;
 import frc.robot.commands.autonomous.TwoBallAuto;
-import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.AlignWithHubSmart;
 import frc.robot.commands.drive.DefaultDrive;
-import frc.robot.commands.drive.HomeOnHub;
-import frc.robot.commands.drive.TurnToAngleProfiled;
-import frc.robot.commands.drive.TurnToAngleSmart;
 import frc.robot.commands.intake.RunIntake;
 import frc.robot.commands.shooter.RampThenShoot;
-import frc.robot.commands.utilities.TimedRumble;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
@@ -109,11 +100,8 @@ public class RobotContainer {
     // TODO: the limelight needs to be turned on before checking if it has a valid target
     new JoystickButton(m_secondaryController, Button.kB.value)
         .whileHeld(
-          new ConditionalCommand(new RampThenShoot(m_indexerSubsystem, m_shooterSubsystem),
-            new ParallelCommandGroup(
-              new RampThenShoot(m_indexerSubsystem, m_shooterSubsystem),
-              new TimedRumble(m_driverController, 0.5, 0.5)),
-            m_limelight::hasValidTarget));
+            new RampThenShoot(m_indexerSubsystem, m_shooterSubsystem,
+                m_limelight, m_driverController));
 
     // Run the intake roller when A is held
     new JoystickButton(m_secondaryController, Button.kA.value)
