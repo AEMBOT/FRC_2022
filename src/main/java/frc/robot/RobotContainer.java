@@ -53,7 +53,7 @@ public class RobotContainer {
   //Automodes - if you add more here, add them to the chooser in the container
   private TwoBallAuto m_autoCommand1 = new TwoBallAuto(m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
   private FiveBallAuto m_autoCommand2 = new FiveBallAuto(m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
-  private TaxiThenShoot m_taxiThenShoot = new TaxiThenShoot(m_robotDrive, m_indexerSubsystem, m_shooterSubsystem, m_limelight);
+  private TaxiThenShoot m_taxiThenShoot = new TaxiThenShoot(m_robotDrive, m_intakeSubsystem, m_indexerSubsystem, m_shooterSubsystem, m_limelight);
 
   //Sets up driver controlled auto choices
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -64,9 +64,9 @@ public class RobotContainer {
     configureButtonBindings();
 
     //Set up chooser
-    m_chooser.setDefaultOption("Two Ball Auto", m_autoCommand1);
-    m_chooser.addOption("Taxi & Shoot", m_taxiThenShoot);
-    m_chooser.addOption("Five Ball Auto*", m_autoCommand2);
+    m_chooser.setDefaultOption("Taxi & Shoot", m_taxiThenShoot);
+    m_chooser.addOption("Two Ball Auto", m_autoCommand1);
+    // m_chooser.addOption("Five Ball Auto*", m_autoCommand2);
 
     SmartDashboard.putData(m_chooser);
 
