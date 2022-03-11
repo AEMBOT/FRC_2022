@@ -104,8 +104,7 @@ public class RobotContainer {
 
     // Ramps up the shooter then runs the upper indexer into it
     new JoystickButton(m_secondaryController, Button.kB.value)
-        .whenPressed(
-            new RampThenShoot(m_indexerSubsystem, m_shooterSubsystem));
+        .whileHeld(new RampThenShoot(m_indexerSubsystem, m_shooterSubsystem));
 
     // Run the intake roller when A is held
     new JoystickButton(m_secondaryController, Button.kA.value)
