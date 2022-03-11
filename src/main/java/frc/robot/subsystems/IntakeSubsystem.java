@@ -137,4 +137,10 @@ public class IntakeSubsystem extends SubsystemBase {
   public double getLiftPosition() {
     return liftRight.getEncoder().getPosition();
   }
+
+  @Override
+  public void periodic() {
+    SmartDashboard.putNumber("Lift", liftLeft.getOutputCurrent());
+
+  }
 }
