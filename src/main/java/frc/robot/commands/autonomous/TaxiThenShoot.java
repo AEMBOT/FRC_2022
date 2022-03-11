@@ -12,14 +12,14 @@ import frc.robot.subsystems.LimeLightTargeting;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class TaxiThenShoot extends SequentialCommandGroup {
-    public TaxiThenShoot(DriveSubsystem drive, IndexerSubsystem indexer, ShooterSubsystem shooter, LimeLightTargeting limelight, XboxController driverController) {
+    public TaxiThenShoot(DriveSubsystem drive, IndexerSubsystem indexer, ShooterSubsystem shooter, LimeLightTargeting limelight) {
         addCommands(
             // TODO: Measure the length of the robot
             new DriveStraightSmart(Units.feetToMeters(4), drive),
-            new AlignWithHubSmart(limelight, drive),
+            new AlignWithHubSmart(limelight, drive).withTimeout(1),
 
             // A driver controller has to be passed in order for this command to work (it includes rumble)
-            new RampThenShoot(indexer, shooter, limelight, driverController).withTimeout(1)
+            new RampThenShoot(indexer, shooter, limelight).withTimeout(1)
         );
     }
 }

@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -13,12 +14,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.ClimbEasyHighBar;
 import frc.robot.commands.ClimbManual;
+import frc.robot.commands.ClimbTimed;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.autonomous.FiveBallAuto;
 import frc.robot.commands.autonomous.TaxiThenShoot;
 import frc.robot.commands.autonomous.TwoBallAuto;
 import frc.robot.commands.drive.AlignWithHubSmart;
 import frc.robot.commands.drive.DefaultDrive;
+import frc.robot.commands.intake.LowerAndSpinIntake;
 import frc.robot.commands.intake.RunIntake;
 import frc.robot.commands.shooter.RampThenShoot;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -50,7 +53,7 @@ public class RobotContainer {
   //Automodes - if you add more here, add them to the chooser in the container
   private TwoBallAuto m_autoCommand1 = new TwoBallAuto(m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
   private FiveBallAuto m_autoCommand2 = new FiveBallAuto(m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
-  private TaxiThenShoot m_taxiThenShoot = new TaxiThenShoot(m_robotDrive, m_indexerSubsystem, m_shooterSubsystem, m_limelight, m_driverController);
+  private TaxiThenShoot m_taxiThenShoot = new TaxiThenShoot(m_robotDrive, m_indexerSubsystem, m_shooterSubsystem, m_limelight);
 
   //Sets up driver controlled auto choices
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -73,7 +76,7 @@ public class RobotContainer {
             m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
 
     m_climberSubsystem.setDefaultCommand(
-        new ClimbEasyHighBar(m_climberSubsystem, m_driverController::getStartButtonPressed));
+        new ClimbTimed(m_climberSubsystem, m_driverController::getStartButtonPressed));
 
     // Tried to write this without creating a separate file, but failed.
     // Please correct as some point
@@ -119,6 +122,9 @@ public class RobotContainer {
     // Move the intake lift down
     new JoystickButton(m_secondaryController, Button.kRightBumper.value)
         .whileHeld(new IntakeControl(m_intakeSubsystem, true));
+
+    new JoystickButton(m_secondaryController, Button.kX.value)
+        .whileHeld(new LowerAndSpinIntake(m_intakeSubsystem));
   }
 
   public void turnOnLimelightLED() {

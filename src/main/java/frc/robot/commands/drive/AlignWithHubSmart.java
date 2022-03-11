@@ -11,9 +11,9 @@ import frc.robot.subsystems.LimeLightTargeting;
 public class AlignWithHubSmart extends SequentialCommandGroup {
     public AlignWithHubSmart(LimeLightTargeting limelight, DriveSubsystem drive) {
         addCommands(
-            // new InstantCommand(limelight::turnOnLED),
-            // new WaitCommand(0.2),
-            new TurnToAngleSmart(() -> -limelight.getX(), drive)
+            new InstantCommand(limelight::turnOnLED),
+            new WaitCommand(0.2),
+            new TurnToAngleSmart(() -> -limelight.getX(), drive).withTimeout(0.5)
             // new InstantCommand(limelight::turnOffLED)
         );
     }

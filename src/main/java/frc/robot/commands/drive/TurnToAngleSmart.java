@@ -56,6 +56,11 @@ public class TurnToAngleSmart extends CommandBase {
   }
 
   @Override
+  public void end(boolean _interrupted) {
+    m_drive.stopMotors();
+  }
+
+  @Override
   public boolean isFinished() {
     return m_drive.smartMotionAtGoal(m_left);
   }
