@@ -21,8 +21,8 @@ public class RampThenShoot extends SequentialCommandGroup {
         m_limelight = limelight;
         addCommands(
             // Turn on the limelight LED and allow for some time for that to actually happen
-            new InstantCommand(limelight::turnOnLED),
-            new WaitCommand(0.1),
+            // new InstantCommand(limelight::turnOnLED),
+            // new WaitCommand(0.1),
 
             // Ramp up the shooter to the desired power, rumbling the driver controller if there's no detected target
             new ParallelCommandGroup(
@@ -45,6 +45,6 @@ public class RampThenShoot extends SequentialCommandGroup {
         super.end(interrupted);
 
         // Turn off the limelight LED after canceling all of the commands
-        m_limelight.turnOffLED();
+        // m_limelight.turnOffLED();
     }
 }

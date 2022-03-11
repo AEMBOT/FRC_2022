@@ -120,6 +120,10 @@ public class RobotContainer {
         .whileHeld(new IntakeControl(m_intakeSubsystem, true));
   }
 
+  public void turnOnLimelightLED() {
+    m_limelight.turnOnLED();
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
