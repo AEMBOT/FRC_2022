@@ -225,10 +225,17 @@ public class ShooterSubsystem extends SubsystemBase {
   public void runAtMapRPM() {
     NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
     NetworkTableEntry ty = limelightTable.getEntry("ty"); // Y degrees
+    NetworkTableEntry tv = limelightTable.getEntry("tv");
     double yAngle = ty.getDouble(0.0);
+    double hasTarget = tv.getDouble(0.0);
+    double defaultAngle = 5;
     double rpm;
+    if (hasTarget == 0){
+      yAngle = defaultAngle;
+    }
     try {
       rpm = returnRPM(yAngle);
+
     } catch (NullPointerException e) {
       rpm = 0;
     }
