@@ -98,6 +98,10 @@ public class IndexerSubsystem extends SubsystemBase {
     m_upperBelt.set(-motorPower);
   }
 
+  public void stopExitSide() {
+    m_upperBelt.set(0);
+  }
+
   /** turns exit belts on or off */
   public void toggleExitSide() {
     if (!running) {

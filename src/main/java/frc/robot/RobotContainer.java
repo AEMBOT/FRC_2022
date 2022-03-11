@@ -24,6 +24,7 @@ import frc.robot.commands.drive.HomeOnHub;
 import frc.robot.commands.drive.TurnToAngleProfiled;
 import frc.robot.commands.drive.TurnToAngleSmart;
 import frc.robot.commands.intake.RunIntake;
+import frc.robot.commands.shooter.RampThenShoot;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
@@ -98,13 +99,13 @@ public class RobotContainer {
 
     //SECONDARY CONTROLLER
     // Shooter control based on limelight distance
-    new JoystickButton(m_secondaryController, Button.kX.value)
-        .whileHeld(new TeleOpShooter(m_shooterSubsystem));
+    // new JoystickButton(m_secondaryController, Button.kX.value)
+    //     .whileHeld(new TeleOpShooter(m_shooterSubsystem));
 
-    // toggle the exit side of the indexer
+    // Ramps up the shooter then runs the upper indexer into it
     new JoystickButton(m_secondaryController, Button.kB.value)
         .whenPressed(
-            new InstantCommand(() -> m_indexerSubsystem.toggleExitSide(), m_indexerSubsystem));
+            new RampThenShoot(m_indexerSubsystem, m_shooterSubsystem));
 
     // Run the intake roller when A is held
     new JoystickButton(m_secondaryController, Button.kA.value)
