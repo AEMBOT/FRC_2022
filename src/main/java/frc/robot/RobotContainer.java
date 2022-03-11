@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.ClimbEasyHighBar;
 import frc.robot.commands.ClimbManual;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.autonomous.FiveBallAuto;
@@ -72,7 +73,7 @@ public class RobotContainer {
             m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
 
     m_climberSubsystem.setDefaultCommand(
-        new ClimbManual(m_climberSubsystem, m_driverController::getStartButtonPressed));
+        new ClimbEasyHighBar(m_climberSubsystem, m_driverController::getStartButtonPressed));
 
     // Tried to write this without creating a separate file, but failed.
     // Please correct as some point
