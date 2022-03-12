@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -56,6 +58,10 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+
+    //camera setup
+    UsbCamera Camera = CameraServer.startAutomaticCapture();
+    Camera.setResolution(320, 240);
 
     //Set up chooser
     m_chooser.setDefaultOption("Two Ball Auto", m_autoCommand1);
