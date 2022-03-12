@@ -5,17 +5,13 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.ClimbEasyHighBar;
-import frc.robot.commands.ClimbManual;
 import frc.robot.commands.ClimbTimed;
 import frc.robot.commands.IntakeControl;
 import frc.robot.commands.autonomous.FiveBallAuto;
@@ -23,10 +19,7 @@ import frc.robot.commands.autonomous.TaxiThenShoot;
 import frc.robot.commands.autonomous.TwoBallAuto;
 import frc.robot.commands.drive.AlignWithHubSmart;
 import frc.robot.commands.drive.DefaultDrive;
-import frc.robot.commands.drive.TurnToAngleProfiled;
-import frc.robot.commands.drive.TurnToAngleSmart;
 import frc.robot.commands.indexer.RunUpperIndexer;
-import frc.robot.commands.intake.LowerAndSpinIntake;
 import frc.robot.commands.intake.RunIntake;
 import frc.robot.commands.shooter.RampThenShoot;
 import frc.robot.subsystems.ClimberSubsystem;

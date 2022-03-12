@@ -21,7 +21,7 @@ public class TaxiThenShoot extends SequentialCommandGroup {
 
             // Run the intake while driving away from the hub
             // TODO: Tune this distance
-            new DriveStraightSmart(Units.feetToMeters(-4), drive),
+            new DriveStraightSmart(Units.feetToMeters(-6), drive),
 
             // Align with the hub using the limelight
             new AlignWithHubSmart(limelight, drive).withTimeout(1),
