@@ -14,7 +14,7 @@ public class LowerAndSpinIntake extends CommandBase {
     @Override
     public void execute() {
         m_intake.lowerIntake();
-        m_intake.runRollerAtMaxPower();
+        m_intake.runRollerAtMaxPower(false);
     }
 
     @Override

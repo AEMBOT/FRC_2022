@@ -52,7 +52,7 @@ public class TurnToAngleSmart extends CommandBase {
   @Override
   public void execute() {
     // Run the motors to the provided position
-    m_drive.smartMotionToPosition(m_left, m_right);
+    m_drive.smartMotionToPosition(m_left, m_right, true);
   }
 
   @Override

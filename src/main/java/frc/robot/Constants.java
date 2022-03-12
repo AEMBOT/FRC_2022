@@ -50,7 +50,7 @@ public final class Constants {
     public static final int kLiftRightPort = 8;
     public static final int kRollerPort = 9;
 
-    public static final double kMaxExpectedCurrent = 0.1;
+    public static final double kMaxExpectedCurrent = 15;
     public static final double kLiftRangeOfMotion = 50;
 
     public static final int kIndexerLowerBottomBeltPort = 11;
@@ -107,6 +107,7 @@ public final class Constants {
       public static final double kIz = 0;
 
       public static final double kFF = 0.000457;
+      public static final double kTurnFF = 0.000557;
       public static final double kMaxOutput = 1;
       public static final double kMinOutput = -1;
       public static final double kAllowedErr = 0.01; // meters

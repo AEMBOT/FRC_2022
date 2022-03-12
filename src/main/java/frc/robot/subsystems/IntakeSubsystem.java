@@ -53,9 +53,9 @@ public class IntakeSubsystem extends SubsystemBase {
     // upper/inner roller follows the outside
     indexEntryRoller.follow(intakeRoller);
 
-    liftLeft.setIdleMode(CANSparkMax.IdleMode.kBrake);
-    liftRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
-    
+    liftLeft.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    liftRight.setIdleMode(CANSparkMax.IdleMode.kCoast);
+
     // set the left side to follow the right side, invert=false
     liftLeft.follow(liftRight, true);
     disableLiftSoftLimits();
@@ -73,8 +73,12 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeRoller.setVelocity(rpm * kGearRatio);
   }
 
-  public void runRollerAtMaxPower() {
-    intakeRoller.set(0.75);
+  public void runRollerAtMaxPower(boolean invert) {
+    if (invert) {
+      intakeRoller.set(-0.75);
+    } else {
+      intakeRoller.set(0.75);
+    }
   }
 
   public void toggleRoller() {
@@ -82,7 +86,7 @@ public class IntakeSubsystem extends SubsystemBase {
       intakeRoller.set(0);
       rollerRunning = false;
     } else {
-      runRollerAtMaxPower();
+      runRollerAtMaxPower(false);
       rollerRunning = true;
     }
   }

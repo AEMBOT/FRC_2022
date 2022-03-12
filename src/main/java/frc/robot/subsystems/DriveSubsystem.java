@@ -117,20 +117,21 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Sets various Smart Motion constants for a Spark Max PID controller */
   private void setSmartMotionConstants(SparkMaxPIDController controller) {
-    controller.setP(kP);
-    controller.setI(kI);
-    controller.setD(kD);
-    controller.setIZone(kIz);
+    controller.setFF(kFF, 0);
+    controller.setFF(kTurnFF, 1);
 
-    controller.setOutputRange(kMinOutput, kMaxOutput);
+    for (int slot : new int[] {0, 1}) {
+      controller.setP(kP, slot);
+      controller.setI(kI, slot);
+      controller.setD(kD, slot);
+      controller.setIZone(kIz, slot);
 
-    controller.setFF(kFF);
-
-    int slot = 0;
-    controller.setSmartMotionMaxVelocity(kMaxVel, slot);
-    controller.setSmartMotionMinOutputVelocity(kMinVel, slot);
-    controller.setSmartMotionMaxAccel(kMaxAcc, slot);
-    controller.setSmartMotionAllowedClosedLoopError(kAllowedErr, slot);
+      controller.setOutputRange(kMinOutput, kMaxOutput, slot);
+      controller.setSmartMotionMaxVelocity(kMaxVel, slot);
+      controller.setSmartMotionMinOutputVelocity(kMinVel, slot);
+      controller.setSmartMotionMaxAccel(kMaxAcc, slot);
+      controller.setSmartMotionAllowedClosedLoopError(kAllowedErr, slot);
+    }
   }
 
   @Override
@@ -262,10 +263,11 @@ public class DriveSubsystem extends SubsystemBase {
    * @param left The distance to move the left motor
    * @param right The distance to move the right motor
    */
-  public void smartMotionToPosition(double left, double right) {
+  public void smartMotionToPosition(double left, double right, boolean turning) {
     m_drive.feed();
-    m_rightController.setReference(right, ControlType.kSmartMotion);
-    m_leftController.setReference(left, ControlType.kSmartMotion);
+    int pidSlot = turning ? 1 : 0;
+    m_rightController.setReference(right, ControlType.kSmartMotion, pidSlot);
+    m_leftController.setReference(left, ControlType.kSmartMotion, pidSlot);
   }
 
   /**
@@ -274,7 +276,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @param distance The distance to drive (in meters)
    */
   public void smartMotionToPosition(double distance) {
-    smartMotionToPosition(distance, distance);
+    smartMotionToPosition(distance, distance, false);
   }
 
   /**

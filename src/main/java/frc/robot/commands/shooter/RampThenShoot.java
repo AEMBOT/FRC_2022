@@ -33,7 +33,7 @@ public class RampThenShoot extends SequentialCommandGroup {
                 new RampShooter(shooter).withTimeout(0.5),
                 new ConditionalCommand(
                     new Noop(), new TimedRumble(driverController, 0.25, 0.5),
-                    () -> limelight.hasValidTarget() && driverController != null)
+                    () -> limelight.hasValidTarget() || driverController == null)
             ),
 
             // Run the shooter and upper indexer belt at the same time after ramping up the shooter power
