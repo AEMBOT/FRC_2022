@@ -107,7 +107,7 @@ public final class Constants {
       public static final double kIz = 0;
 
       public static final double kFF = 0.000457;
-      public static final double kTurnFF = 0.000557;
+      public static final double kTurnFF = 0.001157;
       public static final double kMaxOutput = 1;
       public static final double kMinOutput = -1;
       public static final double kAllowedErr = 0.01; // meters

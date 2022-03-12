@@ -30,7 +30,7 @@ public class IntakeControl extends CommandBase {
   @Override
   public void initialize() {
     int direction = (shouldInvert ? -1 : 1);
-    double power = 1 * direction;
+    double power = 0.5 * direction;
     m_subsystem.setLiftPower(power);
   }
 
