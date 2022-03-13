@@ -31,7 +31,10 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     m_robotContainer.turnOnLimelightLED();
 
-    // PortForwarder.add(5800, "limelight.local", 5800);
+    // Forward limelight ports over USB
+    // PortForwarder.add(5800, "10.64.43.205", 5800);
+    // PortForwarder.add(5801, "10.64.43.205", 5801);
+    // PortForwarder.add(5805, "10.64.43.205", 5805);
   }
 
   /**

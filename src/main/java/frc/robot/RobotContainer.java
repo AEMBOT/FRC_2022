@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -19,6 +21,7 @@ import frc.robot.commands.autonomous.TaxiThenShoot;
 import frc.robot.commands.autonomous.TwoBallAuto;
 import frc.robot.commands.drive.AlignWithHubSmart;
 import frc.robot.commands.drive.DefaultDrive;
+import frc.robot.commands.drive.TurnToAngleSmart;
 import frc.robot.commands.indexer.RunUpperIndexer;
 import frc.robot.commands.intake.RunIntake;
 import frc.robot.commands.shooter.RampThenShoot;
@@ -43,6 +46,7 @@ public class RobotContainer {
   private final IndexerSubsystem m_indexerSubsystem = new IndexerSubsystem();
   private final LimeLightTargeting m_limelight = new LimeLightTargeting();
   private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
+
   // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);
   private final XboxController m_secondaryController = new XboxController(1);
@@ -51,6 +55,8 @@ public class RobotContainer {
   private TwoBallAuto m_autoCommand1 = new TwoBallAuto(m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
   private FiveBallAuto m_autoCommand2 = new FiveBallAuto(m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
   private TaxiThenShoot m_taxiThenShoot = new TaxiThenShoot(m_robotDrive, m_intakeSubsystem, m_indexerSubsystem, m_shooterSubsystem, m_limelight);
+
+  private TurnToAngleSmart m_turn90 = new TurnToAngleSmart(90, m_robotDrive);
 
   //Sets up driver controlled auto choices
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -63,6 +69,10 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
+    // Set up USB (rear-facing) camera
+    UsbCamera camera = CameraServer.startAutomaticCapture();
+    camera.setResolution(320, 240);
+
     //Set up chooser
     m_chooser.setDefaultOption("Taxi & Shoot", m_taxiThenShoot);
     m_chooser.addOption("Two Ball Auto", m_autoCommand1);
@@ -73,7 +83,7 @@ public class RobotContainer {
     // Set default drivetrain command to arcade driving (happens during teleop)
     m_robotDrive.setDefaultCommand(
         new DefaultDrive(
-          m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
+          m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX, () -> false));
 
         // new ConditionalCommand(
         //   new DefaultDrive(

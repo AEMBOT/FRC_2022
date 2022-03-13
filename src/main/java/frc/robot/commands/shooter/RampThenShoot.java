@@ -30,7 +30,7 @@ public class RampThenShoot extends SequentialCommandGroup {
 
             // Ramp up the shooter to the desired power, rumbling the driver controller if there's no detected target
             new ParallelCommandGroup(
-                new RampShooter(shooter).withTimeout(0.5),
+                new RampShooter(shooter).withTimeout(1),
                 new ConditionalCommand(
                     new Noop(), new TimedRumble(driverController, 0.25, 0.5),
                     () -> limelight.hasValidTarget() || driverController == null)

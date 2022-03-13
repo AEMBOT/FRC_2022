@@ -1,5 +1,6 @@
 package frc.robot.commands.drive;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
@@ -20,17 +21,26 @@ public class DefaultDrive extends CommandBase {
   SlewRateLimiter forwardSlewLimiter = new SlewRateLimiter(2.0);
   SlewRateLimiter turningSlewLimiter = new SlewRateLimiter(2.0);
 
+  // Drivers wanted quicker acceleration when playing defense
+  SlewRateLimiter defenseSlewLimiter = new SlewRateLimiter(2.5);
+
   // Drive at full speed for driver practice
   private double speedMultiplier = 1.0;
   private double rotationMultiplier = 0.6;
 
   //Deadzone, choose number from range (0,1)
+  // TODO: Move this to DriveSubsystem (using the setDeadband method)
   private double deadzone = 0.1;
 
-  public DefaultDrive(DriveSubsystem drive, DoubleSupplier left, DoubleSupplier right) {
+  // Used to swap between faster/slower speeds
+  BooleanSupplier m_changeMode;
+  boolean defenseMode = false;
+
+  public DefaultDrive(DriveSubsystem drive, DoubleSupplier left, DoubleSupplier right, BooleanSupplier changeMode) {
     m_drive = drive;
     m_left = left;
     m_right = right;
+    m_changeMode = changeMode;
     addRequirements(drive);
   }
 
@@ -39,15 +49,26 @@ public class DefaultDrive extends CommandBase {
 
   @Override
   public void execute() {
+    // FIXME: This will activate multiple times a button press, so this has to be implemented differently
+    if (m_changeMode.getAsBoolean()) {
+      defenseMode = !defenseMode;
+    }
+
     // Log the powers to the dashboard
     double forwardPower = speedMultiplier * (MathUtil.applyDeadband(-m_left.getAsDouble(), deadzone));
     // Slew filter
-    forwardPower = forwardSlewLimiter.calculate(forwardPower);
-    SmartDashboard.putNumber("power", forwardPower);
+    // if (defenseMode) {
+    //   forwardPower = defenseSlewLimiter.calculate(forwardPower);
+    // } else {
+    //   forwardPower = forwardSlewLimiter.calculate(forwardPower);
+    //   forwardPower = forwardSlewLimiter.calculate(forwardPower);
+    // }
+    // SmartDashboard.putNumber("power", forwardPower);
+    forwardPower = defenseSlewLimiter.calculate(forwardPower);
     
     double rotationPower = rotationMultiplier * (MathUtil.applyDeadband(-m_right.getAsDouble(), deadzone));
     rotationPower = turningSlewLimiter.calculate(rotationPower);
-    SmartDashboard.putNumber("rotation", rotationPower);
+    // SmartDashboard.putNumber("rotation", rotationPower);
 
     m_drive.arcadeDrive(forwardPower, rotationPower, true);
   }

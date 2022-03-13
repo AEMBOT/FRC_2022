@@ -2,7 +2,6 @@ package frc.robot.commands.autonomous;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.drive.AlignWithHubSmart;
 import frc.robot.commands.drive.DriveStraightSmart;

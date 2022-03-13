@@ -31,11 +31,10 @@ public class ClimbTimed extends SequentialCommandGroup {
 
         // retract hooks
         new InstantCommand(climber::setRetracting, climber),
-        new WaitCommand(2.0),
-        /*
+        new WaitCommand(2.2),
+
         new InstantCommand(climber::setCoasting, climber),
         new WaitCommand(1),
-        */
 
         new WaitUntilCommand(condition_button_press),
 

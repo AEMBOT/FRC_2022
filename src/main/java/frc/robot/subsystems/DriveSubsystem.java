@@ -7,6 +7,7 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -120,6 +121,9 @@ public class DriveSubsystem extends SubsystemBase {
     controller.setFF(kFF, 0);
     controller.setFF(kTurnFF, 1);
 
+    controller.setP(kP, 0);
+    controller.setP(kTurnP, 1);
+
     for (int slot : new int[] {0, 1}) {
       controller.setP(kP, slot);
       controller.setI(kI, slot);
@@ -180,6 +184,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void arcadeDrive(double speed, double rotation, boolean squareInputs) {
     m_drive.arcadeDrive(speed, rotation, squareInputs);
     SmartDashboard.putNumber("Arcade forward", speed);
+    SmartDashboard.putNumber("Arcade rotation", Math.pow(rotation, 2));
     /*
 
     // Reimplement WPILib arcade drive so that we get setVoltage() functionality
@@ -265,9 +270,15 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public void smartMotionToPosition(double left, double right, boolean turning) {
     m_drive.feed();
-    int pidSlot = turning ? 1 : 0;
-    m_rightController.setReference(right, ControlType.kSmartMotion, pidSlot);
-    m_leftController.setReference(left, ControlType.kSmartMotion, pidSlot);
+    if (turning) {
+      int pidSlot = 1;
+      m_rightController.setReference(right, ControlType.kSmartMotion, pidSlot, 0.04, ArbFFUnits.kPercentOut);
+      m_leftController.setReference(left, ControlType.kSmartMotion, pidSlot, 0.04, ArbFFUnits.kPercentOut);
+    } else {
+      int pidSlot = 0;
+      m_rightController.setReference(right, ControlType.kSmartMotion, pidSlot);
+      m_leftController.setReference(left, ControlType.kSmartMotion, pidSlot);
+    }
   }
 
   /**
