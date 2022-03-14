@@ -9,7 +9,7 @@ import frc.robot.commands.TeleOpShooter;
 import frc.robot.commands.indexer.RunUpperIndexer;
 import frc.robot.commands.utilities.Noop;
 import frc.robot.commands.utilities.TimedRumble;
-import frc.robot.commands.utilities.TurnOnLimelight;
+import frc.robot.commands.utilities.TurnOnLimelightLEDs;
 import frc.robot.hardware.Limelight;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -25,7 +25,7 @@ public class RampThenShoot extends SequentialCommandGroup {
         m_limelight = limelight;
         addCommands(
             // Turn on the limelight LED and allow for some time for that to actually happen
-            new TurnOnLimelight(limelight),
+            new TurnOnLimelightLEDs(limelight),
             new WaitCommand(0.1),
 
             // Ramp up the shooter to the desired power, rumbling the driver controller if there's no detected target
