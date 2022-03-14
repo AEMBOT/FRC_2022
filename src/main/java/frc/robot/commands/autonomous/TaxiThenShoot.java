@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.drive.AlignWithHubSmart;
 import frc.robot.commands.drive.DriveStraightSmart;
 import frc.robot.commands.shooter.RampThenShoot;
+import frc.robot.hardware.Limelight;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -13,7 +14,7 @@ import frc.robot.subsystems.LimeLightTargeting;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class TaxiThenShoot extends SequentialCommandGroup {
-    public TaxiThenShoot(DriveSubsystem drive, IntakeSubsystem intake, IndexerSubsystem indexer, ShooterSubsystem shooter, LimeLightTargeting limelight) {
+    public TaxiThenShoot(DriveSubsystem drive, IntakeSubsystem intake, IndexerSubsystem indexer, ShooterSubsystem shooter, Limelight limelight) {
         addCommands(
             // Turn on the intake
             new InstantCommand(() -> intake.runRollerAtMaxPower(false), intake),

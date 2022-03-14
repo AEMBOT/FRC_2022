@@ -12,6 +12,7 @@ import frc.robot.commands.drive.AlignWithHubSmart;
 import frc.robot.commands.drive.DriveStraightProfiled;
 import frc.robot.commands.drive.DriveStraightSmart;
 import frc.robot.commands.drive.HomeOnHub;
+import frc.robot.hardware.Limelight;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -19,7 +20,7 @@ import frc.robot.subsystems.LimeLightTargeting;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class TwoBallAuto extends SequentialCommandGroup {
-    public TwoBallAuto(DriveSubsystem drive, ShooterSubsystem shooter, IndexerSubsystem indexer, IntakeSubsystem intake, LimeLightTargeting limelight) {
+    public TwoBallAuto(DriveSubsystem drive, ShooterSubsystem shooter, IndexerSubsystem indexer, IntakeSubsystem intake, Limelight limelight) {
         drive.setBrakeMode();
         addCommands(
             new IntakeControl(intake, true),

@@ -1,25 +1,20 @@
 package frc.robot.commands.autonomous;
 
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commands.HomeIntakeCommand;
-import frc.robot.commands.RunShooterForTime;
-import frc.robot.commands.drive.DriveStraightProfiled;
+import frc.robot.commands.drive.AlignWithHubSmart;
 import frc.robot.commands.drive.DriveStraightSmart;
-import frc.robot.commands.drive.HomeOnHub;
 import frc.robot.commands.drive.TurnToAngleSmart;
+import frc.robot.hardware.Limelight;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LimeLightTargeting;
 import frc.robot.subsystems.ShooterSubsystem;
 
 //command list for autopathing
 public class FiveBallAuto extends SequentialCommandGroup {
-    public FiveBallAuto(DriveSubsystem drive, ShooterSubsystem shooter, IndexerSubsystem indexer, IntakeSubsystem intake, LimeLightTargeting limelight) { 
+    public FiveBallAuto(DriveSubsystem drive, ShooterSubsystem shooter, IndexerSubsystem indexer, IntakeSubsystem intake, Limelight limelight) { 
         drive.setBrakeMode();
         addCommands(
             //Starting position is determined by jig - see discord for specifics
@@ -66,7 +61,7 @@ public class FiveBallAuto extends SequentialCommandGroup {
             new TurnToAngleSmart(-285, drive),
             new WaitCommand(2),
             new DriveStraightSmart(-1, drive),
-            new HomeOnHub(limelight, drive)
+            new AlignWithHubSmart(limelight, drive)
             //--shoot here
 
         );//end command list

@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.util.net.PortForwarder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -25,11 +26,12 @@ import frc.robot.commands.drive.TurnToAngleSmart;
 import frc.robot.commands.indexer.RunUpperIndexer;
 import frc.robot.commands.intake.RunIntake;
 import frc.robot.commands.shooter.RampThenShoot;
+import frc.robot.hardware.Limelight;
+import frc.robot.hardware.Limelight.LEDMode;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LimeLightTargeting;
 import frc.robot.subsystems.ShooterSubsystem;
 
 /**
@@ -44,8 +46,9 @@ public class RobotContainer {
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final IndexerSubsystem m_indexerSubsystem = new IndexerSubsystem();
-  private final LimeLightTargeting m_limelight = new LimeLightTargeting();
   private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
+
+  private final Limelight m_limelight = new Limelight();
 
   // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);
@@ -69,9 +72,17 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
+    // Turn on the limelight's LEDs
+    m_limelight.setLEDMode(LEDMode.On);
+
     // Set up USB (rear-facing) camera
     UsbCamera camera = CameraServer.startAutomaticCapture();
     camera.setResolution(320, 240);
+
+    // Forward limelight ports over USB
+    // PortForwarder.add(5800, "10.64.43.205", 5800);
+    // PortForwarder.add(5801, "10.64.43.205", 5801);
+    // PortForwarder.add(5805, "10.64.43.205", 5805);
 
     //Set up chooser
     m_chooser.setDefaultOption("Taxi & Shoot", m_taxiThenShoot);
@@ -93,13 +104,6 @@ public class RobotContainer {
 
     m_climberSubsystem.setDefaultCommand(
         new ClimbTimed(m_climberSubsystem, m_driverController::getStartButtonPressed));
-
-    // Tried to write this without creating a separate file, but failed.
-    // Please correct as some point
-
-    // m_shooterSubsystem.setDefaultCommand(new InstantCommand(()-> m_shooterSubsystem.test(12.2),
-    // m_shooterSubsystem));
-
   }
 
   /**
@@ -146,10 +150,6 @@ public class RobotContainer {
         .whileHeld(new ParallelCommandGroup(
           new RunIntake(m_intakeSubsystem, true),
           new RunUpperIndexer(m_indexerSubsystem, true)));
-  }
-
-  public void turnOnLimelightLED() {
-    m_limelight.turnOnLED();
   }
 
   /**
