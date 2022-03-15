@@ -70,15 +70,6 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRightMotor.follow(m_centerRightMotor);
     m_backRightMotor.follow(m_centerRightMotor);
 
-    // TODO: Test native Spark MAX voltage compensation
-    // Enable voltage compensation for all of the motors
-    // m_frontLeftMotor.enableVoltageCompensation(nominalVoltage);
-    // m_centerLeftMotor.enableVoltageCompensation(nominalVoltage);
-    // m_backLeftMotor.enableVoltageCompensation(nominalVoltage);
-    // m_frontRightMotor.enableVoltageCompensation(nominalVoltage);
-    // m_centerRightMotor.enableVoltageCompensation(nominalVoltage);
-    // m_backRightMotor.enableVoltageCompensation(nominalVoltage);
-
     // Set the SmartMotion constants for the center motors
     setSmartMotionConstants(m_leftController);
     setSmartMotionConstants(m_rightController);
@@ -86,6 +77,9 @@ public class DriveSubsystem extends SubsystemBase {
     // Reset the encoders & change their position readings to meters
     resetEncoders();
     setupEncoderConversions();
+
+    // Configure a deadband of 0.1 for arcade/tank drive
+    m_drive.setDeadband(0.1);
 
     // Initialize the tracking of the robot's position on the field
     // m_odometry = new DifferentialDriveOdometry(new Rotation2d(getHeading()));

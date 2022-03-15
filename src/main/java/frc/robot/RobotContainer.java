@@ -20,7 +20,6 @@ import frc.robot.commands.autonomous.TwoBallAuto;
 import frc.robot.commands.climber.ClimbTimed;
 import frc.robot.commands.drive.AlignWithHubSmart;
 import frc.robot.commands.drive.DefaultDrive;
-import frc.robot.commands.drive.TurnToAngleSmart;
 import frc.robot.commands.indexer.RunUpperIndexer;
 import frc.robot.commands.intake.IntakeControl;
 import frc.robot.commands.intake.RunIntake;
@@ -64,8 +63,6 @@ public class RobotContainer {
       new TaxiThenShoot(
           m_robotDrive, m_intakeSubsystem, m_indexerSubsystem, m_shooterSubsystem, m_limelight);
 
-  private TurnToAngleSmart m_turn90 = new TurnToAngleSmart(90, m_robotDrive);
-
   // Sets up driver controlled auto choices
   SendableChooser<Command> m_chooser = new SendableChooser<>();
 
@@ -89,7 +86,7 @@ public class RobotContainer {
     // PortForwarder.add(5801, "10.64.43.205", 5801);
     // PortForwarder.add(5805, "10.64.43.205", 5805);
 
-    // Set up chooser
+    // Set up autonomous chooser
     m_chooser.setDefaultOption("Taxi & Shoot", m_taxiThenShoot);
     m_chooser.addOption("Two Ball Auto", m_autoCommand1);
     // m_chooser.addOption("Five Ball Auto*", m_autoCommand2);
@@ -99,16 +96,7 @@ public class RobotContainer {
     // Set default drivetrain command to arcade driving (happens during teleop)
     m_robotDrive.setDefaultCommand(
         new DefaultDrive(
-            m_robotDrive,
-            m_driverController::getLeftY,
-            m_driverController::getRightX,
-            () -> false));
-
-    // new ConditionalCommand(
-    //   new DefaultDrive(
-    //     m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX),
-    //   new DefaultDrive(m_robotDrive, () -> m_driverController.getLeftY() * m_powerMultiplier,
-    //     () -> m_driverController.getRightX() * m_powerMultiplier), () -> m_babyMode));
+            m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
 
     m_climberSubsystem.setDefaultCommand(
         new ClimbTimed(m_climberSubsystem, m_driverController::getStartButtonPressed));
