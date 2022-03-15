@@ -42,13 +42,13 @@ import frc.robot.subsystems.ShooterSubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+  private final Limelight m_limelight = new Limelight();
+
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem();
+  private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(m_limelight);
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final IndexerSubsystem m_indexerSubsystem = new IndexerSubsystem();
   private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
-
-  private final Limelight m_limelight = new Limelight();
 
   // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);

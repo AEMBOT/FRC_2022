@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commands.TeleOpShooter;
 import frc.robot.commands.indexer.RunUpperIndexer;
 import frc.robot.commands.utilities.Noop;
 import frc.robot.commands.utilities.TimedRumble;

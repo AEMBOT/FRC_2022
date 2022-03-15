@@ -7,11 +7,11 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.HomeIntakeCommand;
 import frc.robot.commands.IntakeControl;
-import frc.robot.commands.RunShooterForTime;
 import frc.robot.commands.drive.AlignWithHubSmart;
 import frc.robot.commands.drive.DriveStraightProfiled;
 import frc.robot.commands.drive.DriveStraightSmart;
 import frc.robot.commands.drive.HomeOnHub;
+import frc.robot.commands.shooter.RampShooter;
 import frc.robot.hardware.Limelight;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
@@ -34,10 +34,7 @@ public class TwoBallAuto extends SequentialCommandGroup {
             new AlignWithHubSmart(limelight, drive),
 
             // Run indexer into shooter
-            new ParallelCommandGroup(
-                new InstantCommand(() -> indexer.toggleExitSide(), indexer),
-                new RunShooterForTime(3, shooter)
-            ),
+            new RampShooter(shooter).withTimeout(3),
 
             // Stop the indexer
             new InstantCommand(() -> indexer.toggleExitSide(), indexer)
