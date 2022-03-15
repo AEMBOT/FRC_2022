@@ -14,40 +14,42 @@ import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class RampThenShoot extends SequentialCommandGroup {
-    private Limelight m_limelight;
+  private Limelight m_limelight;
 
-    public RampThenShoot(IndexerSubsystem indexer, ShooterSubsystem shooter, Limelight limelight) {
-        this(indexer, shooter, limelight, null);
-    }
+  public RampThenShoot(IndexerSubsystem indexer, ShooterSubsystem shooter, Limelight limelight) {
+    this(indexer, shooter, limelight, null);
+  }
 
-    public RampThenShoot(IndexerSubsystem indexer, ShooterSubsystem shooter, Limelight limelight, XboxController driverController) {
-        m_limelight = limelight;
-        addCommands(
-            // Turn on the limelight LED and allow for some time for that to actually happen
-            new TurnOnLimelightLEDs(limelight),
-            new WaitCommand(0.1),
+  public RampThenShoot(
+      IndexerSubsystem indexer,
+      ShooterSubsystem shooter,
+      Limelight limelight,
+      XboxController driverController) {
+    m_limelight = limelight;
+    addCommands(
+        // Turn on the limelight LED and allow for some time for that to actually happen
+        new TurnOnLimelightLEDs(limelight),
+        new WaitCommand(0.1),
 
-            // Ramp up the shooter to the desired power, rumbling the driver controller if there's no detected target
-            new ParallelCommandGroup(
-                new RampShooter(shooter).withTimeout(1),
-                new ConditionalCommand(
-                    new Noop(), new TimedRumble(driverController, 0.25, 0.5),
-                    () -> limelight.hasValidTarget() || driverController == null)
-            ),
+        // Ramp up the shooter to the desired power, rumbling the driver controller if there's no
+        // detected target
+        new ParallelCommandGroup(
+            new RampShooter(shooter).withTimeout(1),
+            new ConditionalCommand(
+                new Noop(),
+                new TimedRumble(driverController, 0.25, 0.5),
+                () -> limelight.hasValidTarget() || driverController == null)),
 
-            // Run the shooter and upper indexer belt at the same time after ramping up the shooter power
-            new ParallelCommandGroup(
-                new TeleOpShooter(shooter),
-                new RunUpperIndexer(indexer)
-            )
-        );
-    }
+        // Run the shooter and upper indexer belt at the same time after ramping up the shooter
+        // power
+        new ParallelCommandGroup(new TeleOpShooter(shooter), new RunUpperIndexer(indexer)));
+  }
 
-    @Override
-    public void end(boolean interrupted) {
-        super.end(interrupted);
+  @Override
+  public void end(boolean interrupted) {
+    super.end(interrupted);
 
-        // Turn off the limelight LED after canceling all of the commands
-        // m_limelight.turnOffLED();
-    }
+    // Turn off the limelight LED after canceling all of the commands
+    // m_limelight.turnOffLED();
+  }
 }

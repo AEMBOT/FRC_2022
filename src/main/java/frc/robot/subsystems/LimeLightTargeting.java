@@ -112,11 +112,8 @@ public class LimeLightTargeting extends SubsystemBase {
     limelightTable.getEntry("camMode").setNumber(mode);
   }
 
-  
   @Override
   public void periodic() {
     SmartDashboard.putBoolean("Target Valid", hasValidTarget());
   }
-    
 }
-

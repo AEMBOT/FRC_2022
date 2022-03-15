@@ -19,11 +19,11 @@ public final class Constants {
     public static final int ClimbSolenoidLeftExtend = 0;
     public static final int ClimbSolenoidLeftRetract = 1;
     public static final int ClimbSolenoidLeftChoke = 2;
-  
+
     public static final int ClimbSolenoidRightExtend = 3;
     public static final int ClimbSolenoidRightRetract = 4;
     public static final int ClimbSolenoidRightChoke = 5;
-  
+
     public static final int AngleSolenoidExtend = 7;
     public static final int AngleSolenoidRetract = 6;
   }
@@ -32,17 +32,17 @@ public final class Constants {
     public static final int kLeftMotorCANId = 13;
     public static final int kRightMotorCANId = 14;
 
-    public static final double kVVolts = 0.000163;//0.002181818182; // Volts per RPM
+    public static final double kVVolts = 0.000163; // 0.002181818182; // Volts per RPM
     public static final double kP = 5e-5;
     public static final double kI = 1e-6;
     public static final double kD = 0.0000;
-    //public static final double kFF = 0.000156;
+    // public static final double kFF = 0.000156;
     public static final double kMaxVel = 5700;
     public static final double kMinVel = 2400;
     public static final double kMaxAcc = 1500;
     public static final double kMaxOutput = 1;
     public static final double kMinOutput = -1;
-    public static final double kAllowedError = 2; //read more on this and change the value probably
+    public static final double kAllowedError = 2; // read more on this and change the value probably
 
     // Default angle for RPM calculations
     public static final double kDefaultYAngle = 12;

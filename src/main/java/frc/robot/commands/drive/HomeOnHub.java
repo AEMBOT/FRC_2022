@@ -46,8 +46,8 @@ public class HomeOnHub extends CommandBase {
     double hubAngle = m_limelight.getX();
     double turnPower;
 
-    //Snap to target if it has been found
-    if (m_limelight.hasValidTarget()){
+    // Snap to target if it has been found
+    if (m_limelight.hasValidTarget()) {
       // Use the profile if it hasn't finished
       if (!m_profileFinished) {
         double velocitySetpoint = m_turnProfile.getSetpoint().velocity;
@@ -65,11 +65,9 @@ public class HomeOnHub extends CommandBase {
 
       m_drive.arcadeDrive(0, turnPower, false);
     } else {
-      //If a target is not found, spin until one is 
+      // If a target is not found, spin until one is
       m_drive.arcadeDrive(0, 0.15, false);
     }
-
-    
   }
 
   @Override

@@ -4,7 +4,7 @@
 
 // indexer logic using color sensor input
 
-package frc.robot.commands;
+package frc.robot.commands.indexer;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;

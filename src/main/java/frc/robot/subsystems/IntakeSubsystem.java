@@ -5,7 +5,6 @@ import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -143,8 +142,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public boolean isAtHardLimit() {
     SmartDashboard.putNumber("Lift Current Draw", liftLeft.getOutputCurrent());
-    return (liftLeft.getOutputCurrent() > Constants.IntakeConstants.kMaxExpectedCurrent ||
-       liftRight.getOutputCurrent() > Constants.IntakeConstants.kMaxExpectedCurrent);
+    return (liftLeft.getOutputCurrent() > Constants.IntakeConstants.kMaxExpectedCurrent
+        || liftRight.getOutputCurrent() > Constants.IntakeConstants.kMaxExpectedCurrent);
   }
 
   public void setLiftPower(double power) {

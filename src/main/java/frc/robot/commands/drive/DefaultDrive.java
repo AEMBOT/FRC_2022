@@ -1,13 +1,11 @@
 package frc.robot.commands.drive;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
 public class DefaultDrive extends CommandBase {
   private final DriveSubsystem m_drive;
@@ -16,7 +14,7 @@ public class DefaultDrive extends CommandBase {
   private final DoubleSupplier m_left;
   private final DoubleSupplier m_right;
 
-  //ramping constants
+  // ramping constants
   // Creates a SlewRateLimiter that limits the rate of change of the signal to X.X units per second
   SlewRateLimiter forwardSlewLimiter = new SlewRateLimiter(2.0);
   SlewRateLimiter turningSlewLimiter = new SlewRateLimiter(2.0);
@@ -28,7 +26,7 @@ public class DefaultDrive extends CommandBase {
   private double speedMultiplier = 1.0;
   private double rotationMultiplier = 0.6;
 
-  //Deadzone, choose number from range (0,1)
+  // Deadzone, choose number from range (0,1)
   // TODO: Move this to DriveSubsystem (using the setDeadband method)
   private double deadzone = 0.1;
 
@@ -36,7 +34,8 @@ public class DefaultDrive extends CommandBase {
   BooleanSupplier m_changeMode;
   boolean defenseMode = false;
 
-  public DefaultDrive(DriveSubsystem drive, DoubleSupplier left, DoubleSupplier right, BooleanSupplier changeMode) {
+  public DefaultDrive(
+      DriveSubsystem drive, DoubleSupplier left, DoubleSupplier right, BooleanSupplier changeMode) {
     m_drive = drive;
     m_left = left;
     m_right = right;
@@ -49,13 +48,15 @@ public class DefaultDrive extends CommandBase {
 
   @Override
   public void execute() {
-    // FIXME: This will activate multiple times a button press, so this has to be implemented differently
+    // FIXME: This will activate multiple times a button press, so this has to be implemented
+    // differently
     if (m_changeMode.getAsBoolean()) {
       defenseMode = !defenseMode;
     }
 
     // Log the powers to the dashboard
-    double forwardPower = speedMultiplier * (MathUtil.applyDeadband(-m_left.getAsDouble(), deadzone));
+    double forwardPower =
+        speedMultiplier * (MathUtil.applyDeadband(-m_left.getAsDouble(), deadzone));
     // Slew filter
     // if (defenseMode) {
     //   forwardPower = defenseSlewLimiter.calculate(forwardPower);
@@ -65,8 +66,9 @@ public class DefaultDrive extends CommandBase {
     // }
     // SmartDashboard.putNumber("power", forwardPower);
     forwardPower = defenseSlewLimiter.calculate(forwardPower);
-    
-    double rotationPower = rotationMultiplier * (MathUtil.applyDeadband(-m_right.getAsDouble(), deadzone));
+
+    double rotationPower =
+        rotationMultiplier * (MathUtil.applyDeadband(-m_right.getAsDouble(), deadzone));
     rotationPower = turningSlewLimiter.calculate(rotationPower);
     // SmartDashboard.putNumber("rotation", rotationPower);
 

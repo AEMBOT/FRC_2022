@@ -6,7 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
-import edu.wpi.first.util.net.PortForwarder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -15,7 +14,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.IntakeControl;
 import frc.robot.commands.autonomous.FiveBallAuto;
 import frc.robot.commands.autonomous.TaxiThenShoot;
 import frc.robot.commands.autonomous.TwoBallAuto;
@@ -24,6 +22,7 @@ import frc.robot.commands.drive.AlignWithHubSmart;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.drive.TurnToAngleSmart;
 import frc.robot.commands.indexer.RunUpperIndexer;
+import frc.robot.commands.intake.IntakeControl;
 import frc.robot.commands.intake.RunIntake;
 import frc.robot.commands.shooter.RampThenShoot;
 import frc.robot.hardware.Limelight;
@@ -54,14 +53,20 @@ public class RobotContainer {
   private final XboxController m_driverController = new XboxController(0);
   private final XboxController m_secondaryController = new XboxController(1);
 
-  //Automodes - if you add more here, add them to the chooser in the container
-  private TwoBallAuto m_autoCommand1 = new TwoBallAuto(m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
-  private FiveBallAuto m_autoCommand2 = new FiveBallAuto(m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
-  private TaxiThenShoot m_taxiThenShoot = new TaxiThenShoot(m_robotDrive, m_intakeSubsystem, m_indexerSubsystem, m_shooterSubsystem, m_limelight);
+  // Automodes - if you add more here, add them to the chooser in the container
+  private TwoBallAuto m_autoCommand1 =
+      new TwoBallAuto(
+          m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
+  private FiveBallAuto m_autoCommand2 =
+      new FiveBallAuto(
+          m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
+  private TaxiThenShoot m_taxiThenShoot =
+      new TaxiThenShoot(
+          m_robotDrive, m_intakeSubsystem, m_indexerSubsystem, m_shooterSubsystem, m_limelight);
 
   private TurnToAngleSmart m_turn90 = new TurnToAngleSmart(90, m_robotDrive);
 
-  //Sets up driver controlled auto choices
+  // Sets up driver controlled auto choices
   SendableChooser<Command> m_chooser = new SendableChooser<>();
 
   boolean m_babyMode = false;
@@ -84,7 +89,7 @@ public class RobotContainer {
     // PortForwarder.add(5801, "10.64.43.205", 5801);
     // PortForwarder.add(5805, "10.64.43.205", 5805);
 
-    //Set up chooser
+    // Set up chooser
     m_chooser.setDefaultOption("Taxi & Shoot", m_taxiThenShoot);
     m_chooser.addOption("Two Ball Auto", m_autoCommand1);
     // m_chooser.addOption("Five Ball Auto*", m_autoCommand2);
@@ -94,13 +99,16 @@ public class RobotContainer {
     // Set default drivetrain command to arcade driving (happens during teleop)
     m_robotDrive.setDefaultCommand(
         new DefaultDrive(
-          m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX, () -> false));
+            m_robotDrive,
+            m_driverController::getLeftY,
+            m_driverController::getRightX,
+            () -> false));
 
-        // new ConditionalCommand(
-        //   new DefaultDrive(
-        //     m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX),
-        //   new DefaultDrive(m_robotDrive, () -> m_driverController.getLeftY() * m_powerMultiplier,
-        //     () -> m_driverController.getRightX() * m_powerMultiplier), () -> m_babyMode));
+    // new ConditionalCommand(
+    //   new DefaultDrive(
+    //     m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX),
+    //   new DefaultDrive(m_robotDrive, () -> m_driverController.getLeftY() * m_powerMultiplier,
+    //     () -> m_driverController.getRightX() * m_powerMultiplier), () -> m_babyMode));
 
     m_climberSubsystem.setDefaultCommand(
         new ClimbTimed(m_climberSubsystem, m_driverController::getStartButtonPressed));
@@ -114,15 +122,15 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // PRIMARY CONTROLLER
-    //Homing to Hub - A Button
+    // Homing to Hub - A Button
     new JoystickButton(m_driverController, Button.kA.value)
         .whenPressed(new AlignWithHubSmart(m_limelight, m_robotDrive));
-        // .whenPressed(new AlignWithHub(m_robotDrive, m_limelight).withTimeout(0.5));
+    // .whenPressed(new AlignWithHub(m_robotDrive, m_limelight).withTimeout(0.5));
 
     // new JoystickButton(m_driverController, Button.kY.value)
     //     .whenPressed(() -> m_babyMode = false);
 
-    //SECONDARY CONTROLLER
+    // SECONDARY CONTROLLER
     // Shooter control based on limelight distance
     // new JoystickButton(m_secondaryController, Button.kX.value)
     //     .whileHeld(new TeleOpShooter(m_shooterSubsystem));
@@ -131,8 +139,8 @@ public class RobotContainer {
     // TODO: the limelight needs to be turned on before checking if it has a valid target
     new JoystickButton(m_secondaryController, Button.kB.value)
         .whileHeld(
-            new RampThenShoot(m_indexerSubsystem, m_shooterSubsystem,
-                m_limelight, m_driverController));
+            new RampThenShoot(
+                m_indexerSubsystem, m_shooterSubsystem, m_limelight, m_driverController));
 
     // Run the intake roller when A is held
     new JoystickButton(m_secondaryController, Button.kA.value)
@@ -147,9 +155,10 @@ public class RobotContainer {
         .whileHeld(new IntakeControl(m_intakeSubsystem, true));
 
     new JoystickButton(m_secondaryController, Button.kX.value)
-        .whileHeld(new ParallelCommandGroup(
-          new RunIntake(m_intakeSubsystem, true),
-          new RunUpperIndexer(m_indexerSubsystem, true)));
+        .whileHeld(
+            new ParallelCommandGroup(
+                new RunIntake(m_intakeSubsystem, true),
+                new RunUpperIndexer(m_indexerSubsystem, true)));
   }
 
   /**

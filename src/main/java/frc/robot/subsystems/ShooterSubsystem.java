@@ -7,10 +7,10 @@ package frc.robot.subsystems;
 import static frc.robot.Constants.ShooterConstants.*;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.hardware.Limelight;
@@ -20,8 +20,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // Flywheel motors & related devices
   // TODO: Figure out which one is left vs. right and name accordingly
-  private static CANSparkMax m_flywheelMotor = new CANSparkMax(kLeftMotorCANId, MotorType.kBrushless);
-  private static CANSparkMax m_flywheelMotor2 = new CANSparkMax(kLeftMotorCANId, MotorType.kBrushless);
+  private static CANSparkMax m_flywheelMotor =
+      new CANSparkMax(kLeftMotorCANId, MotorType.kBrushless);
+  private static CANSparkMax m_flywheelMotor2 =
+      new CANSparkMax(kLeftMotorCANId, MotorType.kBrushless);
 
   private RelativeEncoder m_flywheelEncoder = m_flywheelMotor.getEncoder();
   private SparkMaxPIDController m_mainPIDController = m_flywheelMotor.getPIDController();
@@ -68,7 +70,7 @@ public class ShooterSubsystem extends SubsystemBase {
     controller.setD(kD);
     controller.setFF(kVVolts);
     controller.setOutputRange(kMinOutput, kMaxOutput);
-    
+
     int smartMotionSlot = 0;
     controller.setSmartMotionMaxVelocity(kMaxVel, smartMotionSlot);
     controller.setSmartMotionMinOutputVelocity(kMinVel, smartMotionSlot);

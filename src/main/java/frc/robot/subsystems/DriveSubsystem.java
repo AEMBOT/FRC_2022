@@ -7,9 +7,9 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -272,8 +272,10 @@ public class DriveSubsystem extends SubsystemBase {
     m_drive.feed();
     if (turning) {
       int pidSlot = 1;
-      m_rightController.setReference(right, ControlType.kSmartMotion, pidSlot, 0.04, ArbFFUnits.kPercentOut);
-      m_leftController.setReference(left, ControlType.kSmartMotion, pidSlot, 0.04, ArbFFUnits.kPercentOut);
+      m_rightController.setReference(
+          right, ControlType.kSmartMotion, pidSlot, 0.04, ArbFFUnits.kPercentOut);
+      m_leftController.setReference(
+          left, ControlType.kSmartMotion, pidSlot, 0.04, ArbFFUnits.kPercentOut);
     } else {
       int pidSlot = 0;
       m_rightController.setReference(right, ControlType.kSmartMotion, pidSlot);

@@ -31,7 +31,7 @@ public class Limelight {
       this.value = value;
     }
   }
-  
+
   // Creates uninitialized variables to hold limelight table, x offset, y offset
   // and object area
   private NetworkTableEntry m_tx;
@@ -89,4 +89,3 @@ public class Limelight {
     m_camMode.setNumber(mode.value);
   }
 }
-
