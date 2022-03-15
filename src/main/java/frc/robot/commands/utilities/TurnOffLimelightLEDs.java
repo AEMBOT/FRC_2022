@@ -15,4 +15,9 @@ public class TurnOffLimelightLEDs extends CommandBase {
   public void execute() {
     m_limelight.setLEDMode(LEDMode.Off);
   }
+
+  @Override
+  public boolean isFinished() {
+    return true;
+  }
 }
