@@ -3,32 +3,24 @@ package frc.robot.commands.intake;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
 
-public class RunIntake extends CommandBase {
+public class LowerAndSpinIntake extends CommandBase {
     private IntakeSubsystem m_intake;
-    private boolean m_reverse;
 
-    public RunIntake(IntakeSubsystem intake) {
-        this(intake, false);
-    }
-
-    public RunIntake(IntakeSubsystem intake, boolean reverse) {
+    public LowerAndSpinIntake(IntakeSubsystem intake) {
         m_intake = intake;
-        m_reverse = reverse;
         addRequirements(m_intake);
     }
 
     @Override
     public void execute() {
-        m_intake.runRollerAtMaxPower(m_reverse);
+        m_intake.lowerIntake();
+        m_intake.runRollerAtMaxPower(false);
     }
 
     @Override
     public void end(boolean _interrupted) {
+        // Stop the intake roller and bring it back up
         m_intake.setRPM(0);
-    }
-
-    @Override
-    public boolean isFinished() {
-        return false;
+        m_intake.raiseIntake();
     }
 }

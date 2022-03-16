@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -29,6 +30,8 @@ public class IntakeSubsystem extends SubsystemBase {
   private final RelativeEncoder m_liftRightEncoder = liftRight.getEncoder();
   private final RelativeEncoder m_indexEntryEncoder = indexEntryRoller.getEncoder();
 
+  private SparkMaxPIDController m_rightcontroller = liftRight.getPIDController();
+
   // whether the subsystem is successfully homed to its max point
   private boolean homingComplete = false;
 
@@ -52,13 +55,16 @@ public class IntakeSubsystem extends SubsystemBase {
 
     liftLeft.setIdleMode(CANSparkMax.IdleMode.kBrake);
     liftRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
-    
+
     // set the left side to follow the right side, invert=false
     liftLeft.follow(liftRight, true);
+    disableLiftSoftLimits();
 
     // set the position conversion factors for the lift encoders
     m_liftLeftEncoder.setPositionConversionFactor(factor);
     m_liftRightEncoder.setPositionConversionFactor(factor);
+
+    setHome(0, 90);
   }
 
   /** set the intake mechanism to run at the target RPM */
@@ -67,8 +73,12 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeRoller.setVelocity(rpm * kGearRatio);
   }
 
-  public void runRollerAtMaxPower() {
-    intakeRoller.set(0.75);
+  public void runRollerAtMaxPower(boolean invert) {
+    if (invert) {
+      intakeRoller.set(-0.75);
+    } else {
+      intakeRoller.set(0.75);
+    }
   }
 
   public void toggleRoller() {
@@ -76,7 +86,7 @@ public class IntakeSubsystem extends SubsystemBase {
       intakeRoller.set(0);
       rollerRunning = false;
     } else {
-      runRollerAtMaxPower();
+      runRollerAtMaxPower(false);
       rollerRunning = true;
     }
   }
@@ -88,15 +98,23 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     // Enable forward and reverse soft limits for the lift motors
-    enableLiftSoftLimits();
+    // enableLiftSoftLimits();
 
     // Set the soft limits for the lift motors
-    setLiftSoftLimits((float) max, (float) min);
+    // setLiftSoftLimits((float) max, (float) min);
 
     m_lowestAllowedPosition = min;
     m_highestAllowedPosition = max;
 
     homingComplete = true;
+  }
+
+  public void lowerIntake() {
+    m_rightcontroller.setReference(m_highestAllowedPosition, CANSparkMax.ControlType.kPosition);
+  }
+
+  public void raiseIntake() {
+    m_rightcontroller.setReference(m_lowestAllowedPosition, CANSparkMax.ControlType.kPosition);
   }
 
   public void enableLiftSoftLimits() {
@@ -141,6 +159,6 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Lift", liftLeft.getOutputCurrent());
-
+    SmartDashboard.putNumber("Lift Position", m_liftLeftEncoder.getPosition());
   }
 }

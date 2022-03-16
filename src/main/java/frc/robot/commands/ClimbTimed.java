@@ -23,17 +23,18 @@ public class ClimbTimed extends SequentialCommandGroup {
 
         // send hooks up
         new InstantCommand(climber::setExtending, climber),
-        new WaitCommand(1.5),
+        new WaitCommand(1.25),
         new InstantCommand(climber::setCoasting, climber),
-        new WaitCommand(3),
+        //new WaitCommand(2),
 
         new WaitUntilCommand(condition_button_press),
 
         // retract hooks
         new InstantCommand(climber::setRetracting, climber),
-        new WaitCommand(1.5),
+        new WaitCommand(2.2),
+
         new InstantCommand(climber::setCoasting, climber),
-        new WaitCommand(3),
+        new WaitCommand(1),
 
         new WaitUntilCommand(condition_button_press),
 
@@ -60,31 +61,33 @@ public class ClimbTimed extends SequentialCommandGroup {
         // hooks are offset, aligned for second bar
 
         // continue to send main cylinders up (to full length)
-        new WaitCommand(0.65),
+        new WaitCommand(0.85),
         new InstantCommand(climber::setCoasting, climber),
-        new WaitCommand(0.7),
+        new WaitCommand(2.0),
 
         new WaitUntilCommand(condition_button_press),
 
         // adjust angle to attach hooks to second bar
         new InstantCommand(climber::verticalMainCylinders, climber),
+        new WaitCommand(4.0),
         // give them a little time to vertical enough
 
         new WaitUntilCommand(condition_button_press),
 
         // retract hooks halfway
         new InstantCommand(climber::setRetracting, climber),
-        new WaitCommand(1.0),
+        new WaitCommand(3),
+        /*
         new InstantCommand(climber::setCoasting, climber),
         new WaitCommand(0.35),
+        */
 
-        new WaitUntilCommand(condition_button_press),
-
-        // retract hooks fully
-        new InstantCommand(climber::setRetracting, climber),
-        new WaitCommand(1.5),
+        // new InstantCommand(climber::setRetracting, climber),
+        // new WaitCommand(1.5),
+        /*
         new InstantCommand(climber::setCoasting, climber),
         new WaitCommand(0.35),
+        */
 
         /// REPEATED FROM ABOVE, except for slight "wait" differences
         new WaitUntilCommand(condition_button_press),
@@ -117,20 +120,14 @@ public class ClimbTimed extends SequentialCommandGroup {
 
         // adjust angle to attach hooks to second bar
         new InstantCommand(climber::verticalMainCylinders, climber),
+
         // give them a little time to extend enough
+        new WaitCommand(5.0),
 
         new WaitUntilCommand(condition_button_press),
 
-        // retract hooks halfway
-        new InstantCommand(climber::setRetracting, climber),
-        new WaitCommand(0.75),
-        new InstantCommand(climber::setCoasting, climber),
-        new WaitCommand(0.15),
 
         // retract hooks fully
-        new InstantCommand(climber::setRetracting, climber),
-        new WaitCommand(2.67),
-        new InstantCommand(climber::setCoasting, climber),
-        new WaitCommand(0.33)); // end command list
+        new InstantCommand(climber::setRetracting, climber));
   }
 }

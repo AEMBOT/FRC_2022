@@ -17,6 +17,10 @@ import frc.robot.subsystems.ShooterSubsystem;
 public class RampThenShoot extends SequentialCommandGroup {
     private LimeLightTargeting m_limelight;
 
+    public RampThenShoot(IndexerSubsystem indexer, ShooterSubsystem shooter, LimeLightTargeting limelight) {
+        this(indexer, shooter, limelight, null);
+    }
+
     public RampThenShoot(IndexerSubsystem indexer, ShooterSubsystem shooter, LimeLightTargeting limelight, XboxController driverController) {
         m_limelight = limelight;
         addCommands(
@@ -26,10 +30,10 @@ public class RampThenShoot extends SequentialCommandGroup {
 
             // Ramp up the shooter to the desired power, rumbling the driver controller if there's no detected target
             new ParallelCommandGroup(
-                new RampShooter(shooter).withTimeout(0.33),
+                new RampShooter(shooter).withTimeout(1),
                 new ConditionalCommand(
-                    new Noop(), new TimedRumble(driverController, 0.25, 0.5), 
-                    limelight::hasValidTarget)
+                    new Noop(), new TimedRumble(driverController, 0.25, 0.5),
+                    () -> limelight.hasValidTarget() || driverController == null)
             ),
 
             // Run the shooter and upper indexer belt at the same time after ramping up the shooter power
@@ -45,6 +49,6 @@ public class RampThenShoot extends SequentialCommandGroup {
         super.end(interrupted);
 
         // Turn off the limelight LED after canceling all of the commands
-        m_limelight.turnOffLED();
+        // m_limelight.turnOffLED();
     }
 }

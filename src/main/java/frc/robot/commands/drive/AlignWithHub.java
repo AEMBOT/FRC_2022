@@ -63,7 +63,7 @@ public class AlignWithHub extends ProfiledPIDCommand {
 
   @Override
   public void end(boolean _interrupted) {
-    m_limelight.turnOffLED();
+    // m_limelight.turnOffLED();
     m_startupTimer.stop();
     m_startupTimer.reset();
   }
@@ -71,6 +71,7 @@ public class AlignWithHub extends ProfiledPIDCommand {
   @Override
   public boolean isFinished() {
     // The command finishes once the robot is done turning
-    return m_startupTimer.get() > 0.2 && m_controller.atGoal();
+    // return m_startupTimer.get() > 0.2 && m_controller.atGoal();
+    return m_controller.atGoal();
   }
 }

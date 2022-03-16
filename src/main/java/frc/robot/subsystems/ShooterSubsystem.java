@@ -228,7 +228,7 @@ public class ShooterSubsystem extends SubsystemBase {
     NetworkTableEntry tv = limelightTable.getEntry("tv");
     double yAngle = ty.getDouble(0.0);
     double hasTarget = tv.getDouble(0.0);
-    double defaultAngle = 5;
+    double defaultAngle = 12;
     double rpm;
     if (hasTarget == 0){
       yAngle = defaultAngle;

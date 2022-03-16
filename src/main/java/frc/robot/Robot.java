@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.util.net.PortForwarder;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -28,6 +29,12 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    m_robotContainer.turnOnLimelightLED();
+
+    // Forward limelight ports over USB
+    // PortForwarder.add(5800, "10.64.43.205", 5800);
+    // PortForwarder.add(5801, "10.64.43.205", 5801);
+    // PortForwarder.add(5805, "10.64.43.205", 5805);
   }
 
   /**

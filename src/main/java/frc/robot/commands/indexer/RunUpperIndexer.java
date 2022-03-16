@@ -5,15 +5,21 @@ import frc.robot.subsystems.IndexerSubsystem;
 
 public class RunUpperIndexer extends CommandBase {
     private IndexerSubsystem m_indexer;
+    private int powerMultiplier;
+
+    public RunUpperIndexer(IndexerSubsystem indexer, boolean invert) {
+        m_indexer = indexer;
+        powerMultiplier = invert ? -1 : 1;
+        addRequirements(indexer);
+    }
 
     public RunUpperIndexer(IndexerSubsystem indexer) {
-        m_indexer = indexer;
-        addRequirements(indexer);
+        this(indexer, false);
     }
 
     @Override
     public void execute() {
-        m_indexer.powerExitSide(0.7);
+        m_indexer.powerExitSide(powerMultiplier * 0.7);
     }
 
     @Override
