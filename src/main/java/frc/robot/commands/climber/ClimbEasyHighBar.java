@@ -8,25 +8,19 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.hardware.Limelight;
 import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.LimeLightTargeting;
 import java.util.function.BooleanSupplier;
 
 public class ClimbEasyHighBar extends SequentialCommandGroup {
 
   public ClimbEasyHighBar(
-      ClimberSubsystem climber,
-      LimeLightTargeting limelight,
-      BooleanSupplier condition_button_press) {
-
+      ClimberSubsystem climber, Limelight limelight, BooleanSupplier condition_button_press) {
     // Take out the air cutoffs so it's an easy straightforward climb to
     // the high bar
     BooleanSupplier condition = condition_button_press;
 
     addCommands(
-        // Turn off the limelight so drivers don't get blinded
-        new InstantCommand(limelight::turnOffLED),
-
         // Default state
         new InstantCommand(climber::setRetracting, climber),
         new InstantCommand(climber::verticalMainCylinders, climber),

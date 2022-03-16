@@ -8,17 +8,18 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
+import frc.robot.hardware.Limelight;
+import frc.robot.hardware.Limelight.LEDMode;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.LimeLightTargeting;
 
 public class AlignWithHub extends ProfiledPIDCommand {
   private static final SimpleMotorFeedforward m_feedforward =
       new SimpleMotorFeedforward(kSVolts, kVVoltDegreesPerSecond);
   private DriveSubsystem m_drive;
-  private LimeLightTargeting m_limelight;
+  private Limelight m_limelight;
   private final Timer m_startupTimer = new Timer();
 
-  public AlignWithHub(DriveSubsystem drive, LimeLightTargeting limelight) {
+  public AlignWithHub(DriveSubsystem drive, Limelight limelight) {
     super(
         new ProfiledPIDController(
             kP,
@@ -44,7 +45,7 @@ public class AlignWithHub extends ProfiledPIDCommand {
   public void initialize() {
     // Make sure to reset the heading before resetting the internal PID controller
     m_drive.resetHeading();
-    m_limelight.turnOnLED();
+    m_limelight.setLEDMode(LEDMode.On);
     m_startupTimer.start();
     super.initialize();
   }
