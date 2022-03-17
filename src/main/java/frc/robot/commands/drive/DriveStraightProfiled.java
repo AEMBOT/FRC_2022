@@ -10,6 +10,9 @@ import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class DriveStraightProfiled extends ProfiledPIDCommand {
+  //if true smartdashboard will update
+  private boolean m_debug = false;
+  
   private static SimpleMotorFeedforward m_feedforward =
       new SimpleMotorFeedforward(kSVolts, kVVoltMetersPerSecond);
 
@@ -32,6 +35,7 @@ public class DriveStraightProfiled extends ProfiledPIDCommand {
 
   @Override
   public void execute() {
+    
     SmartDashboard.putNumber("Setpoint Velocity", getController().getSetpoint().velocity);
     SmartDashboard.putNumber(
         "Actual Velocity",
