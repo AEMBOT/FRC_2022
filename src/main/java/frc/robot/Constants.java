@@ -81,6 +81,13 @@ public final class Constants {
     public static final int kRightCenter = 2;
     public static final int kRightBack = 3;
 
+    // Speed/power limits during teleop
+    public static final double kMaxForwardPower = 1.0;
+    public static final double kMaxRotationPower = 0.6;
+
+    // Controller stick deadband while driving
+    public static final double kJoystickDeadband = 0.1;
+
     // Split PID-related constants based on whether robot is turning/going straight
     public static final class StraightPID {
       // Basic PID constants

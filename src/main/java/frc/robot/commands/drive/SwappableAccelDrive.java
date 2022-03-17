@@ -1,5 +1,7 @@
 package frc.robot.commands.drive;
 
+import static frc.robot.Constants.DriveConstants.*;
+
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
@@ -19,14 +21,10 @@ public class SwappableAccelDrive extends CommandBase {
   SlewRateLimiter m_defenseSlewLimiter = new SlewRateLimiter(2.5);
 
   // Acceleration limiter for turning
-  SlewRateLimiter m_turningSlewLimiter = new SlewRateLimiter(2.0);
+  SlewRateLimiter m_rotationSlewLimiter = new SlewRateLimiter(2.0);
 
   // For acceleration swapping purposes
   double m_previousForwardPower = 0;
-
-  // Drive at full speed for driver practice
-  private double m_speedMultiplier = 1.0;
-  private double m_rotationMultiplier = 0.6;
 
   // Used to swap between faster/slower speeds
   BooleanSupplier m_changeMode;
@@ -54,7 +52,7 @@ public class SwappableAccelDrive extends CommandBase {
   @Override
   public void execute() {
     // Log the powers to the dashboard
-    double forwardPower = m_speedMultiplier * -m_left.getAsDouble();
+    double forwardPower = kMaxForwardPower * -m_left.getAsDouble();
 
     // Use different slew limiters depending on whether "defense mode" is enabled
     if (m_defenseMode) {
@@ -63,8 +61,8 @@ public class SwappableAccelDrive extends CommandBase {
       forwardPower = m_forwardSlewLimiter.calculate(forwardPower);
     }
 
-    double rotationPower = m_rotationMultiplier * -m_right.getAsDouble();
-    rotationPower = m_turningSlewLimiter.calculate(rotationPower);
+    double rotationPower = kMaxRotationPower * -m_right.getAsDouble();
+    rotationPower = m_rotationSlewLimiter.calculate(rotationPower);
 
     m_drive.arcadeDrive(forwardPower, rotationPower, true);
   }

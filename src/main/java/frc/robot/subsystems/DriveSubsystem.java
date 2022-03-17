@@ -74,7 +74,7 @@ public class DriveSubsystem extends SubsystemBase {
     setupEncoderConversions();
 
     // Configure a deadband of 0.1 for arcade/tank drive
-    m_drive.setDeadband(0.1);
+    m_drive.setDeadband(kJoystickDeadband);
 
     // Initialize the tracking of the robot's position on the field
     m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
