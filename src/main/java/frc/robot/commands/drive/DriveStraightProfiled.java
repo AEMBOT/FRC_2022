@@ -35,15 +35,15 @@ public class DriveStraightProfiled extends ProfiledPIDCommand {
 
   @Override
   public void execute() {
-    
-    SmartDashboard.putNumber("Setpoint Velocity", getController().getSetpoint().velocity);
-    SmartDashboard.putNumber(
-        "Actual Velocity",
-        getController().getSetpoint().velocity + getController().getVelocityError());
-    SmartDashboard.putNumber("Measurement", m_measurement.getAsDouble());
-    SmartDashboard.putBoolean("At goal", getController().atGoal());
-    SmartDashboard.putNumber("Goal: ", getController().getGoal().position);
-
+    if (m_debug) {
+      SmartDashboard.putNumber("Setpoint Velocity", getController().getSetpoint().velocity);
+      SmartDashboard.putNumber(
+          "Actual Velocity",
+          getController().getSetpoint().velocity + getController().getVelocityError());
+      SmartDashboard.putNumber("Measurement", m_measurement.getAsDouble());
+      SmartDashboard.putBoolean("At goal", getController().atGoal());
+      SmartDashboard.putNumber("Goal: ", getController().getGoal().position);
+    }
     super.execute();
   }
 

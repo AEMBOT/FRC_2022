@@ -10,7 +10,9 @@ import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class TurnToAngleProfiled extends ProfiledPIDCommand {
-
+  //if true smartdashboard will update
+  private boolean m_debug = false;
+  
   private static final SimpleMotorFeedforward m_feedforward =
       new SimpleMotorFeedforward(kSVolts, kVVoltDegreesPerSecond);
   private DriveSubsystem m_drive;
@@ -48,13 +50,14 @@ public class TurnToAngleProfiled extends ProfiledPIDCommand {
 
   @Override
   public void execute() {
-    SmartDashboard.putNumber("Setpoint Velocity", getController().getSetpoint().velocity);
-    SmartDashboard.putNumber(
-        "Current Velocity",
-        super.getController().getSetpoint().velocity + getController().getVelocityError());
-    SmartDashboard.putNumber(
-        "Profiled turn power", m_feedforward.calculate(getController().getSetpoint().velocity));
-
+    if (m_debug){
+      SmartDashboard.putNumber("Setpoint Velocity", getController().getSetpoint().velocity);
+      SmartDashboard.putNumber(
+          "Current Velocity",
+          super.getController().getSetpoint().velocity + getController().getVelocityError());
+      SmartDashboard.putNumber(
+          "Profiled turn power", m_feedforward.calculate(getController().getSetpoint().velocity));
+    }
     super.execute();
   }
 
