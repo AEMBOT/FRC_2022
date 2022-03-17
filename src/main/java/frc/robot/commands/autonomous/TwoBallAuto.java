@@ -6,8 +6,9 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.drive.AlignWithHubSmart;
 import frc.robot.commands.drive.DriveStraightSmart;
-import frc.robot.commands.intake.IntakeControl;
+import frc.robot.commands.intake.RunIntakeLift;
 import frc.robot.commands.shooter.RampShooter;
+import frc.robot.commands.utilities.enums.LiftDirection;
 import frc.robot.hardware.Limelight;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
@@ -23,7 +24,8 @@ public class TwoBallAuto extends SequentialCommandGroup {
       Limelight limelight) {
     drive.setBrakeMode();
     addCommands(
-        new IntakeControl(intake, true),
+        // TODO: This is untested
+        new RunIntakeLift(intake, LiftDirection.Down),
         new WaitCommand(2),
         new DriveStraightSmart(Units.inchesToMeters(-55.5), drive),
         new WaitCommand(2),

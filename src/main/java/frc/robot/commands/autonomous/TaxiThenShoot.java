@@ -21,7 +21,7 @@ public class TaxiThenShoot extends SequentialCommandGroup {
       Limelight limelight) {
     addCommands(
         // Turn on the intake
-        new InstantCommand(() -> intake.runRollerAtMaxPower(false), intake),
+        new InstantCommand(intake::runRollerInwards, intake),
 
         // Run the intake while driving away from the hub
         // TODO: Tune this distance
@@ -35,6 +35,6 @@ public class TaxiThenShoot extends SequentialCommandGroup {
         new RampThenShoot(indexer, shooter, limelight).withTimeout(5),
 
         // Stop running the intake
-        new InstantCommand(() -> intake.setRPM(0), intake));
+        new InstantCommand(intake::stopRoller, intake));
   }
 }

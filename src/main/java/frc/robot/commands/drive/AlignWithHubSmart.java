@@ -15,8 +15,7 @@ public class AlignWithHubSmart extends SequentialCommandGroup {
         new WaitCommand(0.2),
 
         // Turn towards the hub
-        new TurnToAngleSmart(() -> -limelight.getX(), drive).withTimeout(0.5)
-        );
+        new TurnToAngleSmart(() -> -limelight.getX(), drive).withTimeout(0.5));
   }
 
   @Override

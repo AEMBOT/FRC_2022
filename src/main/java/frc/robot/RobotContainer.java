@@ -21,9 +21,11 @@ import frc.robot.commands.climber.ClimbTimed;
 import frc.robot.commands.drive.AlignWithHubSmart;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.indexer.RunUpperIndexer;
-import frc.robot.commands.intake.IntakeControl;
-import frc.robot.commands.intake.RunIntake;
+import frc.robot.commands.intake.RunIntakeLift;
+import frc.robot.commands.intake.RunIntakeRoller;
 import frc.robot.commands.shooter.RampThenShoot;
+import frc.robot.commands.utilities.enums.CargoDirection;
+import frc.robot.commands.utilities.enums.LiftDirection;
 import frc.robot.hardware.Limelight;
 import frc.robot.hardware.Limelight.LEDMode;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -132,20 +134,21 @@ public class RobotContainer {
 
     // Run the intake roller when A is held
     new JoystickButton(m_secondaryController, Button.kA.value)
-        .whileHeld(new RunIntake(m_intakeSubsystem));
+        .whileHeld(new RunIntakeRoller(m_intakeSubsystem, CargoDirection.Intake));
 
     // Move the intake lift up
     new JoystickButton(m_secondaryController, Button.kLeftBumper.value)
-        .whileHeld(new IntakeControl(m_intakeSubsystem, false));
+        .whileHeld(new RunIntakeLift(m_intakeSubsystem, LiftDirection.Up));
 
     // Move the intake lift down
     new JoystickButton(m_secondaryController, Button.kRightBumper.value)
-        .whileHeld(new IntakeControl(m_intakeSubsystem, true));
+        .whileHeld(new RunIntakeLift(m_intakeSubsystem, LiftDirection.Down));
 
+    // Eject any cargo in the indexer/intake
     new JoystickButton(m_secondaryController, Button.kX.value)
         .whileHeld(
             new ParallelCommandGroup(
-                new RunIntake(m_intakeSubsystem, true),
+                new RunIntakeRoller(m_intakeSubsystem, CargoDirection.Eject),
                 new RunUpperIndexer(m_indexerSubsystem, true)));
   }
 

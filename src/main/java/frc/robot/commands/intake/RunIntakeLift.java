@@ -5,45 +5,42 @@
 package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
+import frc.robot.commands.utilities.enums.LiftDirection;
 import frc.robot.subsystems.IntakeSubsystem;
 
-/** Homes the intake to its "max" point. */
-public class HomeIntakeCommand extends CommandBase {
-  private final IntakeSubsystem m_intake;
+public class RunIntakeLift extends CommandBase {
+  private IntakeSubsystem m_intake;
+  private LiftDirection m_direction;
 
   /**
-   * Creates a new HomeIntakeCommand.
+   * Creates a new RunIntakeLift.
    *
-   * @param intake The subsystem used by this command.
+   * @param intake The robot's {@link IntakeSubsystem} instance.
    */
-  public HomeIntakeCommand(IntakeSubsystem intake) {
+  public RunIntakeLift(IntakeSubsystem intake, LiftDirection direction) {
     m_intake = intake;
-    addRequirements(m_intake);
+    m_direction = direction;
+    addRequirements(intake);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // TODO: We might want to do this at a lower power
-    m_intake.raiseIntake();
+    if (m_direction == LiftDirection.Up) {
+      m_intake.raiseIntake();
+    } else if (m_direction == LiftDirection.Down) {
+      m_intake.lowerIntake();
+    }
   }
-
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     m_intake.stopLift();
-
-    if (!interrupted) {
-      double max = m_intake.getLiftPosition();
-      double min = max - Constants.IntakeConstants.kLiftRangeOfMotion;
-      m_intake.setHome(min, max);
-    }
   }
 
   @Override
   public boolean isFinished() {
-    // Stop the command when the intake starts drawing too much current
+    // Stop when the intake hits the robot or ground
     return m_intake.isAtHardLimit();
   }
 }
