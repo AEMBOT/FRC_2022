@@ -12,6 +12,8 @@ import frc.robot.Constants;
 import frc.robot.hardware.ClosedLoopSparkMax;
 
 public class IntakeSubsystem extends SubsystemBase {
+  //if true smartdashboard will update
+  private boolean m_debug = false;
 
   // motor controllers
   private final CANSparkMax liftLeft =
@@ -142,7 +144,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public boolean isAtHardLimit() {
-    SmartDashboard.putNumber("Lift Current Draw", liftLeft.getOutputCurrent());
+    if (m_debug){SmartDashboard.putNumber("Lift Current Draw", liftLeft.getOutputCurrent());}
     return (liftLeft.getOutputCurrent() > Constants.IntakeConstants.kMaxExpectedCurrent ||
        liftRight.getOutputCurrent() > Constants.IntakeConstants.kMaxExpectedCurrent);
   }
@@ -158,7 +160,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Lift", liftLeft.getOutputCurrent());
-    SmartDashboard.putNumber("Lift Position", m_liftLeftEncoder.getPosition());
+    if (m_debug){
+      SmartDashboard.putNumber("Lift", liftLeft.getOutputCurrent());
+      SmartDashboard.putNumber("Lift Position", m_liftLeftEncoder.getPosition());
+    }
   }
 }

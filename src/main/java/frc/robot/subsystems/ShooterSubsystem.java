@@ -19,6 +19,8 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 
 public class ShooterSubsystem extends SubsystemBase {
+  //if true smartdashboard will update
+  private boolean m_debug = false;
 
   // Flywheel motors
   private static CANSparkMax flywheelMotor;
@@ -96,8 +98,8 @@ public class ShooterSubsystem extends SubsystemBase {
     flywheelMotor.set(targetPower);
     updateDashboard();
 
+    /*Smartdashboard - re-enable for testing as needed but leave commented out when not using
     double y = ty.getDouble(0.0);
-
     SmartDashboard.putNumber("LimelightY", y);
     SmartDashboard.putNumber("LimelightX", tx.getDouble(0.0));
 
@@ -105,13 +107,16 @@ public class ShooterSubsystem extends SubsystemBase {
     double fwhlM2ActualRpm = flywheel2Encoder.getVelocity();
     SmartDashboard.putNumber("Flywheel1 RPM", fwhlM1ActualRpm);
     SmartDashboard.putNumber("Flywheel2 RPM", fwhlM2ActualRpm);
+    */
   }
 
   private void updateDashboard() {
 
     // The current flywheel speed
-    SmartDashboard.putNumber("Fly-Wheel-RPM", getFlywheelRPM());
-    SmartDashboard.putNumber("Fly-Wheel-Target-Power", targetPower);
+    if (m_debug){
+      SmartDashboard.putNumber("Fly-Wheel-RPM", getFlywheelRPM());
+      SmartDashboard.putNumber("Fly-Wheel-Target-Power", targetPower);
+    }
   }
 
   /**
@@ -240,7 +245,8 @@ public class ShooterSubsystem extends SubsystemBase {
       rpm = 0;
     }
     m_pidController.setReference(rpm, CANSparkMax.ControlType.kVelocity);
-    SmartDashboard.putNumber("RPM", rpm);
+    //Smartdashboard - re-enable for testing as needed but leave commented out when not using
+    //SmartDashboard.putNumber("RPM", rpm);
   }
 
   public void stopShooter() {
@@ -254,14 +260,16 @@ public class ShooterSubsystem extends SubsystemBase {
     NetworkTableEntry ty = limelightTable.getEntry("ty"); // Y degrees
     double y = ty.getDouble(0.0);
     double rpm = returnRPM(y);
-    SmartDashboard.putNumber("rpmVal", rpm);
+    //Smartdashboard - re-enable for testing as needed but leave commented out when not using 
+    //SmartDashboard.putNumber("rpmVal", rpm);
     m_pidController.setReference(rpm, CANSparkMax.ControlType.kVelocity);
     //flywheelMotor.set(rpm);
     //flywheelMotor2.set(rpm);
 
     NetworkTableEntry tx = limelightTable.getEntry("tx");
     double angle = tx.getDouble(0.0);
-    SmartDashboard.putNumber("xFixDegrees", angle);
+    
+    if (m_debug) {SmartDashboard.putNumber("xFixDegrees", angle);}
     
     //TurnToAngleProfiled turn = new TurnToAngleProfiled(angle,m_driveSubsystem);
     // turn.TurnToAngleProfiled(angle,m_driveSubsystem); 

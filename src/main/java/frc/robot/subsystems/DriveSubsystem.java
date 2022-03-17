@@ -52,7 +52,7 @@ public class DriveSubsystem extends SubsystemBase {
   private double m_rightPosition = 0;
 
   // Whether or not to log debug information to the SmartDashboard
-  private final boolean m_debug = true;
+  private final boolean m_debug = false;
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
@@ -183,9 +183,12 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public void arcadeDrive(double speed, double rotation, boolean squareInputs) {
     m_drive.arcadeDrive(speed, rotation, squareInputs);
-    SmartDashboard.putNumber("Arcade forward", speed);
-    SmartDashboard.putNumber("Arcade rotation", Math.pow(rotation, 2));
-    /*
+    
+    if (m_debug){
+      SmartDashboard.putNumber("Arcade forward", speed);
+      SmartDashboard.putNumber("Arcade rotation", Math.pow(rotation, 2));
+    }
+      /*
 
     // Reimplement WPILib arcade drive so that we get setVoltage() functionality
     speed = MathUtil.applyDeadband(speed, DifferentialDrive.kDefaultDeadband);

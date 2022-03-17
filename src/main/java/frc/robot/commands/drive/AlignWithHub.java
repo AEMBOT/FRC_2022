@@ -12,6 +12,9 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.LimeLightTargeting;
 
 public class AlignWithHub extends ProfiledPIDCommand {
+  //if true smartdashboard will update
+  private boolean m_debug = false;
+  
   private static final SimpleMotorFeedforward m_feedforward =
       new SimpleMotorFeedforward(kSVolts, kVVoltDegreesPerSecond);
   private DriveSubsystem m_drive;
@@ -51,13 +54,14 @@ public class AlignWithHub extends ProfiledPIDCommand {
 
   @Override
   public void execute() {
-    SmartDashboard.putNumber("Setpoint Velocity", getController().getSetpoint().velocity);
-    SmartDashboard.putNumber(
-        "Current Velocity",
-        super.getController().getSetpoint().velocity + getController().getVelocityError());
-    SmartDashboard.putNumber(
-        "Profiled turn power", m_feedforward.calculate(getController().getSetpoint().velocity));
-
+    if (m_debug) {
+      SmartDashboard.putNumber("Setpoint Velocity", getController().getSetpoint().velocity);
+      SmartDashboard.putNumber(
+          "Current Velocity",
+          super.getController().getSetpoint().velocity + getController().getVelocityError());
+      SmartDashboard.putNumber(
+          "Profiled turn power", m_feedforward.calculate(getController().getSetpoint().velocity));
+    }
     super.execute();
   }
 

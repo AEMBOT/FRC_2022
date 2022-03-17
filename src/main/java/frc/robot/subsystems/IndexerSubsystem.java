@@ -18,6 +18,10 @@ import frc.robot.Constants;
 import frc.robot.hardware.ClosedLoopSparkMax;
 
 public class IndexerSubsystem extends SubsystemBase {
+  
+  //if true smartdashboard will update
+  private boolean m_debug = false;
+  
   // hardware constants
   private final I2C.Port PORT = I2C.Port.kOnboard;
 
@@ -46,7 +50,7 @@ public class IndexerSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // called once per scheduler run
-    // readSensorHSV();
+    readSensorHSV();
   }
 
   @Override
@@ -75,6 +79,7 @@ public class IndexerSubsystem extends SubsystemBase {
       color = Alliance.Invalid;
     }
 
+    //drivers use, dont remove
     SmartDashboard.putString("Color:", getColorString(color));
 
     return color;
@@ -104,7 +109,7 @@ public class IndexerSubsystem extends SubsystemBase {
 
   /** turns exit belts on or off */
   public void toggleExitSide() {
-    if (!running) {
+     if (!running) {
       powerExitSide(.7);
       running = true;
     } else {
@@ -150,7 +155,7 @@ public class IndexerSubsystem extends SubsystemBase {
     // compute v
     double v = cmax * 100;
 
-    // updates dashboard with latest RGB and HSV readings
+    if (m_debug) {
     SmartDashboard.putNumber("Red", red);
     SmartDashboard.putNumber("Blue", blue);
     SmartDashboard.putNumber("Green", green);
@@ -158,6 +163,7 @@ public class IndexerSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Hue", h);
     SmartDashboard.putNumber("Saturation", s);
     SmartDashboard.putNumber("Value", v);
+    }
 
     return new double[] {h, s, v};
   }

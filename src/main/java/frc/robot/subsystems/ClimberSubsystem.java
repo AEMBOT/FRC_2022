@@ -20,6 +20,9 @@ import static frc.robot.Constants.ClimberConstants.*;
 
 public class ClimberSubsystem extends SubsystemBase {
 
+  //if true smartdashboard will update
+  private boolean m_debug = false;
+
   public enum ClimberState {
     kExtending,
     kRetracting,
@@ -81,19 +84,21 @@ public class ClimberSubsystem extends SubsystemBase {
         (1000 * (m_currentDistance - m_previousDistance))
             / ((double) m_currentTimestamp - m_previousTimestamp);
 
-    SmartDashboard.putNumber("Distance diff (mm)", m_currentDistance - m_previousDistance);
-    SmartDashboard.putNumber("Timestamp diff (ms)", m_currentTimestamp - m_previousTimestamp);
-    SmartDashboard.putNumber("LIDAR distance (mm)", m_currentDistance);
-    SmartDashboard.putNumber("LIDAR velocity (mm/s)", m_currentVelocity);
+    if (m_debug){
+      SmartDashboard.putNumber("Distance diff (mm)", m_currentDistance - m_previousDistance);
+      SmartDashboard.putNumber("Timestamp diff (ms)", m_currentTimestamp - m_previousTimestamp);
+      SmartDashboard.putNumber("LIDAR distance (mm)", m_currentDistance);
+      SmartDashboard.putNumber("LIDAR velocity (mm/s)", m_currentVelocity);
+      SmartDashboard.putString("Climber state", climberState.toString());
+      SmartDashboard.putNumber("Angle X", m_accelerometer.getX());
+      SmartDashboard.putNumber("Angle Y", m_accelerometer.getY());
+      SmartDashboard.putNumber("Angle Z", m_accelerometer.getZ());
+    }
 
     m_previousDistance = m_currentDistance;
     m_previousTimestamp = m_currentTimestamp;
 
-    SmartDashboard.putString("Climber state", climberState.toString());
-
-    SmartDashboard.putNumber("Angle X", m_accelerometer.getX());
-    SmartDashboard.putNumber("Angle Y", m_accelerometer.getY());
-    SmartDashboard.putNumber("Angle Z", m_accelerometer.getZ());
+    
   }
 
   @Override

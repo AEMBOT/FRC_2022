@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * @author Will Richards, Goirick Saha
  */
 public class LimeLightTargeting extends SubsystemBase {
+  //if true smartdashboard will update
+  private boolean m_debug = false;
 
   // Creates uninitialized variables to hold limelight table, x offset, y offset
   // and object area
