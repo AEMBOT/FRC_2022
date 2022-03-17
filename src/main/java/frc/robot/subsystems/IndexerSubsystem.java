@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.IntakeConstants.*;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ColorSensorV3;
@@ -14,32 +16,24 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.hardware.ClosedLoopSparkMax;
 
 public class IndexerSubsystem extends SubsystemBase {
-  // hardware constants
-  private final I2C.Port PORT = I2C.Port.kOnboard;
+  // Belt motors
+  private final CANSparkMax m_lowerBelt =
+      new CANSparkMax(kIndexerUpperBottomBeltPort, MotorType.kBrushless);
+  private final CANSparkMax m_upperBelt =
+      new CANSparkMax(kIndexerTopBeltPort, MotorType.kBrushless);
+  ;
 
-  private final ColorSensorV3 m_sensor;
+  // Color sensor for detecting cargo
+  private final ColorSensorV3 m_colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
 
-  private final ClosedLoopSparkMax m_lowerBelt;
-  private final ClosedLoopSparkMax m_upperBelt;
-
-  private boolean running = false;
-  // creates new ExampleSubsystem
   public IndexerSubsystem() {
-    m_sensor = new ColorSensorV3(PORT);
-
-    m_lowerBelt =
-        new ClosedLoopSparkMax(
-            Constants.IntakeConstants.kIndexerUpperBottomBeltPort, MotorType.kBrushless);
-    m_upperBelt =
-        new ClosedLoopSparkMax(Constants.IntakeConstants.kIndexerTopBeltPort, MotorType.kBrushless);
-
+    // Indexer shouldn't continue moving after stopping
     m_lowerBelt.setIdleMode(CANSparkMax.IdleMode.kBrake);
     m_upperBelt.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
+    // Lower intake belt should follow the upper one
     m_lowerBelt.follow(m_upperBelt, true);
   }
 
@@ -49,10 +43,24 @@ public class IndexerSubsystem extends SubsystemBase {
     // readSensorHSV();
   }
 
-  @Override
-  public void simulationPeriodic() {
-    // this method will be called 1 per scheduler during sim
+  // INDEXER BELT CONTROL
+
+  /** Moves cargo towards the shooter. */
+  public void moveCargoUp() {
+    m_upperBelt.set(-0.7);
   }
+
+  /** Moves cargo down towards the intake. */
+  public void moveCargoDown() {
+    m_upperBelt.set(0.7);
+  }
+
+  /** Stops the upper intake belt. */
+  public void stopBelts() {
+    m_upperBelt.set(0);
+  }
+
+  // COLOR SENSOR READING
 
   /** Return the alliance that the loaded cargo belongs to */
   public Alliance getCargoAllianceColor() {
@@ -75,50 +83,18 @@ public class IndexerSubsystem extends SubsystemBase {
       color = Alliance.Invalid;
     }
 
-    SmartDashboard.putString("Color:", getColorString(color));
+    SmartDashboard.putString("Color:", color.toString());
 
     return color;
   }
 
-  public String getColorString(Alliance color) {
-
-    switch (getCargoAllianceColor()) {
-      case Blue:
-        return "BLUE";
-      case Red:
-        return "RED";
-      case Invalid:
-        return "NONE";
-      default:
-        return "IDK";
-    }
-  }
-  /** turns on exit belt */
-  public void powerExitSide(double motorPower) {
-    m_upperBelt.set(-motorPower);
-  }
-
-  public void stopExitSide() {
-    m_upperBelt.set(0);
-  }
-
-  /** turns exit belts on or off */
-  public void toggleExitSide() {
-    if (!running) {
-      powerExitSide(.7);
-      running = true;
-    } else {
-      powerExitSide(0);
-      running = false;
-    }
-  }
-
+  // TODO: Move this to the utilities folder?
   private double[] readSensorHSV() {
     double red, blue, green;
 
-    red = m_sensor.getRed();
-    blue = m_sensor.getBlue();
-    green = m_sensor.getGreen();
+    red = m_colorSensor.getRed();
+    blue = m_colorSensor.getBlue();
+    green = m_colorSensor.getGreen();
 
     // does math to make hsv
     red /= 255;

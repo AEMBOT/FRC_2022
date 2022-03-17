@@ -149,7 +149,7 @@ public class RobotContainer {
         .whileHeld(
             new ParallelCommandGroup(
                 new RunIntakeRoller(m_intakeSubsystem, CargoDirection.Eject),
-                new RunUpperIndexer(m_indexerSubsystem, true)));
+                new RunUpperIndexer(m_indexerSubsystem, CargoDirection.Eject)));
   }
 
   /**

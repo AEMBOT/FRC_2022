@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.indexer.RunUpperIndexer;
 import frc.robot.commands.utilities.Noop;
 import frc.robot.commands.utilities.TimedRumble;
+import frc.robot.commands.utilities.enums.CargoDirection;
 import frc.robot.hardware.Limelight;
 import frc.robot.hardware.Limelight.LEDMode;
 import frc.robot.subsystems.IndexerSubsystem;
@@ -40,7 +41,8 @@ public class RampThenShoot extends SequentialCommandGroup {
 
         // Run the upper indexer once the shooter is ramped up
         new ParallelCommandGroup(
-            new RunShooterWithLimelight(shooter), new RunUpperIndexer(indexer)));
+            new RunShooterWithLimelight(shooter),
+            new RunUpperIndexer(indexer, CargoDirection.Intake)));
   }
 
   @Override

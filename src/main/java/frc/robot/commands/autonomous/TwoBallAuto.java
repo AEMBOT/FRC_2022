@@ -25,8 +25,9 @@ public class TwoBallAuto extends SequentialCommandGroup {
     drive.setBrakeMode();
     addCommands(
         // TODO: This is untested
-        new RunIntakeLift(intake, LiftDirection.Down),
+        new InstantCommand(intake::lowerIntake, intake),
         new WaitCommand(2),
+        new InstantCommand(intake::stopLift, intake),
         new DriveStraightSmart(Units.inchesToMeters(-55.5), drive),
         new WaitCommand(2),
         // lower & run intake/lower indexer
@@ -38,6 +39,6 @@ public class TwoBallAuto extends SequentialCommandGroup {
         new RampShooter(shooter).withTimeout(3),
 
         // Stop the indexer
-        new InstantCommand(() -> indexer.toggleExitSide(), indexer));
+        new InstantCommand(indexer::stopBelts, indexer));
   }
 }

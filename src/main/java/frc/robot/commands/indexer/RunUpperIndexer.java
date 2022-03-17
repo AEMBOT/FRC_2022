@@ -1,29 +1,29 @@
 package frc.robot.commands.indexer;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.commands.utilities.enums.CargoDirection;
 import frc.robot.subsystems.IndexerSubsystem;
 
 public class RunUpperIndexer extends CommandBase {
   private IndexerSubsystem m_indexer;
-  private int powerMultiplier;
+  private CargoDirection m_direction;
 
-  public RunUpperIndexer(IndexerSubsystem indexer, boolean invert) {
+  public RunUpperIndexer(IndexerSubsystem indexer, CargoDirection direction) {
     m_indexer = indexer;
-    powerMultiplier = invert ? -1 : 1;
     addRequirements(indexer);
-  }
-
-  public RunUpperIndexer(IndexerSubsystem indexer) {
-    this(indexer, false);
   }
 
   @Override
   public void execute() {
-    m_indexer.powerExitSide(powerMultiplier * 0.7);
+    if (m_direction == CargoDirection.Intake) {
+      m_indexer.moveCargoUp();
+    } else if (m_direction == CargoDirection.Eject) {
+      m_indexer.moveCargoDown();
+    }
   }
 
   @Override
   public void end(boolean _interrupted) {
-    m_indexer.stopExitSide();
+    m_indexer.stopBelts();
   }
 }
