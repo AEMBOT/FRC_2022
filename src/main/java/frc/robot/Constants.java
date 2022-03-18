@@ -16,16 +16,14 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public final class ClimberConstants {
-    public static final int ClimbSolenoidLeftExtend = 0;
-    public static final int ClimbSolenoidLeftRetract = 1;
-    public static final int ClimbSolenoidLeftChoke = 2;
+    public static final int ClimbSolenoidRight = 0;
+    public static final int ClimbSolenoidRightChoke = 1;
+    
+    public static final int ClimbSolenoidLeft = 7;
+    public static final int ClimbSolenoidLeftChoke = 6;
 
-    public static final int ClimbSolenoidRightExtend = 3;
-    public static final int ClimbSolenoidRightRetract = 4;
-    public static final int ClimbSolenoidRightChoke = 5;
+    public static final int AngleSolenoid = 3;
 
-    public static final int AngleSolenoidExtend = 7;
-    public static final int AngleSolenoidRetract = 6;
   }
 
   public static final class ShooterConstants {

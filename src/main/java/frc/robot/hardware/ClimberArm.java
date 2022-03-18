@@ -8,23 +8,23 @@ import edu.wpi.first.wpilibj.Solenoid;
 public class ClimberArm {
 
   // the solenoid that controls the piston
-  private DoubleSolenoid controlSolenoid;
+  private Solenoid controlSolenoid;
 
   // the solenoid that controls airflow to the control solenoid
   private Solenoid flowSolenoid;
 
-  public ClimberArm(int extendPort, int retractPort, int flowControlPort) {
-    controlSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, extendPort, retractPort);
+  public ClimberArm(int port, int flowControlPort) {
+    controlSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, port);
     flowSolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, flowControlPort);
   }
 
   public void extendArm() {
-    controlSolenoid.set(Value.kForward);
+    controlSolenoid.set(true);
     flowSolenoid.set(false);
   }
 
   public void retractArm() {
-    controlSolenoid.set(Value.kReverse);
+    controlSolenoid.set(false);
     flowSolenoid.set(false);
   }
 
