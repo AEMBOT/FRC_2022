@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.climber;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -25,17 +25,15 @@ public class ClimbTimed extends SequentialCommandGroup {
         new InstantCommand(climber::setExtending, climber),
         new WaitCommand(1.25),
         new InstantCommand(climber::setCoasting, climber),
-        //new WaitCommand(2),
+        // new WaitCommand(2),
 
         new WaitUntilCommand(condition_button_press),
 
         // retract hooks
         new InstantCommand(climber::setRetracting, climber),
         new WaitCommand(2.2),
-
         new InstantCommand(climber::setCoasting, climber),
         new WaitCommand(1),
-
         new WaitUntilCommand(condition_button_press),
 
         // send hooks up
@@ -46,13 +44,11 @@ public class ClimbTimed extends SequentialCommandGroup {
         // But do it slowly-ish to prevent bouncing!
         new WaitCommand(0.15),
         new InstantCommand(climber::setCoasting, climber),
-
         new WaitUntilCommand(condition_button_press),
 
         // angle hooks
         // start angling a little after main cylinders start extending (want the hooks to disengage)
         new InstantCommand(climber::angleMainCylinders, climber),
-
         new WaitUntilCommand(condition_button_press),
 
         // Choose to not angle and extend at the same time for right now
@@ -64,7 +60,6 @@ public class ClimbTimed extends SequentialCommandGroup {
         new WaitCommand(0.85),
         new InstantCommand(climber::setCoasting, climber),
         new WaitCommand(2.0),
-
         new WaitUntilCommand(condition_button_press),
 
         // adjust angle to attach hooks to second bar
@@ -110,7 +105,7 @@ public class ClimbTimed extends SequentialCommandGroup {
         // Choose to not angle and extend at the same time for right now
         new InstantCommand(climber::setExtending, climber),
 
-          // continue to send main cylinders up (to full length)
+        // continue to send main cylinders up (to full length)
         new WaitCommand(1.8),
         new InstantCommand(climber::setCoasting, climber),
         new WaitCommand(0.3),
@@ -123,9 +118,7 @@ public class ClimbTimed extends SequentialCommandGroup {
 
         // give them a little time to extend enough
         new WaitCommand(5.0),
-
         new WaitUntilCommand(condition_button_press),
-
 
         // retract hooks fully
         new InstantCommand(climber::setRetracting, climber));

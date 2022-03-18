@@ -19,30 +19,33 @@ public final class Constants {
     public static final int ClimbSolenoidLeftExtend = 0;
     public static final int ClimbSolenoidLeftRetract = 1;
     public static final int ClimbSolenoidLeftChoke = 2;
-  
+
     public static final int ClimbSolenoidRightExtend = 3;
     public static final int ClimbSolenoidRightRetract = 4;
     public static final int ClimbSolenoidRightChoke = 5;
-  
+
     public static final int AngleSolenoidExtend = 7;
     public static final int AngleSolenoidRetract = 6;
   }
 
   public static final class ShooterConstants {
-    public static final int LeftMotorCANId = 13;
-    public static final int RightMotorCANId = 14;
+    public static final int kLeftMotorCANId = 13;
+    public static final int kRightMotorCANId = 14;
 
-    public static final double kvVolts = 0.000163;//0.002181818182; // Volts per RPM
-    public static final double P = 5e-5;
-    public static final double I = 1e-6;
-    public static final double D = 0.0000;
-    //public static final double FF = 0.000156;
-    public static final double maxVel = 5700;
-    public static final double minVel = 2400;
-    public static final double maxAcc = 1500;
-    public static final double maxOutput = 1;
-    public static final double minOutput = -1;
-    public static final double allowedError = 2; //read more on this and change the value probably
+    public static final double kVVolts = 0.000163; // 0.002181818182; // Volts per RPM
+    public static final double kP = 5e-5;
+    public static final double kI = 1e-6;
+    public static final double kD = 0.0000;
+    // public static final double kFF = 0.000156;
+    public static final double kMaxVel = 5700;
+    public static final double kMinVel = 2400;
+    public static final double kMaxAcc = 1500;
+    public static final double kMaxOutput = 1;
+    public static final double kMinOutput = -1;
+    public static final double kAllowedError = 2; // read more on this and change the value probably
+
+    // Default angle for RPM calculations
+    public static final double kDefaultYAngle = 12;
   }
 
   public static final class IntakeConstants {
@@ -77,6 +80,13 @@ public final class Constants {
     public static final int kRightFront = 1;
     public static final int kRightCenter = 2;
     public static final int kRightBack = 3;
+
+    // Speed/power limits during teleop
+    public static final double kMaxForwardPower = 1.0;
+    public static final double kMaxRotationPower = 0.6;
+
+    // Controller stick deadband while driving
+    public static final double kJoystickDeadband = 0.1;
 
     // Split PID-related constants based on whether robot is turning/going straight
     public static final class StraightPID {
@@ -130,15 +140,15 @@ public final class Constants {
 
       // Profiling
       public static final double kMaxVelocityDegreesPerSecond = 360 / 5;
-      public static final double kMaxAccelerationDegreesPerSecondSquared = 120;
+      public static final double kMaxAccelerationDegreesPerSecondSquared = 240;
 
       // Feedforward
       private static final double kSecondsPerRotation = .85; // works for dead-er battery
       private static final double kTestPower = 0.4;
 
-      public static final double kSVolts = 0.050;
-      public static final double kVVoltDegreesPerSecond =
-          (kTestPower - kSVolts) / (356.494 / kSecondsPerRotation);
+      public static final double kSVolts = 0.058;
+      public static final double kVVoltDegreesPerSecond = 0.0008;
+      // (kTestPower - kSVolts) / (356.494 / kSecondsPerRotation);
 
       public static final double kTurnToleranceDeg = 3.0;
       public static final double kTurnRateToleranceDegPerS = 20.0;

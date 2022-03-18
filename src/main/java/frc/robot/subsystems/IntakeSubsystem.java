@@ -1,164 +1,144 @@
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.IntakeConstants.*;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.hardware.ClosedLoopSparkMax;
 
 public class IntakeSubsystem extends SubsystemBase {
+  // Lift motors
+  private final CANSparkMax m_liftLeft = new CANSparkMax(kLiftLeftPort, MotorType.kBrushless);
+  private final CANSparkMax m_liftRight = new CANSparkMax(kLiftRightPort, MotorType.kBrushless);
 
-  // motor controllers
-  private final CANSparkMax liftLeft =
-      new CANSparkMax(Constants.IntakeConstants.kLiftLeftPort, MotorType.kBrushless);
-  private final CANSparkMax liftRight =
-      new CANSparkMax(Constants.IntakeConstants.kLiftRightPort, MotorType.kBrushless);
+  // Intake motors
+  private final CANSparkMax m_intakeRoller = new CANSparkMax(kRollerPort, MotorType.kBrushless);
+  private final CANSparkMax m_lowerIndexBelt =
+      new CANSparkMax(kIndexerLowerBottomBeltPort, MotorType.kBrushless);
 
-  private final ClosedLoopSparkMax intakeRoller =
-      new ClosedLoopSparkMax(Constants.IntakeConstants.kRollerPort, MotorType.kBrushless);
-  private final ClosedLoopSparkMax indexEntryRoller =
-      new ClosedLoopSparkMax(
-          Constants.IntakeConstants.kIndexerLowerBottomBeltPort, MotorType.kBrushless);
-
-  // Encoders
-  private final RelativeEncoder m_liftLeftEncoder = liftLeft.getEncoder();
-  private final RelativeEncoder m_liftRightEncoder = liftRight.getEncoder();
-  private final RelativeEncoder m_indexEntryEncoder = indexEntryRoller.getEncoder();
-
-  private SparkMaxPIDController m_rightcontroller = liftRight.getPIDController();
+  // Lift encoder
+  private final RelativeEncoder m_liftLeftEncoder = m_liftLeft.getEncoder();
 
   // whether the subsystem is successfully homed to its max point
-  private boolean homingComplete = false;
+  private boolean m_homingComplete = false;
 
   // The encoder positions for the lowest and highest allowed
   private double m_lowestAllowedPosition;
   private double m_highestAllowedPosition;
 
-  private boolean rollerRunning = false;
-
   // motor geared 125:1 -> 24:72 gearing
   public IntakeSubsystem() {
+    // Lower indexer belt follows the intake roller
+    m_lowerIndexBelt.follow(m_intakeRoller);
 
-    // TODO: set position conversion factor
-    double factor = 1;
+    // Lift motors should be in brake mode so the lift doesn't drift
+    m_liftLeft.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    m_liftRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
-    // I value needs to be nonzero in order for closed loop PID to work
-    intakeRoller.kI(000001);
-
-    // upper/inner roller follows the outside
-    indexEntryRoller.follow(intakeRoller);
-
-    liftLeft.setIdleMode(CANSparkMax.IdleMode.kBrake);
-    liftRight.setIdleMode(CANSparkMax.IdleMode.kBrake);
-
-    // set the left side to follow the right side, invert=false
-    liftLeft.follow(liftRight, true);
-    disableLiftSoftLimits();
-
-    // set the position conversion factors for the lift encoders
-    m_liftLeftEncoder.setPositionConversionFactor(factor);
-    m_liftRightEncoder.setPositionConversionFactor(factor);
-
-    setHome(0, 90);
-  }
-
-  /** set the intake mechanism to run at the target RPM */
-  public void setRPM(double rpm) {
-    final double kGearRatio = 1 / 12;
-    intakeRoller.setVelocity(rpm * kGearRatio);
-  }
-
-  public void runRollerAtMaxPower(boolean invert) {
-    if (invert) {
-      intakeRoller.set(-0.75);
-    } else {
-      intakeRoller.set(0.75);
-    }
-  }
-
-  public void toggleRoller() {
-    if (rollerRunning) {
-      intakeRoller.set(0);
-      rollerRunning = false;
-    } else {
-      runRollerAtMaxPower(false);
-      rollerRunning = true;
-    }
-  }
-
-  /** sets the range of motion for the intake lift. */
-  public void setHome(double min, double max) {
-    if (homingComplete) {
-      System.out.println("Intake being re-homed!");
-    }
-
-    // Enable forward and reverse soft limits for the lift motors
-    // enableLiftSoftLimits();
-
-    // Set the soft limits for the lift motors
-    // setLiftSoftLimits((float) max, (float) min);
-
-    m_lowestAllowedPosition = min;
-    m_highestAllowedPosition = max;
-
-    homingComplete = true;
-  }
-
-  public void lowerIntake() {
-    m_rightcontroller.setReference(m_highestAllowedPosition, CANSparkMax.ControlType.kPosition);
-  }
-
-  public void raiseIntake() {
-    m_rightcontroller.setReference(m_lowestAllowedPosition, CANSparkMax.ControlType.kPosition);
-  }
-
-  public void enableLiftSoftLimits() {
-    liftLeft.enableSoftLimit(SoftLimitDirection.kForward, true);
-    liftRight.enableSoftLimit(SoftLimitDirection.kForward, true);
-
-    liftLeft.enableSoftLimit(SoftLimitDirection.kReverse, true);
-    liftRight.enableSoftLimit(SoftLimitDirection.kReverse, true);
-  }
-
-  public void disableLiftSoftLimits() {
-    liftLeft.enableSoftLimit(SoftLimitDirection.kForward, false);
-    liftRight.enableSoftLimit(SoftLimitDirection.kForward, false);
-
-    liftLeft.enableSoftLimit(SoftLimitDirection.kReverse, false);
-    liftRight.enableSoftLimit(SoftLimitDirection.kReverse, false);
-  }
-
-  public void setLiftSoftLimits(float max, float min) {
-    liftLeft.setSoftLimit(SoftLimitDirection.kForward, max);
-    liftRight.setSoftLimit(SoftLimitDirection.kForward, max);
-
-    liftLeft.setSoftLimit(SoftLimitDirection.kReverse, min);
-    liftRight.setSoftLimit(SoftLimitDirection.kReverse, min);
-  }
-
-  public boolean isAtHardLimit() {
-    SmartDashboard.putNumber("Lift Current Draw", liftLeft.getOutputCurrent());
-    return (liftLeft.getOutputCurrent() > Constants.IntakeConstants.kMaxExpectedCurrent ||
-       liftRight.getOutputCurrent() > Constants.IntakeConstants.kMaxExpectedCurrent);
-  }
-
-  public void setLiftPower(double power) {
-    liftRight.set(power);
-  }
-
-  /** gets the encoder position of the left lift */
-  public double getLiftPosition() {
-    return liftRight.getEncoder().getPosition();
+    // Lift motors should follow each other, albeit mirrored
+    m_liftLeft.follow(m_liftRight, true);
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Lift", liftLeft.getOutputCurrent());
+    SmartDashboard.putNumber("Lift Current", m_liftLeft.getOutputCurrent());
     SmartDashboard.putNumber("Lift Position", m_liftLeftEncoder.getPosition());
+  }
+
+  // INTAKE ROLLER CONTROL
+
+  /** Runs the intake roller inward to intake cargo. */
+  public void runRollerInwards() {
+    m_intakeRoller.set(0.75);
+  }
+
+  /** Runs the intake roller outward to eject cargo. */
+  public void runRollerOutwards() {
+    m_intakeRoller.set(-0.75);
+  }
+
+  /** Stops the intake roller. */
+  public void stopRoller() {
+    m_intakeRoller.set(0);
+  }
+
+  // INTAKE LIFT CONTROL
+
+  // TODO: raise/lower might be reversed
+  /** Raises the intake lift at a constant speed. */
+  public void raiseIntake() {
+    m_liftLeft.set(0.5);
+  }
+
+  /** Lowers the intake lift at a constant speed. */
+  public void lowerIntake() {
+    m_liftLeft.set(-0.5);
+  }
+
+  /** Stops moving the intake lift. */
+  public void stopLift() {
+    m_liftLeft.set(0);
+  }
+
+  // HOMING (not quite functional)
+
+  /** Returns true if the intake lift is drawing too much current. */
+  public boolean isAtHardLimit() {
+    return (m_liftLeft.getOutputCurrent() > Constants.IntakeConstants.kMaxExpectedCurrent
+        || m_liftRight.getOutputCurrent() > Constants.IntakeConstants.kMaxExpectedCurrent);
+  }
+
+  /** sets the range of motion for the intake lift (UNTESTED). */
+  public void setHome(double min, double max) {
+    if (m_homingComplete) {
+      System.out.println("Intake being re-homed!");
+    }
+
+    // Set the soft limits for the lift motors
+    // setLiftSoftLimits((float) max, (float) min);
+
+    // Enable forward and reverse soft limits for the lift motors
+    // enableLiftSoftLimits();
+
+    m_lowestAllowedPosition = min;
+    m_highestAllowedPosition = max;
+
+    m_homingComplete = true;
+  }
+
+  /** Enable soft limits for the lift motors. */
+  private void enableLiftSoftLimits() {
+    m_liftLeft.enableSoftLimit(SoftLimitDirection.kForward, true);
+    m_liftRight.enableSoftLimit(SoftLimitDirection.kForward, true);
+
+    m_liftLeft.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    m_liftRight.enableSoftLimit(SoftLimitDirection.kReverse, true);
+  }
+
+  /** Disable soft limits for the lift motors. */
+  private void disableLiftSoftLimits() {
+    m_liftLeft.enableSoftLimit(SoftLimitDirection.kForward, false);
+    m_liftRight.enableSoftLimit(SoftLimitDirection.kForward, false);
+
+    m_liftLeft.enableSoftLimit(SoftLimitDirection.kReverse, false);
+    m_liftRight.enableSoftLimit(SoftLimitDirection.kReverse, false);
+  }
+
+  /** Sets soft limits for the lift motors. */
+  public void setLiftSoftLimits(float max, float min) {
+    m_liftLeft.setSoftLimit(SoftLimitDirection.kForward, max);
+    m_liftRight.setSoftLimit(SoftLimitDirection.kForward, max);
+
+    m_liftLeft.setSoftLimit(SoftLimitDirection.kReverse, min);
+    m_liftRight.setSoftLimit(SoftLimitDirection.kReverse, min);
+  }
+
+  /** gets the encoder position of the left lift */
+  public double getLiftPosition() {
+    return m_liftRight.getEncoder().getPosition();
   }
 }

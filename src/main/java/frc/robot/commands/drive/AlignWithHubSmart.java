@@ -1,20 +1,26 @@
 package frc.robot.commands.drive;
 
-import java.time.Instant;
-
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.hardware.Limelight;
+import frc.robot.hardware.Limelight.LEDMode;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.LimeLightTargeting;
 
 public class AlignWithHubSmart extends SequentialCommandGroup {
-    public AlignWithHubSmart(LimeLightTargeting limelight, DriveSubsystem drive) {
-        addCommands(
-            new InstantCommand(limelight::turnOnLED),
-            new WaitCommand(0.2),
-            new TurnToAngleSmart(() -> -limelight.getX(), drive).withTimeout(0.5)
-            // new InstantCommand(limelight::turnOffLED)
-        );
-    }
+  private Limelight m_limelight;
+
+  public AlignWithHubSmart(Limelight limelight, DriveSubsystem drive) {
+    addCommands(
+        // Allow some time for the Limelight LEDs to actually turn on
+        new WaitCommand(0.2),
+
+        // Turn towards the hub
+        new TurnToAngleSmart(() -> -limelight.getX(), drive).withTimeout(0.5));
+  }
+
+  @Override
+  public void initialize() {
+    super.initialize();
+    m_limelight.setLEDMode(LEDMode.On);
+  }
 }

@@ -4,7 +4,7 @@
 
 // indexer logic using color sensor input
 
-package frc.robot.commands;
+package frc.robot.commands.indexer;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.commands.utilities.TimedRumble;
 import frc.robot.subsystems.IndexerSubsystem;
 
+/** DO NOT USE, THIS IS UNTESTED */
 public class IndexingCommands extends CommandBase {
   private final IndexerSubsystem m_index;
   private Alliance teamColor = Alliance.Invalid;
@@ -53,7 +54,7 @@ public class IndexingCommands extends CommandBase {
     // Always move up the cargo if we have a slot available, regardless of color
     if (positions[1] == Alliance.Invalid) {
       // Intake ball to 2nd position
-      m_index.toggleExitSide(); // but need it to be on for a little bit, then turn off
+      // m_index.toggleExitSide(); // but need it to be on for a little bit, then turn off
     } else {
       // Reverse intake a little bit to remove any second balls immediately behind this one and
       // raise the intake?

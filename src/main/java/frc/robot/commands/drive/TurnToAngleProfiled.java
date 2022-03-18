@@ -8,6 +8,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.subsystems.DriveSubsystem;
+import java.util.function.DoubleSupplier;
 
 public class TurnToAngleProfiled extends ProfiledPIDCommand {
 
@@ -16,6 +17,10 @@ public class TurnToAngleProfiled extends ProfiledPIDCommand {
   private DriveSubsystem m_drive;
 
   public TurnToAngleProfiled(double goalAngle, DriveSubsystem drive) {
+    this(() -> goalAngle, drive);
+  }
+
+  public TurnToAngleProfiled(DoubleSupplier goalAngle, DriveSubsystem drive) {
     super(
         new ProfiledPIDController(
             kP,

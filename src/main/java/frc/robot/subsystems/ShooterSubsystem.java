@@ -4,270 +4,111 @@
 
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.ShooterConstants.*;
+
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.Constants.ShooterConstants;
-import java.util.NavigableMap;
-import java.util.TreeMap;
+import frc.robot.hardware.Limelight;
+import frc.robot.utilities.ShooterMath;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-  // Flywheel motors
-  private static CANSparkMax flywheelMotor;
-  private static CANSparkMax flywheelMotor2;
+  // Flywheel motors & related devices
+  // TODO: Figure out which one is left vs. right and name accordingly
+  private static CANSparkMax m_flywheelMotor =
+      new CANSparkMax(kLeftMotorCANId, MotorType.kBrushless);
+  private static CANSparkMax m_flywheelMotor2 =
+      new CANSparkMax(kRightMotorCANId, MotorType.kBrushless);
 
-  private RelativeEncoder flywheelEncoder;
-  private RelativeEncoder flywheel2Encoder;
+  private RelativeEncoder m_flywheelEncoder = m_flywheelMotor.getEncoder();
+  private SparkMaxPIDController m_mainPIDController = m_flywheelMotor.getPIDController();
 
-  private SparkMaxPIDController m_pidController;
+  // Limelight for vision processing
+  private Limelight m_limelight;
 
-  private DriveSubsystem m_driveSubsystem;
-  
   private double targetPower = 0;
 
-  private NetworkTable limelightTable;
-  private NetworkTableEntry tx;
-  private NetworkTableEntry ty;
-  private NetworkTableEntry ta;
-  private NetworkTableEntry tv;
-
-  private NavigableMap<Double, Double> map = new TreeMap<>();
-
   /** Creates a new ArcShooter. */
-  public ShooterSubsystem() {
-    tyRPMMap();
-    // Construct both flywheel motor objects
-    flywheelMotor =
-        new CANSparkMax(Constants.ShooterConstants.LeftMotorCANId, MotorType.kBrushless);
-    flywheelMotor2 =
-        new CANSparkMax(Constants.ShooterConstants.RightMotorCANId, MotorType.kBrushless);
+  public ShooterSubsystem(Limelight limelight) {
+    // Restore motor factory defaults without persisting
+    m_flywheelMotor.restoreFactoryDefaults();
+    m_flywheelMotor2.restoreFactoryDefaults();
 
-    CANSparkMax maxes[] = {flywheelMotor, flywheelMotor2};
+    // Set smart motion constants for main flywheel
+    // TODO: Should this be done for both flywheels?
+    setSmartMotionConstants(m_mainPIDController);
 
-    for (CANSparkMax max : maxes) {
-      // Restore to factory defaults only for this boot. Ensure we have a consistent
-      // spark max setup even if someone changes values on the spark max flash
-      max.restoreFactoryDefaults(false);
+    // Have the secondary shooter motor be inverted relative to the primary
+    m_flywheelMotor2.follow(m_flywheelMotor, true);
 
-      // Set closed loop constants
-      m_pidController = max.getPIDController();
-      m_pidController.setP(ShooterConstants.P);
-      m_pidController.setI(ShooterConstants.I);
-      m_pidController.setD(ShooterConstants.D);
-      m_pidController.setFF(ShooterConstants.kvVolts);
-      m_pidController.setOutputRange(ShooterConstants.minOutput, ShooterConstants.maxOutput);
-      int smartMotionSlot = 0;
-      m_pidController.setSmartMotionMaxVelocity(ShooterConstants.maxVel,smartMotionSlot);
-      m_pidController.setSmartMotionMinOutputVelocity(ShooterConstants.minVel, smartMotionSlot);
-      m_pidController.setSmartMotionMaxAccel(ShooterConstants.maxAcc, smartMotionSlot);
-      //m_pidController.setSmartMotionAllowedClosedLoopError(ShooterConstants.allowedError, smartMotionSlot);
-
-      limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
-      tx = limelightTable.getEntry("tx");
-      ty = limelightTable.getEntry("ty");
-    }
-
-    // Set the pid controller to reference the first spark max
-    m_pidController = flywheelMotor.getPIDController();
-
-    // Invert the first motor and have the second motor follow also inverted
-    flywheelMotor.setInverted(false);
-    flywheelMotor2.follow(flywheelMotor, true);
-
-    flywheelEncoder = flywheelMotor.getEncoder();
-    flywheel2Encoder = flywheelMotor2.getEncoder();
-
-    // Set the open loop ramp rate, really should be using closed loop but that is
-    // currently not important
-    // flywheelMotor.setOpenLoopRampRate(0.01);
+    m_limelight = limelight;
   }
 
   @Override
   public void periodic() {
-    targetPower = SmartDashboard.getNumber("Fly-Wheel-Target-Power", targetPower);
-    flywheelMotor.set(targetPower);
+    // FIXME: This might not play well with teleop control of the shooter
+    // targetPower = SmartDashboard.getNumber("Shooter Target Power", targetPower);
+    // runAtRPM(targetPower);
+
     updateDashboard();
-
-    double y = ty.getDouble(0.0);
-
-    SmartDashboard.putNumber("LimelightY", y);
-    SmartDashboard.putNumber("LimelightX", tx.getDouble(0.0));
-
-    double fwhlM1ActualRpm = flywheelEncoder.getVelocity();
-    double fwhlM2ActualRpm = flywheel2Encoder.getVelocity();
-    SmartDashboard.putNumber("Flywheel1 RPM", fwhlM1ActualRpm);
-    SmartDashboard.putNumber("Flywheel2 RPM", fwhlM2ActualRpm);
   }
 
   private void updateDashboard() {
-
     // The current flywheel speed
-    SmartDashboard.putNumber("Fly-Wheel-RPM", getFlywheelRPM());
-    SmartDashboard.putNumber("Fly-Wheel-Target-Power", targetPower);
+    SmartDashboard.putNumber("Shooter Current Power", getFlywheelRPM());
+    SmartDashboard.putNumber("Shooter Target Power", targetPower);
   }
 
-  /**
-   * Get the current flywheel RPM
-   *
-   * @return
-   */
+  private void setSmartMotionConstants(SparkMaxPIDController controller) {
+    controller.setP(kP);
+    controller.setI(kI);
+    controller.setD(kD);
+    controller.setFF(kVVolts);
+    controller.setOutputRange(kMinOutput, kMaxOutput);
+
+    int smartMotionSlot = 0;
+    controller.setSmartMotionMaxVelocity(kMaxVel, smartMotionSlot);
+    controller.setSmartMotionMinOutputVelocity(kMinVel, smartMotionSlot);
+    controller.setSmartMotionMaxAccel(kMaxAcc, smartMotionSlot);
+  }
+
+  /** Get the current flywheel RPM. */
   public double getFlywheelRPM() {
-    return flywheelEncoder.getVelocity();
+    return m_flywheelEncoder.getVelocity();
   }
 
-  /**
-   * Determines whether or not the shooter is running
-   *
-   * @return shooter status
-   */
-  public boolean isRunning() {
-    if (Math.abs(flywheelMotor.get()) > 0.05) {
-      return true;
-    }
-    return false;
-  }
+  /** Gets the target RPM for the shooter based on what the Limelight sees. */
+  public double getTargetRPM() {
+    double yAngle;
 
-  /** Run the shooter motor given a manual power */
-  public void runShooter(double motorPower) {
-
-    if (motorPower > 0.1) {
-      flywheelMotor.set(motorPower);
+    if (!m_limelight.hasValidTarget()) {
+      yAngle = kDefaultYAngle;
     } else {
-      flywheelMotor.set(0);
-    }
-    // flywheelMotor.setVoltage(10);
-
-    // flywheelMotor.setVoltage(SmartDashboard.getNumber("Shooter Voltage", 10));
-
-  }
-
-  public void toggleShooter() {
-    if (isRunning()) {
-      runShooter(0);
-    } else {
-      runShooter(0.5);
-    }
-  }
-
-  public double RPM;
-  public double maxRPM = 5676;
-  public double distance;
-  public int angle = 24;
-  public double slope24 = 4000 / 24;
-  public double slope4 = 1400 / 4;
-  private int shooterAngle = 24;
-  private double shooterHeight = 0.3048;
-  private final double gravity = 9.8;
-  private int flywheelRadius = 4;
-  private double targetHeight = 2.7432;
-
-
-  public double RPMtoAngularVelocity(int rpm) {
-    double omega = (2 * Math.PI * rpm) / 60;
-    return omega;
-  }
-
-  public double angularToLinearVelocity(double angularVelocity) {
-    // two flywheels
-    double velocity = RPMtoAngularVelocity(4000) * flywheelRadius;
-    return velocity;
-  }
-
-  public double linearToRPM(double v) {
-    double angular = v / flywheelRadius;
-    double rpm = (angular * 60) / (2 * Math.PI);
-    return rpm;
-  }
-
-  public double LinearInterpolation(double ty1, double rpm1, double ty2, double rpm2, double findty) {
-    double slope = (rpm2 - rpm1 ) /(ty2 - ty1);
-    double rpm = rpm1 + slope * (findty - ty1);
-
-    return rpm;
-  }
-
-  public void tyRPMMap() {
-    map.put(13.3, 2468.0);
-    map.put(9.0, 2680.0);
-    map.put(3.0, 2960.0);
-    map.put(-0.2, 3205.0);
-    map.put(-6.0, 3900.0);
-
-  }
-
-  public double returnRPM(double ty) {
-    double above;
-    double below;
-    try {
-      above = map.ceilingKey(ty);
-    } catch (Exception e) {
-      above = -1;
+      yAngle = m_limelight.getY();
     }
 
-    try {
-      below = map.floorKey(ty);
-    } catch (Exception e) {
-      below = -1;
-    }
-
-    double rpm = 400 + LinearInterpolation(above, map.get(above), below, map.get(below),ty);
-    return rpm;
+    return ShooterMath.calculateRPM(yAngle);
   }
 
-  public void runAtMapRPM() {
-    NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
-    NetworkTableEntry ty = limelightTable.getEntry("ty"); // Y degrees
-    NetworkTableEntry tv = limelightTable.getEntry("tv");
-    double yAngle = ty.getDouble(0.0);
-    double hasTarget = tv.getDouble(0.0);
-    double defaultAngle = 12;
-    double rpm;
-    if (hasTarget == 0){
-      yAngle = defaultAngle;
-    }
-    try {
-      rpm = returnRPM(yAngle);
-
-    } catch (NullPointerException e) {
-      rpm = 0;
-    }
-    m_pidController.setReference(rpm, CANSparkMax.ControlType.kVelocity);
-    SmartDashboard.putNumber("RPM", rpm);
+  /** Runs the shooter at a given RPM using the Limelight */
+  // TODO: Find a better name for this method
+  public void runAtCalibratedRPM() {
+    double rpm = getTargetRPM();
+    runAtRPM(rpm);
   }
 
+  /** Runs the shooter flywheels at the given RPM. */
+  public void runAtRPM(double rpm) {
+    m_mainPIDController.setReference(rpm, ControlType.kVelocity);
+  }
+
+  /** Stops the shooter flywheels. */
   public void stopShooter() {
-    flywheelMotor.set(0);
-  }
-
-  public void test() {
-    NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
-    
-
-    NetworkTableEntry ty = limelightTable.getEntry("ty"); // Y degrees
-    double y = ty.getDouble(0.0);
-    double rpm = returnRPM(y);
-    SmartDashboard.putNumber("rpmVal", rpm);
-    m_pidController.setReference(rpm, CANSparkMax.ControlType.kVelocity);
-    //flywheelMotor.set(rpm);
-    //flywheelMotor2.set(rpm);
-
-    NetworkTableEntry tx = limelightTable.getEntry("tx");
-    double angle = tx.getDouble(0.0);
-    SmartDashboard.putNumber("xFixDegrees", angle);
-    
-    //TurnToAngleProfiled turn = new TurnToAngleProfiled(angle,m_driveSubsystem);
-    // turn.TurnToAngleProfiled(angle,m_driveSubsystem); 
-    
-    //these are now being outputted periodically in the smart dashboard 
-    //double fwhlM1ActualRpm = flywheelEncoder.getVelocity();
-    //double fwhlM2ActualRpm = flywheel2Encoder.getVelocity();
+    m_flywheelMotor.set(0);
   }
 }

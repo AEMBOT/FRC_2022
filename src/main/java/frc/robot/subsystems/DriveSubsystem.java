@@ -7,13 +7,12 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -44,13 +43,10 @@ public class DriveSubsystem extends SubsystemBase {
   private final DifferentialDrive m_drive =
       new DifferentialDrive(m_centerLeftMotor, m_centerRightMotor);
 
-  // TODO: Figure out if we actually need this
   // This allows the robot to keep track of where it is on the field
   private DifferentialDriveOdometry m_odometry;
-  private Pose2d m_lastResetPose;
-  private double m_leftPosition = 0;
-  private double m_rightPosition = 0;
 
+  // TODO: We probably don't really need this, so remove it?
   // Whether or not to log debug information to the SmartDashboard
   private final boolean m_debug = true;
 
@@ -60,7 +56,6 @@ public class DriveSubsystem extends SubsystemBase {
     restoreMotorFactoryDefaults();
 
     // Invert the left motors to drive in the correct direction
-    // m_leftMotors.setInverted(true);
     m_centerLeftMotor.setInverted(true);
 
     // Have the front/back motors mirror power outputs from the center motors
@@ -70,28 +65,16 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRightMotor.follow(m_centerRightMotor);
     m_backRightMotor.follow(m_centerRightMotor);
 
-    // TODO: Test native Spark MAX voltage compensation
-    // Enable voltage compensation for all of the motors
-    // m_frontLeftMotor.enableVoltageCompensation(nominalVoltage);
-    // m_centerLeftMotor.enableVoltageCompensation(nominalVoltage);
-    // m_backLeftMotor.enableVoltageCompensation(nominalVoltage);
-    // m_frontRightMotor.enableVoltageCompensation(nominalVoltage);
-    // m_centerRightMotor.enableVoltageCompensation(nominalVoltage);
-    // m_backRightMotor.enableVoltageCompensation(nominalVoltage);
-
     // Set the SmartMotion constants for the center motors
     setSmartMotionConstants(m_leftController);
     setSmartMotionConstants(m_rightController);
 
+    // Initialize the tracking of the robot's position on the field
+    m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+
     // Reset the encoders & change their position readings to meters
     resetEncoders();
     setupEncoderConversions();
-
-    // Initialize the tracking of the robot's position on the field
-    // m_odometry = new DifferentialDriveOdometry(new Rotation2d(getHeading()));
-
-    // Keep track of the place where the odometry was last reset
-    // m_lastResetPose = m_odometry.getPoseMeters();
   }
 
   /** Set all drive motors to brake mode. */
@@ -125,7 +108,6 @@ public class DriveSubsystem extends SubsystemBase {
     controller.setP(kTurnP, 1);
 
     for (int slot : new int[] {0, 1}) {
-      controller.setP(kP, slot);
       controller.setI(kI, slot);
       controller.setD(kD, slot);
       controller.setIZone(kIz, slot);
@@ -141,7 +123,7 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Keep track of where the robot is on the field
-    // updateOdometry();
+    updateOdometry();
 
     // Log drive-related informatin to SmartDashboard if specified
     if (m_debug) {
@@ -183,22 +165,6 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public void arcadeDrive(double speed, double rotation, boolean squareInputs) {
     m_drive.arcadeDrive(speed, rotation, squareInputs);
-    SmartDashboard.putNumber("Arcade forward", speed);
-    SmartDashboard.putNumber("Arcade rotation", Math.pow(rotation, 2));
-    /*
-
-    // Reimplement WPILib arcade drive so that we get setVoltage() functionality
-    speed = MathUtil.applyDeadband(speed, DifferentialDrive.kDefaultDeadband);
-    rotation = MathUtil.applyDeadband(rotation, DifferentialDrive.kDefaultDeadband);
-
-    var speeds = DifferentialDrive.arcadeDriveIK(speed, rotation, squareInputs);
-
-    m_leftMotors.setVoltage(speeds.left * DifferentialDrive.kDefaultMaxOutput * nominalBatteryVoltage);
-    m_rightMotors.setVoltage(speeds.right * DifferentialDrive.kDefaultMaxOutput * nominalBatteryVoltage);
-
-    SmartDashboard.putNumber("Output Voltage (r)", speeds.right* DifferentialDrive.kDefaultMaxOutput * nominalBatteryVoltage);
-    SmartDashboard.putNumber("Output Voltage (l)", speeds.left * DifferentialDrive.kDefaultMaxOutput * nominalBatteryVoltage);
-    */
   }
 
   /** Stops all drive motors. */
@@ -207,6 +173,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_centerRightMotor.set(0);
   }
 
+  /** Resets drive Spark Max configurations to their factory defaults */
   private void restoreMotorFactoryDefaults() {
     m_backLeftMotor.restoreFactoryDefaults();
     m_centerLeftMotor.restoreFactoryDefaults();
@@ -234,8 +201,8 @@ public class DriveSubsystem extends SubsystemBase {
     m_centerLeftEncoder.setPosition(0);
     m_centerRightEncoder.setPosition(0);
 
-    // TODO: If odometry is added back in, previous positions also have to be
-    // updated
+    // Also reset the robot pose
+    resetRobotPose(getPoseMeters());
   }
 
   /**
@@ -243,7 +210,6 @@ public class DriveSubsystem extends SubsystemBase {
    * respectively.
    */
   private void setupEncoderConversions() {
-    // TODO: Maybe compensate for lower right encoder readings?
     // Convert revolutions to meters
     m_centerLeftEncoder.setPositionConversionFactor(kMetersPerMotorRotation);
     m_centerRightEncoder.setPositionConversionFactor(kMetersPerMotorRotation);
@@ -272,8 +238,10 @@ public class DriveSubsystem extends SubsystemBase {
     m_drive.feed();
     if (turning) {
       int pidSlot = 1;
-      m_rightController.setReference(right, ControlType.kSmartMotion, pidSlot, 0.04, ArbFFUnits.kPercentOut);
-      m_leftController.setReference(left, ControlType.kSmartMotion, pidSlot, 0.04, ArbFFUnits.kPercentOut);
+      m_rightController.setReference(
+          right, ControlType.kSmartMotion, pidSlot, 0.04, ArbFFUnits.kPercentOut);
+      m_leftController.setReference(
+          left, ControlType.kSmartMotion, pidSlot, 0.04, ArbFFUnits.kPercentOut);
     } else {
       int pidSlot = 0;
       m_rightController.setReference(right, ControlType.kSmartMotion, pidSlot);
@@ -343,26 +311,20 @@ public class DriveSubsystem extends SubsystemBase {
     // TODO: Either mention this in the method documentation or call it separately
     resetEncoders();
 
-    /*
-     * TODO: Determine if this is appropriate for this year
-     * // Reuse the previous pose on the field, compensating for the change in
-     * heading
-     * Pose2d prev_pose = m_odometry.getPoseMeters();
-     * m_odometry.resetPosition(prev_pose, new
-     * Rotation2d(Units.degreesToRadians(getHeading())));
-     */
+    // Reuse the previous pose on the field
+    resetRobotPose(getPoseMeters());
   }
 
-  // ODOMETRY METHODS (might not be necessary)
+  // ODOMETRY METHODS
 
-  /** Gets the displacent of the robot relative to the last time the odometry was reset */
-  public double getResetDisplacement() {
-    return -1;
-    /*
-    // TODO: Convert to use feet
-    Pose2d currentOffset = m_odometry.getPoseMeters().relativeTo(m_lastResetPose);
-    return currentOffset.getTranslation().getDistance(new Translation2d());
-    */
+  /** Returns the robot's current pose on the field in meters. */
+  public Pose2d getPoseMeters() {
+    return m_odometry.getPoseMeters();
+  }
+
+  /** Resets the robot's pose on the field. */
+  public void resetRobotPose(Pose2d pose) {
+    m_odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
   }
 
   /**
@@ -375,12 +337,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Update the drive odometry
     m_odometry.update(
-        new Rotation2d(Units.degreesToRadians(getHeading())),
-        currentLeftPosition - m_leftPosition,
-        currentRightPosition - m_rightPosition);
-
-    // Update previous encoder readings (odometry requires change in position)
-    m_leftPosition = currentLeftPosition;
-    m_rightPosition = currentRightPosition;
+        Rotation2d.fromDegrees(getHeading()), currentLeftPosition, currentRightPosition);
   }
 }
