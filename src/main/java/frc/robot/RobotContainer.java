@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.autonomous.AutonomousPathing;
 import frc.robot.commands.drive.DefaultDrive;
@@ -19,6 +20,9 @@ import frc.robot.commands.drive.TurnToAngleProfiled;
 import frc.robot.commands.drive.TurnToAngleSmart;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.LimeLightTargeting;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.commands.IntakeControl;
+import frc.robot.commands.IntakeStopPowerPos;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -33,6 +37,7 @@ public class RobotContainer {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
   private AutonomousPathing m_autoCommand = new AutonomousPathing(m_robotDrive);
+  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final DriveStraightSmart m_driveForward =
       new DriveStraightSmart(Units.feetToMeters(3), m_robotDrive);
   private final DriveStraightGyro m_gyroDrive =
@@ -57,6 +62,8 @@ public class RobotContainer {
     m_robotDrive.setDefaultCommand(
         new DefaultDrive(
             m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
+
+    m_intakeSubsystem.setDefaultCommand(new IntakeStopPowerPos(m_intakeSubsystem,false, 90));
   }
 
   /**
@@ -79,10 +86,18 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(() -> m_robotDrive.resetHeading(), m_robotDrive));
 
     new JoystickButton(m_driverController, Button.kA.value)
-        .whenPressed(new TurnToAngleProfiled(10, m_robotDrive).withTimeout(3));
-
+        //.whenPressed(new TurnToAngleProfiled(10, m_robotDrive).withTimeout(3));
+        .whileHeld(new IntakeStopPowerPos(m_intakeSubsystem, false, 150));
+/*
     new JoystickButton(m_driverController, Button.kRightBumper.value)
-        .whenPressed(new TurnToAngleProfiled(-10, m_robotDrive).withTimeout(3));
+        .whenPressed(new TurnToAngleProfiled(-10, m_robotDrive).withTimeout(3));*/
+        
+    new JoystickButton(m_driverController, Button.kRightBumper.value)
+    .whileHeld(new IntakeControl(m_intakeSubsystem,false));
+    
+
+    new JoystickButton(m_driverController,Button.kLeftBumper.value)
+    .whileHeld(new IntakeControl(m_intakeSubsystem,true));
 
     // NOTE: Doesn't have requirement of m_targeting subsystem. Could not figure out how to include
     // it. Can't add it as an additional argument for some reason, even though the function uses
