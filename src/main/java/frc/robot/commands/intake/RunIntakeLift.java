@@ -23,9 +23,8 @@ public class RunIntakeLift extends CommandBase {
     addRequirements(intake);
   }
 
-  // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
+  public void execute() {
     if (m_direction == LiftDirection.Up) {
       m_intake.raiseIntake();
     } else if (m_direction == LiftDirection.Down) {

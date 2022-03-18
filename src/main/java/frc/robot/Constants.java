@@ -140,15 +140,15 @@ public final class Constants {
 
       // Profiling
       public static final double kMaxVelocityDegreesPerSecond = 360 / 5;
-      public static final double kMaxAccelerationDegreesPerSecondSquared = 120;
+      public static final double kMaxAccelerationDegreesPerSecondSquared = 240;
 
       // Feedforward
       private static final double kSecondsPerRotation = .85; // works for dead-er battery
       private static final double kTestPower = 0.4;
 
-      public static final double kSVolts = 0.050;
-      public static final double kVVoltDegreesPerSecond =
-          (kTestPower - kSVolts) / (356.494 / kSecondsPerRotation);
+      public static final double kSVolts = 0.058;
+      public static final double kVVoltDegreesPerSecond = 0.0008;
+      // (kTestPower - kSVolts) / (356.494 / kSecondsPerRotation);
 
       public static final double kTurnToleranceDeg = 3.0;
       public static final double kTurnRateToleranceDegPerS = 20.0;

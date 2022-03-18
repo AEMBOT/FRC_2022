@@ -23,7 +23,7 @@ public class ShooterSubsystem extends SubsystemBase {
   private static CANSparkMax m_flywheelMotor =
       new CANSparkMax(kLeftMotorCANId, MotorType.kBrushless);
   private static CANSparkMax m_flywheelMotor2 =
-      new CANSparkMax(kLeftMotorCANId, MotorType.kBrushless);
+      new CANSparkMax(kRightMotorCANId, MotorType.kBrushless);
 
   private RelativeEncoder m_flywheelEncoder = m_flywheelMotor.getEncoder();
   private SparkMaxPIDController m_mainPIDController = m_flywheelMotor.getPIDController();

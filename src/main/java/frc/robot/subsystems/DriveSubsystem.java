@@ -69,15 +69,15 @@ public class DriveSubsystem extends SubsystemBase {
     setSmartMotionConstants(m_leftController);
     setSmartMotionConstants(m_rightController);
 
+    // Initialize the tracking of the robot's position on the field
+    m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+
     // Reset the encoders & change their position readings to meters
     resetEncoders();
     setupEncoderConversions();
 
     // Configure a deadband of 0.1 for arcade/tank drive
-    m_drive.setDeadband(kJoystickDeadband);
-
-    // Initialize the tracking of the robot's position on the field
-    m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+    // m_drive.setDeadband(kJoystickDeadband);
   }
 
   /** Set all drive motors to brake mode. */

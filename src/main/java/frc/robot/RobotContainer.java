@@ -18,7 +18,7 @@ import frc.robot.commands.autonomous.FiveBallAuto;
 import frc.robot.commands.autonomous.TaxiThenShoot;
 import frc.robot.commands.autonomous.TwoBallAuto;
 import frc.robot.commands.climber.ClimbTimed;
-import frc.robot.commands.drive.AlignWithHubSmart;
+import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.indexer.RunUpperIndexer;
 import frc.robot.commands.intake.RunIntakeLift;
@@ -114,11 +114,8 @@ public class RobotContainer {
     // PRIMARY CONTROLLER
     // Homing to Hub - A Button
     new JoystickButton(m_driverController, Button.kA.value)
-        .whenPressed(new AlignWithHubSmart(m_limelight, m_robotDrive));
+        .whenPressed(new AlignWithHub(m_limelight, m_robotDrive).withTimeout(1));
     // .whenPressed(new AlignWithHub(m_robotDrive, m_limelight).withTimeout(0.5));
-
-    // new JoystickButton(m_driverController, Button.kY.value)
-    //     .whenPressed(() -> m_babyMode = false);
 
     // SECONDARY CONTROLLER
     // Shooter control based on limelight distance
