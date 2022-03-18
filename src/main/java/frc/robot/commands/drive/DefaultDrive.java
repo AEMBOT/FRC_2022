@@ -29,10 +29,12 @@ public class DefaultDrive extends CommandBase {
   @Override
   public void execute() {
     // Calculate appropriate powers using above slew limiters
-    double forwardPower = MathUtil.applyDeadband(kMaxForwardPower * -m_left.getAsDouble(), kJoystickDeadband);
+    double forwardPower =
+        MathUtil.applyDeadband(kMaxForwardPower * -m_left.getAsDouble(), kJoystickDeadband);
     forwardPower = m_forwardSlewLimiter.calculate(forwardPower);
 
-    double rotationPower = MathUtil.applyDeadband(kMaxRotationPower * -m_right.getAsDouble(), kJoystickDeadband);
+    double rotationPower =
+        MathUtil.applyDeadband(kMaxRotationPower * -m_right.getAsDouble(), kJoystickDeadband);
     rotationPower = m_turningSlewLimiter.calculate(rotationPower);
 
     m_drive.arcadeDrive(forwardPower, rotationPower, true);

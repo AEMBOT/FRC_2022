@@ -53,7 +53,8 @@ public class SwappableAccelDrive extends CommandBase {
   @Override
   public void execute() {
     // Log the powers to the dashboard
-    double forwardPower = MathUtil.applyDeadband(kMaxForwardPower * -m_left.getAsDouble(), kJoystickDeadband);
+    double forwardPower =
+        MathUtil.applyDeadband(kMaxForwardPower * -m_left.getAsDouble(), kJoystickDeadband);
 
     // Use different slew limiters depending on whether "defense mode" is enabled
     if (m_defenseMode) {
@@ -62,7 +63,8 @@ public class SwappableAccelDrive extends CommandBase {
       forwardPower = m_forwardSlewLimiter.calculate(forwardPower);
     }
 
-    double rotationPower = MathUtil.applyDeadband(kMaxRotationPower * -m_right.getAsDouble(), kJoystickDeadband);
+    double rotationPower =
+        MathUtil.applyDeadband(kMaxRotationPower * -m_right.getAsDouble(), kJoystickDeadband);
     rotationPower = m_rotationSlewLimiter.calculate(rotationPower);
 
     m_drive.arcadeDrive(forwardPower, rotationPower, true);

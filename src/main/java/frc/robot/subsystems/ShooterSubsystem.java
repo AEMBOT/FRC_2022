@@ -68,7 +68,7 @@ public class ShooterSubsystem extends SubsystemBase {
     controller.setP(kP);
     controller.setI(kI);
     controller.setD(kD);
-    controller.setFF(kVVolts);
+    controller.setFF(kFF);
     controller.setOutputRange(kMinOutput, kMaxOutput);
 
     int smartMotionSlot = 0;

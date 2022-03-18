@@ -30,13 +30,12 @@ public final class Constants {
     public static final int kLeftMotorCANId = 13;
     public static final int kRightMotorCANId = 14;
 
-    public static final double kVVolts = 0.000163; // 0.002181818182; // Volts per RPM
-    public static final double kP = 5e-5;
-    public static final double kI = 1e-6;
+    public static final double kP = 1.2481e-11;
+    public static final double kI = 0;
     public static final double kD = 0.0000;
-    // public static final double kFF = 0.000156;
+    public static final double kFF = 0.000173;
     public static final double kMaxVel = 5700;
-    public static final double kMinVel = 2400;
+    public static final double kMinVel = 0;
     public static final double kMaxAcc = 1500;
     public static final double kMaxOutput = 1;
     public static final double kMinOutput = -1;
@@ -44,6 +43,9 @@ public final class Constants {
 
     // Default angle for RPM calculations
     public static final double kDefaultYAngle = 12;
+
+    // RPM tolerance for ramping
+    public static final double kRPMTolerance = 50;
   }
 
   public static final class IntakeConstants {

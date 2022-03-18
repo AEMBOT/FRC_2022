@@ -1,13 +1,13 @@
 package frc.robot.commands.shooter;
 
+import static frc.robot.Constants.ShooterConstants.*;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class RampShooter extends CommandBase {
   private ShooterSubsystem m_shooter;
   private double m_targetRPM;
-
-  private final double m_RPMTolerance = 10;
 
   public RampShooter(ShooterSubsystem shooter) {
     m_shooter = shooter;
@@ -26,6 +26,6 @@ public class RampShooter extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return m_shooter.getFlywheelRPM() >= m_targetRPM - m_RPMTolerance;
+    return m_shooter.getFlywheelRPM() >= m_targetRPM - kRPMTolerance;
   }
 }
