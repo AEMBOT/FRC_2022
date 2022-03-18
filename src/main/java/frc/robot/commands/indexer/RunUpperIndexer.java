@@ -10,6 +10,7 @@ public class RunUpperIndexer extends CommandBase {
 
   public RunUpperIndexer(IndexerSubsystem indexer, CargoDirection direction) {
     m_indexer = indexer;
+    m_direction = direction;
     addRequirements(indexer);
   }
 

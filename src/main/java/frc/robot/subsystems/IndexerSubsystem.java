@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.IndexerConstants.*;
 import static frc.robot.Constants.IntakeConstants.*;
 
 import com.revrobotics.CANSparkMax;
@@ -40,7 +41,9 @@ public class IndexerSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // called once per scheduler run
-    // readSensorHSV();
+    readSensorHSV();
+    SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());
+    getCargoAllianceColor();
   }
 
   // INDEXER BELT CONTROL
@@ -62,6 +65,10 @@ public class IndexerSubsystem extends SubsystemBase {
 
   // COLOR SENSOR READING
 
+  public boolean ballInIndexer() {
+    return m_colorSensor.getProximity() >= kCargoMinProximity;
+  }
+
   /** Return the alliance that the loaded cargo belongs to */
   public Alliance getCargoAllianceColor() {
     double[] hsv = readSensorHSV();
@@ -73,11 +80,11 @@ public class IndexerSubsystem extends SubsystemBase {
     Alliance color = Alliance.Invalid;
 
     // TODO: This will likely need to be updated with actual color values from the robot
-    if ((hue > 200 && hue < 260) && (val > 50) && (sat > 75)) {
+    if (hue > kMinRedHue && hue < kMaxRedHue) {
       color = Alliance.Red;
     }
     // TODO: This will likely need to be updated with actual color values from the robot
-    else if ((hue < 15 || hue > 350) && (val > 50) && (sat > 75)) {
+    else if (hue > kMinBlueHue && hue < kMaxBlueHue) {
       color = Alliance.Blue;
     } else {
       color = Alliance.Invalid;

@@ -47,6 +47,7 @@ public class RampThenShoot extends SequentialCommandGroup {
 
   @Override
   public void initialize() {
+    super.initialize();
     m_limelight.setLEDMode(LEDMode.On);
   }
 

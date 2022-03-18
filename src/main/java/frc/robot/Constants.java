@@ -18,12 +18,11 @@ public final class Constants {
   public final class ClimberConstants {
     public static final int ClimbSolenoidRight = 0;
     public static final int ClimbSolenoidRightChoke = 1;
-    
+
     public static final int ClimbSolenoidLeft = 7;
     public static final int ClimbSolenoidLeftChoke = 6;
 
     public static final int AngleSolenoid = 3;
-
   }
 
   public static final class ShooterConstants {
@@ -60,6 +59,16 @@ public final class Constants {
     public static final int kIndexerUpperBottomBeltPort = 12;
 
     public static final int kIndexerTopBeltPort = 10;
+  }
+
+  public static final class IndexerConstants {
+    public static final int kCargoMinProximity = 230;
+
+    // Color "boundaries"
+    public static final double kMinBlueHue = 140;
+    public static final double kMaxBlueHue = 185;
+    public static final double kMinRedHue = 15;
+    public static final double kMaxRedHue = 50;
   }
 
   public static final class DriveConstants {

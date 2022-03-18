@@ -4,13 +4,7 @@
 
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.ClimberConstants.AngleSolenoid;
-import static frc.robot.Constants.ClimberConstants.ClimbSolenoidLeft;
-import static frc.robot.Constants.ClimberConstants.ClimbSolenoidLeftChoke;
-import static frc.robot.Constants.ClimberConstants.ClimbSolenoidRight;
-import static frc.robot.Constants.ClimberConstants.ClimbSolenoidRightChoke;
-
-import java.time.Clock;
+import static frc.robot.Constants.ClimberConstants.*;
 
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.I2C;
@@ -21,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.hardware.ClimberArm;
 import frc.robot.hardware.LIDAR07_100W_Module;
+import java.time.Clock;
 
 public class ClimberSubsystem extends SubsystemBase {
 
@@ -51,13 +46,10 @@ public class ClimberSubsystem extends SubsystemBase {
 
   /** Creates a new ClimberSubsystem. */
   public ClimberSubsystem() {
-    leftArm =
-        new ClimberArm(ClimbSolenoidLeft, ClimbSolenoidLeftChoke);
-    rightArm =
-        new ClimberArm(ClimbSolenoidRight, ClimbSolenoidRightChoke);
+    leftArm = new ClimberArm(ClimbSolenoidLeft, ClimbSolenoidLeftChoke);
+    rightArm = new ClimberArm(ClimbSolenoidRight, ClimbSolenoidRightChoke);
 
-    anglePistonsControl =
-        new Solenoid(PneumaticsModuleType.CTREPCM, AngleSolenoid);
+    anglePistonsControl = new Solenoid(PneumaticsModuleType.CTREPCM, AngleSolenoid);
     setRetracting();
 
     m_sensor = new LIDAR07_100W_Module(I2C.Port.kMXP);
