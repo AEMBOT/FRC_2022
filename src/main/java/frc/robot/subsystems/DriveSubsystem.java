@@ -75,9 +75,6 @@ public class DriveSubsystem extends SubsystemBase {
     // Reset the encoders & change their position readings to meters
     resetEncoders();
     setupEncoderConversions();
-
-    // Configure a deadband of 0.1 for arcade/tank drive
-    // m_drive.setDeadband(kJoystickDeadband);
   }
 
   /** Set all drive motors to brake mode. */

@@ -2,6 +2,7 @@ package frc.robot.commands.drive;
 
 import static frc.robot.Constants.DriveConstants.*;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
@@ -52,7 +53,7 @@ public class SwappableAccelDrive extends CommandBase {
   @Override
   public void execute() {
     // Log the powers to the dashboard
-    double forwardPower = kMaxForwardPower * -m_left.getAsDouble();
+    double forwardPower = MathUtil.applyDeadband(kMaxForwardPower * -m_left.getAsDouble(), kJoystickDeadband);
 
     // Use different slew limiters depending on whether "defense mode" is enabled
     if (m_defenseMode) {
@@ -61,7 +62,7 @@ public class SwappableAccelDrive extends CommandBase {
       forwardPower = m_forwardSlewLimiter.calculate(forwardPower);
     }
 
-    double rotationPower = kMaxRotationPower * -m_right.getAsDouble();
+    double rotationPower = MathUtil.applyDeadband(kMaxRotationPower * -m_right.getAsDouble(), kJoystickDeadband);
     rotationPower = m_rotationSlewLimiter.calculate(rotationPower);
 
     m_drive.arcadeDrive(forwardPower, rotationPower, true);
