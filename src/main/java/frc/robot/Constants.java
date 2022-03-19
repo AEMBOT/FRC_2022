@@ -16,6 +16,15 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
 
+  public static final class IntakeConstants {
+    public static final int LiftCANId = 11;
+
+    public static final int kMaxLiftCurrent = 6; // amps
+
+    public static final double kHomingPower = 0.1;
+    public static final double kNormalPower = 0.5;
+  }
+
   public static final class ShooterConstants {
     public static final int LeftMotorCANId = 27;
     public static final int RightMotorCANId = 28;

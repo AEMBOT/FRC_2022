@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.autonomous.AutonomousPathing;
 import frc.robot.commands.drive.DefaultDrive;
@@ -18,11 +17,12 @@ import frc.robot.commands.drive.DriveStraightGyro;
 import frc.robot.commands.drive.DriveStraightSmart;
 import frc.robot.commands.drive.TurnToAngleProfiled;
 import frc.robot.commands.drive.TurnToAngleSmart;
+import frc.robot.commands.intake.HomeIntakeCommand;
+import frc.robot.commands.intake.IntakeControl;
+import frc.robot.commands.intake.IntakeGoToAngle;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.LimeLightTargeting;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.commands.IntakeControl;
-import frc.robot.commands.IntakeStopPowerPos;
+import frc.robot.subsystems.LimeLightTargeting;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -56,6 +56,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
     // Configure the button bindings
     configureButtonBindings();
     // Set default drivetrain command to arcade driving (happens during teleop)
@@ -63,7 +64,15 @@ public class RobotContainer {
         new DefaultDrive(
             m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
 
-    m_intakeSubsystem.setDefaultCommand(new IntakeStopPowerPos(m_intakeSubsystem,false, 90));
+
+    m_intakeSubsystem.setDefaultCommand(new IntakeGoToAngle(m_intakeSubsystem, 100));
+
+  }
+
+  public void homeIntake() {
+    if (!m_intakeSubsystem.isHomingComplete()) {
+      new HomeIntakeCommand(m_intakeSubsystem).schedule(false);
+    }
   }
 
   /**
@@ -87,7 +96,7 @@ public class RobotContainer {
 
     new JoystickButton(m_driverController, Button.kA.value)
         //.whenPressed(new TurnToAngleProfiled(10, m_robotDrive).withTimeout(3));
-        .whileHeld(new IntakeStopPowerPos(m_intakeSubsystem, false, 180));
+        .whileHeld(new IntakeGoToAngle(m_intakeSubsystem, 190));
 /*
     new JoystickButton(m_driverController, Button.kRightBumper.value)
         .whenPressed(new TurnToAngleProfiled(-10, m_robotDrive).withTimeout(3));*/
