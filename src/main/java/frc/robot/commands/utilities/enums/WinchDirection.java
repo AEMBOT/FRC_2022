@@ -1,6 +1,6 @@
 package frc.robot.commands.utilities.enums;
 
-public enum LiftDirection {
+public enum WinchDirection {
   Up,
   Down;
 }

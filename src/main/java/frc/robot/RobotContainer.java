@@ -21,11 +21,11 @@ import frc.robot.commands.climber.ClimbTimed;
 import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.indexer.RunUpperIndexer;
-import frc.robot.commands.intake.RunIntakeLift;
 import frc.robot.commands.intake.RunIntakeRoller;
+import frc.robot.commands.intake.RunIntakeWinch;
 import frc.robot.commands.shooter.RampThenShoot;
 import frc.robot.commands.utilities.enums.CargoDirection;
-import frc.robot.commands.utilities.enums.LiftDirection;
+import frc.robot.commands.utilities.enums.WinchDirection;
 import frc.robot.hardware.Limelight;
 import frc.robot.hardware.Limelight.LEDMode;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -135,11 +135,11 @@ public class RobotContainer {
 
     // Move the intake lift up
     new JoystickButton(m_secondaryController, Button.kLeftBumper.value)
-        .whileHeld(new RunIntakeLift(m_intakeSubsystem, LiftDirection.Up));
+        .whileHeld(new RunIntakeWinch(m_intakeSubsystem, WinchDirection.Up));
 
     // Move the intake lift down
     new JoystickButton(m_secondaryController, Button.kRightBumper.value)
-        .whileHeld(new RunIntakeLift(m_intakeSubsystem, LiftDirection.Down));
+        .whileHeld(new RunIntakeWinch(m_intakeSubsystem, WinchDirection.Down));
 
     // Eject any cargo in the indexer/intake
     new JoystickButton(m_secondaryController, Button.kX.value)

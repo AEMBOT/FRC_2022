@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.IntakeSubsystem;
 
-/** Homes the intake to its "max" point. */
+/** Homes the intake to its "max" point. (UNTESTED) */
 public class HomeIntakeCommand extends CommandBase {
   private final IntakeSubsystem m_intake;
 
@@ -32,10 +32,10 @@ public class HomeIntakeCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_intake.stopLift();
+    m_intake.stopWinch();
 
     if (!interrupted) {
-      double max = m_intake.getLiftPosition();
+      double max = m_intake.getWinchPosition();
       double min = max - Constants.IntakeConstants.kLiftRangeOfMotion;
       m_intake.setHome(min, max);
     }

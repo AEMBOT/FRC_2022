@@ -46,6 +46,10 @@ public class ShooterSubsystem extends SubsystemBase {
     // Have the secondary shooter motor be inverted relative to the primary
     m_rightFlywheelMotor.follow(m_leftFlywheelMotor, true);
 
+    // Flywheel motors should be in coast mode so as to not destroy themselves
+    m_leftFlywheelMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    m_rightFlywheelMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+
     m_limelight = limelight;
   }
 

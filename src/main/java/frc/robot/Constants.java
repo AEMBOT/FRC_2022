@@ -48,9 +48,8 @@ public final class Constants {
   }
 
   public static final class IntakeConstants {
-    public static final int kLiftLeftPort = 7;
-    public static final int kLiftRightPort = 8;
-    public static final int kRollerPort = 9;
+    public static final int kCANRollerID = 7;
+    public static final int kCANWinchID = 8;
 
     public static final double kMaxExpectedCurrent = 15;
     public static final double kLiftRangeOfMotion = 50;

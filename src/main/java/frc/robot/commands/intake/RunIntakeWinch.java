@@ -5,19 +5,19 @@
 package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.commands.utilities.enums.LiftDirection;
+import frc.robot.commands.utilities.enums.WinchDirection;
 import frc.robot.subsystems.IntakeSubsystem;
 
-public class RunIntakeLift extends CommandBase {
+public class RunIntakeWinch extends CommandBase {
   private IntakeSubsystem m_intake;
-  private LiftDirection m_direction;
+  private WinchDirection m_direction;
 
   /**
    * Creates a new RunIntakeLift.
    *
    * @param intake The robot's {@link IntakeSubsystem} instance.
    */
-  public RunIntakeLift(IntakeSubsystem intake, LiftDirection direction) {
+  public RunIntakeWinch(IntakeSubsystem intake, WinchDirection direction) {
     m_intake = intake;
     m_direction = direction;
     addRequirements(intake);
@@ -25,16 +25,16 @@ public class RunIntakeLift extends CommandBase {
 
   @Override
   public void execute() {
-    if (m_direction == LiftDirection.Up) {
+    if (m_direction == WinchDirection.Up) {
       m_intake.raiseIntake();
-    } else if (m_direction == LiftDirection.Down) {
+    } else if (m_direction == WinchDirection.Down) {
       m_intake.lowerIntake();
     }
   }
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    m_intake.stopLift();
+  public void end(boolean _interrupted) {
+    m_intake.stopWinch();
   }
 
   @Override
