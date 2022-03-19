@@ -87,7 +87,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Lift Position", m_liftRightEncoder.getPosition());
+    SmartDashboard.putNumber("Lift Position", lift.getEncoder().getPosition());
     SmartDashboard.putNumber("Lift", lift.getOutputCurrent());
   }
 }
