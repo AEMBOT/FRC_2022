@@ -6,7 +6,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 /** Allows for swapping between two accelerations for defense and normal driving. */
@@ -27,8 +26,7 @@ public class SwappableAccelDrive extends CommandBase {
   // For acceleration swapping purposes
   double m_previousForwardPower = 0;
 
-  // Used to swap between faster/slower speeds
-  BooleanSupplier m_changeMode;
+  // Used to swap between faster/slower accelerations
   boolean m_defenseMode = false;
 
   public SwappableAccelDrive(DriveSubsystem drive, DoubleSupplier left, DoubleSupplier right) {
@@ -54,7 +52,7 @@ public class SwappableAccelDrive extends CommandBase {
   public void execute() {
     // Log the powers to the dashboard
     double forwardPower =
-        MathUtil.applyDeadband(kMaxForwardPower * -m_left.getAsDouble(), kJoystickDeadband);
+        kMaxForwardPower * MathUtil.applyDeadband(-m_left.getAsDouble(), kJoystickDeadband);
 
     // Use different slew limiters depending on whether "defense mode" is enabled
     if (m_defenseMode) {
@@ -64,7 +62,7 @@ public class SwappableAccelDrive extends CommandBase {
     }
 
     double rotationPower =
-        MathUtil.applyDeadband(kMaxRotationPower * -m_right.getAsDouble(), kJoystickDeadband);
+        kMaxRotationPower * MathUtil.applyDeadband(-m_right.getAsDouble(), kJoystickDeadband);
     rotationPower = m_rotationSlewLimiter.calculate(rotationPower);
 
     m_drive.arcadeDrive(forwardPower, rotationPower, true);
