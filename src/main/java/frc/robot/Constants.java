@@ -62,13 +62,24 @@ public final class Constants {
   }
 
   public static final class IndexerConstants {
-    public static final int kCargoMinProximity = 230;
+    // COLOR SENSOR
+    public static final int kCargoMinProximity = 300;
 
-    // Color "boundaries"
+    // Blue cargo HSV "boundaries"
     public static final double kMinBlueHue = 140;
     public static final double kMaxBlueHue = 185;
+    public static final double kMinBlueSaturation = 40;
+    public static final double kMaxBlueSaturation = 100;
+    public static final double kMinBlueValue = 0.1;
+    public static final double kMaxBlueValue = 15;
+
+    // Red cargo HSV "boundaries"
     public static final double kMinRedHue = 15;
     public static final double kMaxRedHue = 50;
+    public static final double kMinRedSaturation = 40;
+    public static final double kMaxRedSaturation = 100;
+    public static final double kMinRedValue = 0.7;
+    public static final double kMaxRedValue = 10;
   }
 
   public static final class DriveConstants {

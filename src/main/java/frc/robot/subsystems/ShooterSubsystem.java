@@ -111,4 +111,9 @@ public class ShooterSubsystem extends SubsystemBase {
   public void stopShooter() {
     m_flywheelMotor.set(0);
   }
+
+  /** Returns true if the flywheel is within some tolerance of the target RPM. */
+  public boolean atTargetRPM() {
+    return m_flywheelEncoder.getVelocity() >= getTargetRPM() - kRPMTolerance;
+  }
 }

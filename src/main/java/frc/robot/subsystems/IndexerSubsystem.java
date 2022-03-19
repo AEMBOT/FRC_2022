@@ -65,7 +65,8 @@ public class IndexerSubsystem extends SubsystemBase {
 
   // COLOR SENSOR READING
 
-  public boolean ballInIndexer() {
+  /** Returns true if there is a piece of cargo in the indexer. */
+  public boolean cargoInIndexer() {
     return m_colorSensor.getProximity() >= kCargoMinProximity;
   }
 
@@ -74,17 +75,28 @@ public class IndexerSubsystem extends SubsystemBase {
     double[] hsv = readSensorHSV();
 
     double hue = hsv[0];
-    double sat = hsv[1];
-    double val = hsv[2];
+    double saturation = hsv[1];
+    double value = hsv[2];
 
     Alliance color = Alliance.Invalid;
 
-    // TODO: This will likely need to be updated with actual color values from the robot
-    if (hue > kMinRedHue && hue < kMaxRedHue) {
+    // Red cargo
+    if (hue >= kMinRedHue
+        && hue <= kMaxRedHue
+        && saturation >= kMinRedSaturation
+        && saturation <= kMaxRedSaturation
+        && value >= kMinRedValue
+        && value <= kMaxRedValue) {
       color = Alliance.Red;
     }
-    // TODO: This will likely need to be updated with actual color values from the robot
-    else if (hue > kMinBlueHue && hue < kMaxBlueHue) {
+
+    // Blue cargo
+    else if (hue >= kMinBlueHue
+        && hue <= kMaxBlueHue
+        && saturation >= kMinBlueSaturation
+        && saturation <= kMaxBlueSaturation
+        && value >= kMinBlueValue
+        && value <= kMaxBlueValue) {
       color = Alliance.Blue;
     } else {
       color = Alliance.Invalid;
