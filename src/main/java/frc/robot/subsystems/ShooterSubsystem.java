@@ -20,13 +20,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
   // Flywheel motors & related devices
   // TODO: Figure out which one is left vs. right and name accordingly
-  private static CANSparkMax m_flywheelMotor =
+  private static CANSparkMax m_leftFlywheelMotor =
       new CANSparkMax(kLeftMotorCANId, MotorType.kBrushless);
-  private static CANSparkMax m_flywheelMotor2 =
+  private static CANSparkMax m_rightFlywheelMotor =
       new CANSparkMax(kRightMotorCANId, MotorType.kBrushless);
 
-  private RelativeEncoder m_flywheelEncoder = m_flywheelMotor.getEncoder();
-  private SparkMaxPIDController m_mainPIDController = m_flywheelMotor.getPIDController();
+  private RelativeEncoder m_flywheelEncoder = m_leftFlywheelMotor.getEncoder();
+  private SparkMaxPIDController m_mainPIDController = m_leftFlywheelMotor.getPIDController();
 
   // Limelight for vision processing
   private Limelight m_limelight;
@@ -36,15 +36,15 @@ public class ShooterSubsystem extends SubsystemBase {
   /** Creates a new ArcShooter. */
   public ShooterSubsystem(Limelight limelight) {
     // Restore motor factory defaults without persisting
-    m_flywheelMotor.restoreFactoryDefaults();
-    m_flywheelMotor2.restoreFactoryDefaults();
+    m_leftFlywheelMotor.restoreFactoryDefaults();
+    m_rightFlywheelMotor.restoreFactoryDefaults();
 
     // Set smart motion constants for main flywheel
     // TODO: Should this be done for both flywheels?
     setSmartMotionConstants(m_mainPIDController);
 
     // Have the secondary shooter motor be inverted relative to the primary
-    m_flywheelMotor2.follow(m_flywheelMotor, true);
+    m_rightFlywheelMotor.follow(m_leftFlywheelMotor, true);
 
     m_limelight = limelight;
   }
@@ -109,7 +109,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   /** Stops the shooter flywheels. */
   public void stopShooter() {
-    m_flywheelMotor.set(0);
+    m_leftFlywheelMotor.set(0);
   }
 
   /** Returns true if the flywheel is within some tolerance of the target RPM. */
