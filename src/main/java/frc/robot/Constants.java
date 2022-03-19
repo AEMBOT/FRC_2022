@@ -174,29 +174,3 @@ public final class Constants {
     }
   }
 }
-/* feedforward feedback gains
-// These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
-    // These characterization values MUST be determined either experimentally or theoretically
-    // for *your* robot's drive.
-    // The Robot Characterization Toolsuite provides a convenient tool for obtaining these
-    // values for your robot.
-    public static final double ksVolts = 0.16741;
-    public static final double kvVoltSecondsPerMeter = .12549;
-    public static final double kaVoltSecondsSquaredPerMeter = 0.20605;
-
-    // Example value only - as above, this must be tuned for your drive!
-    public static final double kPDriveVel = .16767;
-//differential drive kinematics
-public static final double kTrackwidthMeters = 8.3588;
-    public static final DifferentialDriveKinematics kDriveKinematics =
-        new DifferentialDriveKinematics(kTrackwidthMeters);
-
-//max trajectory vel/accel
-    public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-
-//ramsete patterns.
-    // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
-    public static final double kRamseteB = 2;
-    public static final double kRamseteZeta = 0.7;
-*/
