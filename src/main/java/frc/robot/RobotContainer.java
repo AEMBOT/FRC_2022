@@ -87,7 +87,7 @@ public class RobotContainer {
 
     new JoystickButton(m_driverController, Button.kA.value)
         //.whenPressed(new TurnToAngleProfiled(10, m_robotDrive).withTimeout(3));
-        .whileHeld(new IntakeStopPowerPos(m_intakeSubsystem, false, 150));
+        .whileHeld(new IntakeStopPowerPos(m_intakeSubsystem, false, 180));
 /*
     new JoystickButton(m_driverController, Button.kRightBumper.value)
         .whenPressed(new TurnToAngleProfiled(-10, m_robotDrive).withTimeout(3));*/
