@@ -24,9 +24,6 @@ public class IntakeSubsystem extends SubsystemBase {
   // whether the subsystem is successfully homed to its max point
   private boolean m_homingComplete = false;
 
-  // The encoder positions for the lowest and highest allowed
-  private double m_lowestAllowedPosition;
-  private double m_highestAllowedPosition;
 
   // motor geared 125:1 -> 24:72 gearing
   public IntakeSubsystem() {
@@ -39,6 +36,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     // Winch shouldn't drift, so set it to brake mode
     m_intakeWinch.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    // Set max current the winch can draw
+    m_intakeWinch.setSmartCurrentLimit(kWinchMaxExpectedCurrent,0,20000);
 
     // Roller can be in coast mode, since preciseness isn't important (I think)
     m_intakeRoller.setIdleMode(CANSparkMax.IdleMode.kCoast);
@@ -54,12 +53,12 @@ public class IntakeSubsystem extends SubsystemBase {
 
   /** Runs the intake roller inward to intake cargo. */
   public void runRollerInwards() {
-    m_intakeRoller.set(0.75);
+    m_intakeRoller.set(kRollerPower);
   }
 
   /** Runs the intake roller outward to eject cargo. */
   public void runRollerOutwards() {
-    m_intakeRoller.set(-0.75);
+    m_intakeRoller.set(-kRollerPower);
   }
 
   /** Stops the intake roller. */
@@ -72,12 +71,12 @@ public class IntakeSubsystem extends SubsystemBase {
   // FIXME: raise/lower might be reversed
   /** Raises the intake lift at a constant speed. */
   public void raiseIntake() {
-    m_intakeWinch.set(0.5);
+    m_intakeWinch.set(kWinchPower);
   }
 
   /** Lowers the intake lift at a constant speed. */
   public void lowerIntake() {
-    m_intakeWinch.set(-0.5);
+    m_intakeWinch.set(-kWinchPower);
   }
 
   /** Stops moving the intake lift. */
@@ -90,43 +89,17 @@ public class IntakeSubsystem extends SubsystemBase {
   // TODO: This may not work with the intake winch design
   /** Returns true if the intake lift is drawing too much current. */
   public boolean isAtHardLimit() {
-    return m_intakeWinch.getOutputCurrent() > kMaxExpectedCurrent;
+    return m_intakeWinch.getOutputCurrent() > kWinchMaxExpectedCurrent;
   }
 
-  /** sets the range of motion for the intake lift (UNTESTED). */
-  public void setHome(double min, double max) {
-    if (m_homingComplete) {
-      System.out.println("Intake being re-homed!");
-    }
-
-    // Set the soft limits for the lift motors
-    // setLiftSoftLimits((float) max, (float) min);
-
-    // Enable forward and reverse soft limits for the lift motors
-    // enableLiftSoftLimits();
-
-    m_lowestAllowedPosition = min;
-    m_highestAllowedPosition = max;
-
+  /** sets the range of motion for the intake lift */
+  public void setHome() {
     m_homingComplete = true;
+    m_intakeWinch.getEncoder().setPosition(0);
   }
 
-  /** Enable soft limits for the lift motors. */
-  private void enableWinchSoftLimits() {
-    m_intakeWinch.enableSoftLimit(SoftLimitDirection.kForward, true);
-    m_intakeWinch.enableSoftLimit(SoftLimitDirection.kReverse, true);
-  }
-
-  /** Disable soft limits for the lift motors. */
-  private void disableLiftSoftLimits() {
-    m_intakeWinch.enableSoftLimit(SoftLimitDirection.kForward, false);
-    m_intakeWinch.enableSoftLimit(SoftLimitDirection.kReverse, false);
-  }
-
-  /** Sets soft limits for the lift motors. */
-  public void setLiftSoftLimits(float max, float min) {
-    m_intakeWinch.setSoftLimit(SoftLimitDirection.kForward, max);
-    m_intakeWinch.setSoftLimit(SoftLimitDirection.kReverse, min);
+  public boolean getHomingComplete() {
+    return m_homingComplete;
   }
 
   /** gets the encoder position of the left lift */
