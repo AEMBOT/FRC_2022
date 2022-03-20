@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.autonomous.FiveBallAuto;
 import frc.robot.commands.autonomous.TaxiThenShoot;
 import frc.robot.commands.autonomous.TwoBallAuto;
+import frc.robot.commands.climber.ClimbTimed;
 import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.indexer.RunUpperIndexer;
@@ -27,6 +28,7 @@ import frc.robot.commands.utilities.enums.CargoDirection;
 import frc.robot.commands.utilities.enums.WinchDirection;
 import frc.robot.hardware.Limelight;
 import frc.robot.hardware.Limelight.LEDMode;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -46,7 +48,7 @@ public class RobotContainer {
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(m_limelight);
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final IndexerSubsystem m_indexerSubsystem = new IndexerSubsystem();
-  // private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
+  private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
 
   // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);
@@ -103,8 +105,8 @@ public class RobotContainer {
         new DefaultDrive(
             m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
 
-    // m_climberSubsystem.setDefaultCommand(
-    //     new ClimbTimed(m_climberSubsystem, m_driverController::getStartButtonPressed));
+    m_climberSubsystem.setDefaultCommand(
+        new ClimbTimed(m_climberSubsystem, m_driverController::getStartButtonPressed));
 
     // Default intake to raised and no roller running
     /*
