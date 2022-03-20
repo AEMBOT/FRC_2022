@@ -17,11 +17,9 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.autonomous.FiveBallAuto;
 import frc.robot.commands.autonomous.TaxiThenShoot;
 import frc.robot.commands.autonomous.TwoBallAuto;
-import frc.robot.commands.climber.ClimbTimed;
 import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.indexer.RunUpperIndexer;
-import frc.robot.commands.intake.HomeIntakeCommand;
 import frc.robot.commands.intake.RunIntakeRoller;
 import frc.robot.commands.intake.RunIntakeWinch;
 import frc.robot.commands.shooter.RampThenShoot;
@@ -29,7 +27,6 @@ import frc.robot.commands.utilities.enums.CargoDirection;
 import frc.robot.commands.utilities.enums.WinchDirection;
 import frc.robot.hardware.Limelight;
 import frc.robot.hardware.Limelight.LEDMode;
-import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -49,11 +46,16 @@ public class RobotContainer {
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(m_limelight);
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final IndexerSubsystem m_indexerSubsystem = new IndexerSubsystem();
-  private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
+  // private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
 
   // TODO: Move port to constants?
   private final XboxController m_driverController = new XboxController(0);
   private final XboxController m_secondaryController = new XboxController(1);
+
+  // PDP and PCM
+  // FIXME: Initializing the PDP this way leads to repeated CAN errors for some reason
+  // private final PowerDistribution m_pdp = new PowerDistribution();
+  // private final PneumaticsControlModule m_pcm = new PneumaticsControlModule();
 
   // Automodes - if you add more here, add them to the chooser in the container
   private TwoBallAuto m_autoCommand1 =
@@ -101,8 +103,8 @@ public class RobotContainer {
         new DefaultDrive(
             m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
 
-    m_climberSubsystem.setDefaultCommand(
-        new ClimbTimed(m_climberSubsystem, m_driverController::getStartButtonPressed));
+    // m_climberSubsystem.setDefaultCommand(
+    //     new ClimbTimed(m_climberSubsystem, m_driverController::getStartButtonPressed));
 
     // Default intake to raised and no roller running
     /*
@@ -110,7 +112,7 @@ public class RobotContainer {
         new InstantCommand(m_intakeSubsystem::stopRoller).andThen(
         new RunIntakeWinchToPosition(m_intakeSubsystem, 0)));
         */
-    
+
   }
 
   /**
@@ -140,11 +142,10 @@ public class RobotContainer {
 
     // Run the intake roller and lower intake when A is held
     // Using andThen since they share the same subsystem
-    /*
     new JoystickButton(m_secondaryController, Button.kA.value)
-        .whileHeld(new RunIntakeRoller(m_intakeSubsystem, CargoDirection.Intake).andThen(
-          new RunIntakeWinchToPosition(m_intakeSubsystem, Constants.IntakeConstants.kWinchLoweredPosition)));
-*/
+        .whileHeld(new RunIntakeRoller(m_intakeSubsystem, CargoDirection.Intake)); // .andThen(
+    // new RunIntakeWinchToPosition(m_intakeSubsystem,
+    // Constants.IntakeConstants.kWinchLoweredPosition)));
     // Move the intake lift up
     new JoystickButton(m_secondaryController, Button.kLeftBumper.value)
         .whileHeld(new RunIntakeWinch(m_intakeSubsystem, WinchDirection.Up));
@@ -162,9 +163,16 @@ public class RobotContainer {
   }
 
   public void homeIntake() {
-    if (!m_intakeSubsystem.getHomingComplete()) {
-      new HomeIntakeCommand(m_intakeSubsystem).schedule(false);
-    }
+    // if (!m_intakeSubsystem.getHomingComplete()) {
+    //   new HomeIntakeCommand(m_intakeSubsystem).schedule(false);
+    // }
+  }
+
+  /** Clears all sticky faults on the PCM and PDP. */
+  public void clearAllStickyFaults() {
+    // TODO: Update the PDP firmware?
+    // m_pdp.clearStickyFaults();
+    // m_pcm.clearAllStickyFaults();
   }
 
   /**

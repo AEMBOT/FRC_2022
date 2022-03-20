@@ -4,26 +4,27 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.IntakeSubsystem;
 
-public class RunIntakeWinchToPosition extends CommandBase{
+public class RunIntakeWinchToPosition extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final IntakeSubsystem m_intake;
-  private double goalPosition;
-  boolean shouldInvert; 
 
-  public RunIntakeWinchToPosition(IntakeSubsystem intake, double position){
+  private double goalPosition;
+  boolean shouldInvert;
+
+  public RunIntakeWinchToPosition(IntakeSubsystem intake, double position) {
     m_intake = intake;
-    goalPosition = position; 
+    goalPosition = position;
     addRequirements(intake);
   }
 
   @Override
   public void initialize() {
     double motorPosition = m_intake.getWinchPosition();
-    if(goalPosition > motorPosition){
+    if (goalPosition > motorPosition) {
       m_intake.raiseIntake();
     }
 
-    if(goalPosition < motorPosition){
+    if (goalPosition < motorPosition) {
       m_intake.lowerIntake();
     }
   }
@@ -36,7 +37,7 @@ public class RunIntakeWinchToPosition extends CommandBase{
 
   @Override
   public boolean isFinished() {
-    return Math.abs(goalPosition - m_intake.getWinchPosition()) < 
-      Constants.IntakeConstants.kIntakeWinchMotionThreshold;
+    return Math.abs(goalPosition - m_intake.getWinchPosition())
+        < Constants.IntakeConstants.kIntakeWinchMotionThreshold;
   }
 }

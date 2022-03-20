@@ -50,10 +50,11 @@ public final class Constants {
   public static final class IntakeConstants {
     public static final int kCANRollerID = 7;
     public static final int kCANWinchID = 8;
+    public static final int kCANInnerRollerID = 9;
 
     public static final double kRollerPower = 0.75;
-    public static final double kWinchPower = 0.05; // really low to start
-    public static final int kWinchMaxExpectedCurrent = 1;
+    public static final double kWinchPower = 0.5; // really low to start
+    public static final int kWinchMaxExpectedCurrent = 5;
     public static final double kWinchLoweredPosition = 100;
     public static final double kIntakeWinchMotionThreshold = 8;
     // Assume raised position is 0?

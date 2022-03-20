@@ -13,9 +13,12 @@ import static frc.robot.Constants.IntakeConstants.*;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ColorSensorV3;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IndexerSubsystem extends SubsystemBase {
@@ -24,10 +27,18 @@ public class IndexerSubsystem extends SubsystemBase {
       new CANSparkMax(kIndexerUpperBottomBeltPort, MotorType.kBrushless);
   private final CANSparkMax m_upperBelt =
       new CANSparkMax(kIndexerTopBeltPort, MotorType.kBrushless);
-  ;
 
   // Color sensor for detecting cargo
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
+
+  // Get the alliance from the FMS for dashboard display purposes
+  private final Alliance m_alliance = DriverStation.getAlliance();
+
+  // Create a specific Network Table for indexer information
+  private final NetworkTable m_indexerTable =
+      NetworkTableInstance.getDefault().getTable("Robot").getSubTable("Indexer");
+  private final NetworkTableEntry m_cargoCorrect = m_indexerTable.getEntry("cargoCorrect");
+  private final NetworkTableEntry m_cargoInIndexer = m_indexerTable.getEntry("cargoInIndexer");
 
   public IndexerSubsystem() {
     // Indexer shouldn't continue moving after stopping
@@ -40,10 +51,9 @@ public class IndexerSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // called once per scheduler run
-    readSensorHSV();
-    SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());
-    getCargoAllianceColor();
+    // Write diagnostic info to network tables
+    m_cargoCorrect.setBoolean(correctCargoColor());
+    m_cargoInIndexer.setBoolean(cargoInIndexer());
   }
 
   // INDEXER BELT CONTROL
@@ -68,6 +78,11 @@ public class IndexerSubsystem extends SubsystemBase {
   /** Returns true if there is a piece of cargo in the indexer. */
   public boolean cargoInIndexer() {
     return m_colorSensor.getProximity() >= kCargoMinProximity;
+    // && getCargoAllianceColor() != Alliance.Invalid;
+  }
+
+  public boolean correctCargoColor() {
+    return getCargoAllianceColor() == m_alliance;
   }
 
   /** Return the alliance that the loaded cargo belongs to */
@@ -101,8 +116,6 @@ public class IndexerSubsystem extends SubsystemBase {
     } else {
       color = Alliance.Invalid;
     }
-
-    SmartDashboard.putString("Color:", color.toString());
 
     return color;
   }
@@ -146,13 +159,13 @@ public class IndexerSubsystem extends SubsystemBase {
     double v = cmax * 100;
 
     // updates dashboard with latest RGB and HSV readings
-    SmartDashboard.putNumber("Red", red);
-    SmartDashboard.putNumber("Blue", blue);
-    SmartDashboard.putNumber("Green", green);
+    // SmartDashboard.putNumber("Red", red);
+    // SmartDashboard.putNumber("Blue", blue);
+    // SmartDashboard.putNumber("Green", green);
 
-    SmartDashboard.putNumber("Hue", h);
-    SmartDashboard.putNumber("Saturation", s);
-    SmartDashboard.putNumber("Value", v);
+    // SmartDashboard.putNumber("Hue", h);
+    // SmartDashboard.putNumber("Saturation", s);
+    // SmartDashboard.putNumber("Value", v);
 
     return new double[] {h, s, v};
   }

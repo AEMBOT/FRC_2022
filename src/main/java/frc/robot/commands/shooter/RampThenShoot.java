@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.commands.indexer.RunUpperIndexer;
 import frc.robot.commands.utilities.Noop;
 import frc.robot.commands.utilities.TimedRumble;
@@ -32,17 +33,17 @@ public class RampThenShoot extends SequentialCommandGroup {
 
         // Ramp up the shooter to the desired power, rumbling the driver controller if there's no
         // detected target
-        new ParallelCommandGroup(
-            new RampShooter(shooter).withTimeout(1),
-            new ConditionalCommand(
-                new Noop(),
-                new TimedRumble(driverController, 0.25, 0.5),
-                () -> limelight.hasValidTarget() || driverController == null)),
+        new ConditionalCommand(
+            new Noop(),
+            new TimedRumble(driverController, 0.25, 0.5),
+            () -> limelight.hasValidTarget() || driverController == null),
 
-        // Run the upper indexer once the shooter is ramped up
+        // Ramp up the shooter then run the indexer once that's finished
         new ParallelCommandGroup(
             new RunShooterWithLimelight(shooter),
-            new RunUpperIndexer(indexer, CargoDirection.Intake)));
+            new SequentialCommandGroup(
+                new WaitUntilCommand(shooter::atTargetRPM).withTimeout(1),
+                new RunUpperIndexer(indexer, CargoDirection.Intake))));
   }
 
   @Override

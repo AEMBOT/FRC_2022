@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import static frc.robot.Constants.IntakeConstants.*;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,6 +12,8 @@ public class IntakeSubsystem extends SubsystemBase {
   // Intake motors
   private final CANSparkMax m_intakeRoller = new CANSparkMax(kCANRollerID, MotorType.kBrushless);
   private final CANSparkMax m_intakeWinch = new CANSparkMax(kCANWinchID, MotorType.kBrushless);
+  private final CANSparkMax m_innerRoller =
+      new CANSparkMax(kCANInnerRollerID, MotorType.kBrushless);
 
   // Lowest indexer belt
   private final CANSparkMax m_lowerIndexBelt =
@@ -24,20 +25,21 @@ public class IntakeSubsystem extends SubsystemBase {
   // whether the subsystem is successfully homed to its max point
   private boolean m_homingComplete = false;
 
-
   // motor geared 125:1 -> 24:72 gearing
   public IntakeSubsystem() {
     // Restore motors to factory defaults for settings to be consistent
     m_intakeRoller.restoreFactoryDefaults();
     m_intakeWinch.restoreFactoryDefaults();
+    m_innerRoller.restoreFactoryDefaults();
 
-    // Lower indexer belt follows the intake roller
+    // Lower indexer belt & inner roller follow the intake roller
     m_lowerIndexBelt.follow(m_intakeRoller);
+    m_innerRoller.follow(m_intakeRoller);
 
     // Winch shouldn't drift, so set it to brake mode
     m_intakeWinch.setIdleMode(CANSparkMax.IdleMode.kBrake);
     // Set max current the winch can draw
-    m_intakeWinch.setSmartCurrentLimit(kWinchMaxExpectedCurrent,0,20000);
+    m_intakeWinch.setSmartCurrentLimit(kWinchMaxExpectedCurrent, 0, 20000);
 
     // Roller can be in coast mode, since preciseness isn't important (I think)
     m_intakeRoller.setIdleMode(CANSparkMax.IdleMode.kCoast);
