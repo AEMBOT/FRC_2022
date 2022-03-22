@@ -21,8 +21,11 @@ import frc.robot.commands.climber.ClimbTimed;
 import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.indexer.RunUpperIndexer;
-import frc.robot.commands.intake.RunIntakeRoller;
+import frc.robot.commands.intake.HomeIntakeCommand;
 import frc.robot.commands.intake.RunIntakeWinch;
+import frc.robot.commands.intake.RunIntakeWinchToPosition;
+import frc.robot.commands.intake.StartIntakeRoller;
+import frc.robot.commands.intake.StopIntakeRoller;
 import frc.robot.commands.shooter.RampThenShoot;
 import frc.robot.commands.utilities.enums.CargoDirection;
 import frc.robot.commands.utilities.enums.WinchDirection;
@@ -74,7 +77,6 @@ public class RobotContainer {
   SendableChooser<Command> m_chooser = new SendableChooser<>();
 
   boolean m_babyMode = false;
-  double m_powerMultiplier = 0.5;
 
   /** The container for the robot. Contains subsystems, IO devices, and commands. */
   public RobotContainer() {
@@ -109,11 +111,10 @@ public class RobotContainer {
         new ClimbTimed(m_climberSubsystem, m_driverController::getStartButtonPressed));
 
     // Default intake to raised and no roller running
-    /*
-    m_intakeSubsystem.setDefaultCommand(
-        new InstantCommand(m_intakeSubsystem::stopRoller).andThen(
-        new RunIntakeWinchToPosition(m_intakeSubsystem, 0)));
-        */
+
+    m_intakeSubsystem.setDefaultCommand(new StopIntakeRoller(m_intakeSubsystem).andThen(new RunIntakeWinchToPosition(
+        m_intakeSubsystem, Constants.IntakeConstants.kWinchRaisedPosition)));
+        
 
   }
 
@@ -145,9 +146,11 @@ public class RobotContainer {
     // Run the intake roller and lower intake when A is held
     // Using andThen since they share the same subsystem
     new JoystickButton(m_secondaryController, Button.kA.value)
-        .whileHeld(new RunIntakeRoller(m_intakeSubsystem, CargoDirection.Intake)); // .andThen(
-    // new RunIntakeWinchToPosition(m_intakeSubsystem,
-    // Constants.IntakeConstants.kWinchLoweredPosition)));
+        .whileHeld(new StartIntakeRoller(m_intakeSubsystem, CargoDirection.Intake)
+        // TODO: This command never finishes / ends to abide by default command requirements
+        // of never ending/finishing.
+        .andThen(new RunIntakeWinchToPosition(m_intakeSubsystem, Constants.IntakeConstants.kWinchLoweredPosition)));
+
     // Move the intake lift up
     new JoystickButton(m_secondaryController, Button.kLeftBumper.value)
         .whileHeld(new RunIntakeWinch(m_intakeSubsystem, WinchDirection.Up));
@@ -160,14 +163,17 @@ public class RobotContainer {
     new JoystickButton(m_secondaryController, Button.kX.value)
         .whileHeld(
             new ParallelCommandGroup(
-                new RunIntakeRoller(m_intakeSubsystem, CargoDirection.Eject),
+                new StartIntakeRoller(m_intakeSubsystem, CargoDirection.Eject),
                 new RunUpperIndexer(m_indexerSubsystem, CargoDirection.Eject)));
   }
 
   public void homeIntake() {
-    // if (!m_intakeSubsystem.getHomingComplete()) {
-    //   new HomeIntakeCommand(m_intakeSubsystem).schedule(false);
-    // }
+      
+    if (!m_intakeSubsystem.getHomingComplete()) {
+      new HomeIntakeCommand(m_intakeSubsystem).schedule(false);
+    }
+    
+    
   }
 
   /** Clears all sticky faults on the PCM and PDP. */

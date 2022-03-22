@@ -53,11 +53,13 @@ public final class Constants {
     public static final int kCANInnerRollerID = 9;
 
     public static final double kRollerPower = 0.75;
-    public static final double kWinchPower = 0.5; // really low to start
-    public static final int kWinchMaxExpectedCurrent = 5;
-    public static final double kWinchLoweredPosition = 100;
-    public static final double kIntakeWinchMotionThreshold = 8;
-    // Assume raised position is 0?
+    public static final double kWinchPower = 0.7; // really low to start
+    public static final int kWinchMaxExpectedCurrent = 25;
+    // Raised position is same as home
+    public static final double kWinchRaisedPosition = 0;
+    public static final double kWinchLoweredPosition = -60;
+    public static final double kIntakeWinchMotionThreshold = 4;
+    
 
     public static final int kIndexerLowerBottomBeltPort = 11;
     public static final int kIndexerUpperBottomBeltPort = 12;
