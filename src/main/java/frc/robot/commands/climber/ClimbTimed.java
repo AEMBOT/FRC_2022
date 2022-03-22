@@ -25,7 +25,7 @@ public class ClimbTimed extends SequentialCommandGroup {
         new InstantCommand(climber::setExtending, climber),
         new WaitCommand(1.25),
         new InstantCommand(climber::setCoasting, climber),
-        // new WaitCommand(2),
+        new WaitCommand(2),
 
         new WaitUntilCommand(condition_button_press),
 
@@ -42,9 +42,14 @@ public class ClimbTimed extends SequentialCommandGroup {
         // ---attach chin here
         // ---robot should now be hanging from first bar
         // But do it slowly-ish to prevent bouncing!
-        new WaitCommand(0.15),
+        new WaitCommand(0.25),
+
+//////////////////////
+// REMOVE ME AFTER INITIAL TESTING
         new InstantCommand(climber::setCoasting, climber),
         new WaitUntilCommand(condition_button_press),
+//////////////////////
+
 
         // angle hooks
         // start angling a little after main cylinders start extending (want the hooks to disengage)
@@ -64,25 +69,24 @@ public class ClimbTimed extends SequentialCommandGroup {
 
         // adjust angle to attach hooks to second bar
         new InstantCommand(climber::verticalMainCylinders, climber),
+
+/////////////////////
+// ADJUST ME, or just remove and do button press instead?  
         new WaitCommand(4.0),
         // give them a little time to vertical enough
+/////////////////////
 
         new WaitUntilCommand(condition_button_press),
 
-        // retract hooks halfway
+        // retract hooks all the way
         new InstantCommand(climber::setRetracting, climber),
-        new WaitCommand(3),
-        /*
+        new WaitCommand(2.2),
+        
         new InstantCommand(climber::setCoasting, climber),
-        new WaitCommand(0.35),
-        */
+        new WaitCommand(1.0),
+        
 
-        // new InstantCommand(climber::setRetracting, climber),
-        // new WaitCommand(1.5),
-        /*
-        new InstantCommand(climber::setCoasting, climber),
-        new WaitCommand(0.35),
-        */
+
 
         /// REPEATED FROM ABOVE, except for slight "wait" differences
         new WaitUntilCommand(condition_button_press),
@@ -94,8 +98,11 @@ public class ClimbTimed extends SequentialCommandGroup {
         // ---robot should now be hanging from first bar
         // But do it slowly-ish to prevent bouncing!
         new WaitCommand(0.4),
+//////////////////
+// REMOVE ME        
         new InstantCommand(climber::setCoasting, climber),
         new WaitUntilCommand(condition_button_press),
+//////////////////        
 
         // angle hooks
         // start angling a little after main cylinders start extending (want the hooks to disengage)
@@ -116,11 +123,16 @@ public class ClimbTimed extends SequentialCommandGroup {
         // adjust angle to attach hooks to second bar
         new InstantCommand(climber::verticalMainCylinders, climber),
 
+//////////////////
+// ADJUST OR REMOVE
         // give them a little time to extend enough
         new WaitCommand(5.0),
+//////////////////        
         new WaitUntilCommand(condition_button_press),
 
         // retract hooks fully
         new InstantCommand(climber::setRetracting, climber));
+
+        // Maybe add a coast here so we don't run out of air?
   }
 }
