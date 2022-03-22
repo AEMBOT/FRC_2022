@@ -6,25 +6,28 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.commands.indexer.RunUpperIndexer;
+import frc.robot.commands.intake.StartIntakeRoller;
 import frc.robot.commands.utilities.Noop;
 import frc.robot.commands.utilities.TimedRumble;
 import frc.robot.commands.utilities.enums.CargoDirection;
 import frc.robot.hardware.Limelight;
 import frc.robot.hardware.Limelight.LEDMode;
 import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 public class RampThenShoot extends SequentialCommandGroup {
   private Limelight m_limelight;
 
-  public RampThenShoot(IndexerSubsystem indexer, ShooterSubsystem shooter, Limelight limelight) {
-    this(indexer, shooter, limelight, null);
+  public RampThenShoot(IndexerSubsystem indexer, ShooterSubsystem shooter, Limelight limelight, IntakeSubsystem intake) {
+    this(indexer, shooter, limelight, intake, null);
   }
 
   public RampThenShoot(
       IndexerSubsystem indexer,
       ShooterSubsystem shooter,
       Limelight limelight,
+      IntakeSubsystem intake,
       XboxController driverController) {
     m_limelight = limelight;
     addCommands(
@@ -43,6 +46,7 @@ public class RampThenShoot extends SequentialCommandGroup {
             new RunShooterWithLimelight(shooter),
             new SequentialCommandGroup(
                 new WaitUntilCommand(shooter::atTargetRPM).withTimeout(1),
+                new StartIntakeRoller(intake, CargoDirection.Intake),
                 new RunUpperIndexer(indexer, CargoDirection.Intake))));
   }
 

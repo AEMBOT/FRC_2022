@@ -141,7 +141,7 @@ public class RobotContainer {
     new JoystickButton(m_secondaryController, Button.kB.value)
         .whileHeld(
             new RampThenShoot(
-                m_indexerSubsystem, m_shooterSubsystem, m_limelight, m_driverController));
+                m_indexerSubsystem, m_shooterSubsystem, m_limelight, m_intakeSubsystem, m_driverController));
 
     // Run the intake roller and lower intake when A is held
     // Using andThen since they share the same subsystem
