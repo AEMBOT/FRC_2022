@@ -23,13 +23,17 @@ public class ClimbTimed extends SequentialCommandGroup {
 
         // send hooks up
         new InstantCommand(climber::setExtending, climber),
-        new WaitCommand(1.75),
+        new WaitCommand(1.25),
+        new InstantCommand(climber::setCoasting, climber),
+        // new WaitCommand(2),
 
         new WaitUntilCommand(condition_button_press),
 
         // retract hooks
         new InstantCommand(climber::setRetracting, climber),
         new WaitCommand(2.2),
+        new InstantCommand(climber::setCoasting, climber),
+        new WaitCommand(1),
         new WaitUntilCommand(condition_button_press),
 
         // send hooks up
@@ -39,6 +43,8 @@ public class ClimbTimed extends SequentialCommandGroup {
         // ---robot should now be hanging from first bar
         // But do it slowly-ish to prevent bouncing!
         new WaitCommand(0.15),
+        new InstantCommand(climber::setCoasting, climber),
+        new WaitUntilCommand(condition_button_press),
 
         // angle hooks
         // start angling a little after main cylinders start extending (want the hooks to disengage)
