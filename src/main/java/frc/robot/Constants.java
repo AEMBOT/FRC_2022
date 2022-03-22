@@ -61,7 +61,7 @@ public final class Constants {
     public static final double kWinchLoweringPower = -0.4;
     public static final int kWinchMaxExpectedCurrent = 25;
     // Raised position is same as home
-    public static final double kWinchRaisedPosition = 0;
+    public static final double kWinchRaisedPosition = 0.2;
     public static final double kWinchLoweredPosition = -60;
     public static final double kIntakeWinchMotionThreshold = 4;
     
