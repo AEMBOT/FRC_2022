@@ -54,7 +54,7 @@ public final class Constants {
     public static final int kCANInnerRollerID = 9;
 
     public static final double kRollerPower = 0.75;
-    public static final double kWinchRaisePower = 0.7;
+    public static final double kWinchRaisingPower = 0.7;
     // Want to avoid the motor going faster than the spring / gravity can
     // lower the arm, leading to the cable going over the edge of the
     // spool
