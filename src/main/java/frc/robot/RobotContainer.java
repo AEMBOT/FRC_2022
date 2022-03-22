@@ -168,6 +168,7 @@ public class RobotContainer {
                 new RunUpperIndexer(m_indexerSubsystem, CargoDirection.Eject)));
   }
 
+  /** 
   public void homeIntake() {
       
     if (!m_intakeSubsystem.getHomingComplete()) {
@@ -176,6 +177,7 @@ public class RobotContainer {
     
     
   }
+  */
 
   /** Clears all sticky faults on the PCM and PDP. */
   public void clearAllStickyFaults() {
