@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.PerpetualCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.autonomous.FiveBallAuto;
 import frc.robot.commands.autonomous.TaxiThenShoot;
@@ -107,15 +108,10 @@ public class RobotContainer {
         new DefaultDrive(
             m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
 
-    m_climberSubsystem.setDefaultCommand(
-        new ClimbTimed(m_climberSubsystem, m_driverController::getStartButtonPressed));
-
     // Default intake to raised and no roller running
-
-    m_intakeSubsystem.setDefaultCommand(new StopIntakeRoller(m_intakeSubsystem).andThen(new RunIntakeWinchToPosition(
-        m_intakeSubsystem, Constants.IntakeConstants.kWinchRaisedPosition)));
+    m_intakeSubsystem.setDefaultCommand(new StopIntakeRoller(m_intakeSubsystem).andThen(
+        new PerpetualCommand(new RunIntakeWinchToPosition(m_intakeSubsystem, Constants.IntakeConstants.kWinchRaisedPosition))));
         
-
   }
 
   /**
@@ -131,6 +127,11 @@ public class RobotContainer {
         .whenPressed(new AlignWithHub(m_limelight, m_robotDrive).withTimeout(1));
     // .whenPressed(new AlignWithHub(m_robotDrive, m_limelight).withTimeout(0.5));
 
+    // Climb sequence - Start Button
+    new JoystickButton(m_driverController, Button.kStart.value)
+        .whenPressed(new ClimbTimed(m_climberSubsystem, m_intakeSubsystem, m_driverController::getStartButtonPressed));
+
+
     // SECONDARY CONTROLLER
     // Shooter control based on limelight distance
     // new JoystickButton(m_secondaryController, Button.kX.value)
@@ -141,14 +142,12 @@ public class RobotContainer {
     new JoystickButton(m_secondaryController, Button.kB.value)
         .whileHeld(
             new RampThenShoot(
-                m_indexerSubsystem, m_shooterSubsystem, m_limelight, m_intakeSubsystem, m_driverController));
+                m_intakeSubsystem, m_indexerSubsystem, m_shooterSubsystem, m_limelight, m_driverController));
 
     // Run the intake roller and lower intake when A is held
     // Using andThen since they share the same subsystem
     new JoystickButton(m_secondaryController, Button.kA.value)
         .whileHeld(new StartIntakeRoller(m_intakeSubsystem, CargoDirection.Intake)
-        // TODO: This command never finishes / ends to abide by default command requirements
-        // of never ending/finishing.
         .andThen(new RunIntakeWinchToPosition(m_intakeSubsystem, Constants.IntakeConstants.kWinchLoweredPosition)));
 
     // Move the intake lift up

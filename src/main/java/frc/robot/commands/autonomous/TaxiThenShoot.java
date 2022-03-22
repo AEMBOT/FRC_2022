@@ -32,7 +32,7 @@ public class TaxiThenShoot extends SequentialCommandGroup {
 
         // A driver controller has to be passed in order for this command to work (it includes
         // rumble)
-        new RampThenShoot(indexer, shooter, limelight).withTimeout(5),
+        new RampThenShoot(intake, indexer, shooter, limelight).withTimeout(5),
 
         // Stop running the intake
         new InstantCommand(intake::stopRoller, intake));

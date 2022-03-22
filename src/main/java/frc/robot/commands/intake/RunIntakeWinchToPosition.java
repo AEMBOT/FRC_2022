@@ -29,18 +29,15 @@ public class RunIntakeWinchToPosition extends CommandBase {
     }
   }
 
-  
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean _interrupted) {
+    m_intake.stopWinch();
+  }
 
   @Override
   public boolean isFinished() {
-    boolean finished = false;
-    if (Math.abs(goalPosition - m_intake.getWinchPosition())
-        < Constants.IntakeConstants.kIntakeWinchMotionThreshold) {
-      m_intake.stopWinch();
-      // Default commands shouldn't end / be finished??
-      //finished = true;
-      finished = false;
-    }
-    return finished;
+    return (Math.abs(goalPosition - m_intake.getWinchPosition())
+        < Constants.IntakeConstants.kIntakeWinchMotionThreshold);
   }
 }

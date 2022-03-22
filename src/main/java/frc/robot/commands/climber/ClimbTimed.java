@@ -4,22 +4,31 @@
 
 package frc.robot.commands.climber;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.Constants;
+import frc.robot.commands.intake.RunIntakeWinchToPosition;
 import frc.robot.subsystems.ClimberSubsystem;
-import java.util.function.BooleanSupplier;
+import frc.robot.subsystems.IntakeSubsystem;
 
 public class ClimbTimed extends SequentialCommandGroup {
 
-  public ClimbTimed(ClimberSubsystem climber, BooleanSupplier condition_button_press) {
+  public ClimbTimed(ClimberSubsystem climber, IntakeSubsystem intake, BooleanSupplier condition_button_press) {
+
+    addRequirements(climber, intake);
 
     addCommands(
         // Default state
         new InstantCommand(climber::setRetracting, climber),
         new InstantCommand(climber::verticalMainCylinders, climber),
         new WaitUntilCommand(condition_button_press),
+
+        // Take over intake and lower it for the rest of the climb
+        new RunIntakeWinchToPosition(intake, Constants.IntakeConstants.kWinchLoweredPosition),
 
         // send hooks up
         new InstantCommand(climber::setExtending, climber),
