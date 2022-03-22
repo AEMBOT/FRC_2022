@@ -70,15 +70,14 @@ public class IntakeSubsystem extends SubsystemBase {
 
   // INTAKE LIFT CONTROL
 
-  // FIXME: raise/lower might be reversed
   /** Raises the intake lift at a constant speed. */
   public void raiseIntake() {
-    m_intakeWinch.set(kWinchPower);
+    m_intakeWinch.set(kWinchRaisingPower);
   }
 
   /** Lowers the intake lift at a constant speed. */
   public void lowerIntake() {
-    m_intakeWinch.set(-kWinchPower);
+    m_intakeWinch.set(kWinchLoweringPower);
   }
 
   /** Stops moving the intake lift. */
@@ -104,7 +103,6 @@ public class IntakeSubsystem extends SubsystemBase {
     return m_homingComplete;
   }
 
-  /** gets the encoder position of the left lift */
   public double getWinchPosition() {
     return m_winchEncoder.getPosition();
   }

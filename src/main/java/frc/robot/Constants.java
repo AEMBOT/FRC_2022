@@ -38,7 +38,8 @@ public final class Constants {
     public static final double kMaxAcc = 1500;
     public static final double kMaxOutput = 1;
     public static final double kMinOutput = -1;
-    public static final double kAllowedError = 2; // read more on this and change the value probably
+    // read more on this and change the value probably
+    public static final double kAllowedError = 2; 
 
     // Default angle for RPM calculations
     public static final double kDefaultYAngle = 12;
@@ -53,7 +54,11 @@ public final class Constants {
     public static final int kCANInnerRollerID = 9;
 
     public static final double kRollerPower = 0.75;
-    public static final double kWinchPower = 0.7; // really low to start
+    public static final double kWinchRaisePower = 0.7;
+    // Want to avoid the motor going faster than the spring / gravity can
+    // lower the arm, leading to the cable going over the edge of the
+    // spool
+    public static final double kWinchLoweringPower = -0.4;
     public static final int kWinchMaxExpectedCurrent = 25;
     // Raised position is same as home
     public static final double kWinchRaisedPosition = 0;
