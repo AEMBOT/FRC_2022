@@ -97,6 +97,7 @@ public class RobotContainer {
     // PortForwarder.add(5805, "10.64.43.205", 5805);
 
     // Set up autonomous chooser
+    //IMPORTANT: Add Automodes here, don't override the chooser 
     m_chooser.setDefaultOption("Taxi & Shoot", m_taxiThenShoot);
     m_chooser.addOption("Two Ball Auto", m_autoCommand1);
     // m_chooser.addOption("Five Ball Auto*", m_autoCommand2);
@@ -124,8 +125,7 @@ public class RobotContainer {
     // PRIMARY CONTROLLER
     // Homing to Hub - A Button
     new JoystickButton(m_driverController, Button.kA.value)
-        .whenPressed(new AlignWithHub(m_limelight, m_robotDrive).withTimeout(1));
-    // .whenPressed(new AlignWithHub(m_robotDrive, m_limelight).withTimeout(0.5));
+        .whenPressed(new AlignWithHub(m_limelight, m_robotDrive).withTimeout(1.5));
 
     // Climb sequence - Start Button
     new JoystickButton(m_driverController, Button.kStart.value)
@@ -146,6 +146,8 @@ public class RobotContainer {
 
     // Run the intake roller and lower intake when A is held
     // Using andThen since they share the same subsystem
+    
+    /**
     new JoystickButton(m_secondaryController, Button.kA.value)
         .whileHeld(new StartIntakeRoller(m_intakeSubsystem, CargoDirection.Intake)
         .andThen(new RunIntakeWinchToPosition(m_intakeSubsystem, Constants.IntakeConstants.kWinchLoweredPosition)));
@@ -157,7 +159,7 @@ public class RobotContainer {
     // Move the intake lift down
     new JoystickButton(m_secondaryController, Button.kRightBumper.value)
         .whileHeld(new RunIntakeWinch(m_intakeSubsystem, WinchDirection.Down));
-
+    */
     // Eject any cargo in the indexer/intake
     new JoystickButton(m_secondaryController, Button.kX.value)
         .whileHeld(
