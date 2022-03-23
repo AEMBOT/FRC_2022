@@ -65,10 +65,10 @@ public class RobotContainer {
   // private final PneumaticsControlModule m_pcm = new PneumaticsControlModule();
 
   // Automodes - if you add more here, add them to the chooser in the container
-  private TwoBallAuto m_autoCommand1 =
+  private TwoBallAuto m_twoBall =
       new TwoBallAuto(
           m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
-  private FiveBallAuto m_autoCommand2 =
+  private FiveBallAuto m_fiveBall =
       new FiveBallAuto(
           m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
   private TaxiThenShoot m_taxiThenShoot =
@@ -100,8 +100,8 @@ public class RobotContainer {
     // Set up autonomous chooser
     //IMPORTANT: Add Automodes here, don't override the chooser 
     m_chooser.setDefaultOption("Taxi & Shoot", m_taxiThenShoot);
-    m_chooser.addOption("Two Ball Auto", m_autoCommand1);
-    // m_chooser.addOption("Five Ball Auto*", m_autoCommand2);
+    m_chooser.addOption("Two Ball Auto", m_twoBall);
+    // m_chooser.addOption("Five Ball Auto*", m_fiveBall);
 
     SmartDashboard.putData(m_chooser);
 
