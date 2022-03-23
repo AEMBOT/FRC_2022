@@ -38,6 +38,8 @@ import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
+import static frc.robot.Constants.ControllerConstants.*;
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -54,9 +56,8 @@ public class RobotContainer {
   private final IndexerSubsystem m_indexerSubsystem = new IndexerSubsystem();
   private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
 
-  // TODO: Move port to constants?
-  private final XboxController m_driverController = new XboxController(0);
-  private final XboxController m_secondaryController = new XboxController(1);
+  private final XboxController m_driverController = new XboxController(kDriver);
+  private final XboxController m_secondaryController = new XboxController(kSecondary);
 
   // PDP and PCM
   // FIXME: Initializing the PDP this way leads to repeated CAN errors for some reason

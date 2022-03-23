@@ -185,4 +185,9 @@ public final class Constants {
       public static final double kTurnRateToleranceDegPerS = 20.0;
     }
   }
+
+  public static final class ControllerConstants {
+    public static final int kDriver = 0;
+    public static final int kSecondary = 1;
+  }
 }
