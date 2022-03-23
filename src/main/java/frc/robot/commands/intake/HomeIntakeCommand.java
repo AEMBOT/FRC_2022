@@ -40,7 +40,10 @@ public class HomeIntakeCommand extends CommandBase {
 
   @Override
   public boolean isFinished() {
+    return true;
+    /*
     // Stop the command when the intake starts drawing too much current
     return m_intake.isAtHardLimit();
+    */
   }
 }

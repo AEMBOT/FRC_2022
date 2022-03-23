@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import static frc.robot.Constants.ControllerConstants.kDriver;
+import static frc.robot.Constants.ControllerConstants.kSecondary;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -18,18 +21,16 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.autonomous.FiveBallAuto;
 import frc.robot.commands.autonomous.TaxiThenShoot;
 import frc.robot.commands.autonomous.TwoBallAuto;
-import frc.robot.commands.climber.ClimbTimed;
+import frc.robot.commands.climber.ClimbManual;
 import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.indexer.RunUpperIndexer;
 import frc.robot.commands.intake.HomeIntakeCommand;
-import frc.robot.commands.intake.RunIntakeWinch;
 import frc.robot.commands.intake.RunIntakeWinchToPosition;
 import frc.robot.commands.intake.StartIntakeRoller;
 import frc.robot.commands.intake.StopIntakeRoller;
 import frc.robot.commands.shooter.RampThenShoot;
 import frc.robot.commands.utilities.enums.CargoDirection;
-import frc.robot.commands.utilities.enums.WinchDirection;
 import frc.robot.hardware.Limelight;
 import frc.robot.hardware.Limelight.LEDMode;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -37,8 +38,6 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-
-import static frc.robot.Constants.ControllerConstants.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -130,7 +129,7 @@ public class RobotContainer {
 
     // Climb sequence - Start Button
     new JoystickButton(m_driverController, Button.kStart.value)
-        .whenPressed(new ClimbTimed(m_climberSubsystem, m_intakeSubsystem, m_driverController::getStartButtonPressed));
+        .whenPressed(new ClimbManual(m_climberSubsystem, m_intakeSubsystem, m_driverController::getStartButtonPressed));
 
 
     // SECONDARY CONTROLLER
