@@ -1,5 +1,6 @@
 package frc.robot.commands.drive;
 
+import static frc.robot.Constants.ControllerConstants.*;
 import static frc.robot.Constants.DriveConstants.*;
 
 import edu.wpi.first.math.MathUtil;
@@ -10,61 +11,77 @@ import java.util.function.DoubleSupplier;
 
 /** Allows for swapping between two accelerations for defense and normal driving. */
 public class SwappableAccelDrive extends CommandBase {
-  private final DriveSubsystem m_drive;
+  private DriveSubsystem m_drive;
 
   // Left & right stick inputs from main controller
-  private final DoubleSupplier m_left;
-  private final DoubleSupplier m_right;
+  private DoubleSupplier m_forwardInput;
+  private DoubleSupplier m_turningInput;
+
+  // Boolean switch for enabling defense mode
+  private DoubleSupplier m_defenseToggle;
 
   // Acceleration limiters for forward/backward movement
-  SlewRateLimiter m_forwardSlewLimiter = new SlewRateLimiter(2.0);
-  SlewRateLimiter m_defenseSlewLimiter = new SlewRateLimiter(2.5);
+  private final SlewRateLimiter m_scoringSlewLimiter = new SlewRateLimiter(2.0);
+  private final SlewRateLimiter m_defenseSlewLimiter = new SlewRateLimiter(2.5);
 
   // Acceleration limiter for turning
-  SlewRateLimiter m_rotationSlewLimiter = new SlewRateLimiter(2.0);
+  private final SlewRateLimiter m_turningSlewLimiter = new SlewRateLimiter(2.0);
 
   // For acceleration swapping purposes
-  double m_previousForwardPower = 0;
+  private double m_previousForwardPower = 0;
 
   // Used to swap between faster/slower accelerations
-  boolean m_defenseMode = false;
+  private boolean m_inDefenseMode = false;
 
-  public SwappableAccelDrive(DriveSubsystem drive, DoubleSupplier left, DoubleSupplier right) {
+  public SwappableAccelDrive(
+      DriveSubsystem drive,
+      DoubleSupplier forward,
+      DoubleSupplier turning,
+      DoubleSupplier defenseToggle) {
     m_drive = drive;
-    m_left = left;
-    m_right = right;
+    m_forwardInput = forward;
+    m_turningInput = turning;
+    m_defenseToggle = defenseToggle;
     addRequirements(drive);
-  }
-
-  /** Increases the allowed robot acceleration for defense purposes */
-  public void toggleDefenseMode() {
-    m_defenseMode = !m_defenseMode;
-
-    // Reset the appropriate slew limiter
-    if (m_defenseMode) {
-      m_defenseSlewLimiter.reset(m_previousForwardPower);
-    } else {
-      m_forwardSlewLimiter.reset(m_previousForwardPower);
-    }
   }
 
   @Override
   public void execute() {
-    // Log the powers to the dashboard
+    // Calculate the deadbanded forward & rotation powers
     double forwardPower =
-        kMaxForwardPower * MathUtil.applyDeadband(-m_left.getAsDouble(), kJoystickDeadband);
+        kMaxForwardPower * MathUtil.applyDeadband(-m_forwardInput.getAsDouble(), kJoystickDeadband);
+    double rotationPower =
+        kMaxRotationPower
+            * MathUtil.applyDeadband(-m_turningInput.getAsDouble(), kJoystickDeadband);
 
-    // Use different slew limiters depending on whether "defense mode" is enabled
-    if (m_defenseMode) {
-      forwardPower = m_defenseSlewLimiter.calculate(forwardPower);
-    } else {
-      forwardPower = m_forwardSlewLimiter.calculate(forwardPower);
+    // Apply the slew (acceleration) limiters to avoid burning the carpet/etc.
+    rotationPower = m_turningSlewLimiter.calculate(rotationPower);
+
+    // Slew limiters need to be reset if we're just entering/exiting defense mode
+
+    // Entering defense mode
+    if (m_defenseToggle.getAsDouble() >= kTriggerActiveThreshold && !m_inDefenseMode) {
+      m_inDefenseMode = true;
+      m_defenseSlewLimiter.reset(m_previousForwardPower);
     }
 
-    double rotationPower =
-        kMaxRotationPower * MathUtil.applyDeadband(-m_right.getAsDouble(), kJoystickDeadband);
-    rotationPower = m_rotationSlewLimiter.calculate(rotationPower);
+    // Exiting defense mode
+    else if (m_defenseToggle.getAsDouble() < kTriggerActiveThreshold && m_inDefenseMode) {
+      m_inDefenseMode = false;
+      m_scoringSlewLimiter.reset(m_previousForwardPower);
+    }
 
+    // Apply the appropriate slew limiter to the stick input for forward/backward motion
+    if (m_inDefenseMode) {
+      forwardPower = m_defenseSlewLimiter.calculate(forwardPower);
+    } else {
+      forwardPower = m_scoringSlewLimiter.calculate(forwardPower);
+    }
+
+    // Actually drive the robot
     m_drive.arcadeDrive(forwardPower, rotationPower, true);
+
+    // Used for slew limiter swapping
+    m_previousForwardPower = forwardPower;
   }
 }

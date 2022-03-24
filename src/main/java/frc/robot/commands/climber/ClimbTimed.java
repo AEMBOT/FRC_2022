@@ -4,8 +4,6 @@
 
 package frc.robot.commands.climber;
 
-import java.util.function.BooleanSupplier;
-
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -14,10 +12,12 @@ import frc.robot.Constants;
 import frc.robot.commands.intake.RunIntakeWinchToPosition;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import java.util.function.BooleanSupplier;
 
 public class ClimbTimed extends SequentialCommandGroup {
 
-  public ClimbTimed(ClimberSubsystem climber, IntakeSubsystem intake, BooleanSupplier condition_button_press) {
+  public ClimbTimed(
+      ClimberSubsystem climber, IntakeSubsystem intake, BooleanSupplier condition_button_press) {
 
     addRequirements(climber, intake);
 
@@ -35,7 +35,6 @@ public class ClimbTimed extends SequentialCommandGroup {
         new WaitCommand(1.25),
         new InstantCommand(climber::setCoasting, climber),
         new WaitCommand(2),
-
         new WaitUntilCommand(condition_button_press),
 
         // retract hooks
@@ -53,12 +52,11 @@ public class ClimbTimed extends SequentialCommandGroup {
         // But do it slowly-ish to prevent bouncing!
         new WaitCommand(0.25),
 
-//////////////////////
-// REMOVE ME AFTER INITIAL TESTING
+        //////////////////////
+        // REMOVE ME AFTER INITIAL TESTING
         new InstantCommand(climber::setCoasting, climber),
         new WaitUntilCommand(condition_button_press),
-//////////////////////
-
+        //////////////////////
 
         // angle hooks
         // start angling a little after main cylinders start extending (want the hooks to disengage)
@@ -79,23 +77,19 @@ public class ClimbTimed extends SequentialCommandGroup {
         // adjust angle to attach hooks to second bar
         new InstantCommand(climber::verticalMainCylinders, climber),
 
-/////////////////////
-// ADJUST ME, or just remove and do button press instead?  
+        /////////////////////
+        // ADJUST ME, or just remove and do button press instead?
         new WaitCommand(4.0),
         // give them a little time to vertical enough
-/////////////////////
+        /////////////////////
 
         new WaitUntilCommand(condition_button_press),
 
         // retract hooks all the way
         new InstantCommand(climber::setRetracting, climber),
         new WaitCommand(2.2),
-        
         new InstantCommand(climber::setCoasting, climber),
         new WaitCommand(1.0),
-        
-
-
 
         /// REPEATED FROM ABOVE, except for slight "wait" differences
         new WaitUntilCommand(condition_button_press),
@@ -107,11 +101,11 @@ public class ClimbTimed extends SequentialCommandGroup {
         // ---robot should now be hanging from first bar
         // But do it slowly-ish to prevent bouncing!
         new WaitCommand(0.4),
-//////////////////
-// REMOVE ME        
+        //////////////////
+        // REMOVE ME
         new InstantCommand(climber::setCoasting, climber),
         new WaitUntilCommand(condition_button_press),
-//////////////////        
+        //////////////////
 
         // angle hooks
         // start angling a little after main cylinders start extending (want the hooks to disengage)
@@ -132,16 +126,16 @@ public class ClimbTimed extends SequentialCommandGroup {
         // adjust angle to attach hooks to second bar
         new InstantCommand(climber::verticalMainCylinders, climber),
 
-//////////////////
-// ADJUST OR REMOVE
+        //////////////////
+        // ADJUST OR REMOVE
         // give them a little time to extend enough
         new WaitCommand(5.0),
-//////////////////        
+        //////////////////
         new WaitUntilCommand(condition_button_press),
 
         // retract hooks fully
         new InstantCommand(climber::setRetracting, climber));
 
-        // Maybe add a coast here so we don't run out of air?
+    // Maybe add a coast here so we don't run out of air?
   }
 }

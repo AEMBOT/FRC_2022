@@ -19,7 +19,11 @@ import frc.robot.subsystems.ShooterSubsystem;
 public class RampThenShoot extends SequentialCommandGroup {
   private Limelight m_limelight;
 
-  public RampThenShoot(IntakeSubsystem intake, IndexerSubsystem indexer, ShooterSubsystem shooter, Limelight limelight) {
+  public RampThenShoot(
+      IntakeSubsystem intake,
+      IndexerSubsystem indexer,
+      ShooterSubsystem shooter,
+      Limelight limelight) {
     this(intake, indexer, shooter, limelight, null);
   }
 

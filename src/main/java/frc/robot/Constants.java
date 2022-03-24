@@ -39,7 +39,7 @@ public final class Constants {
     public static final double kMaxOutput = 1;
     public static final double kMinOutput = -1;
     // read more on this and change the value probably
-    public static final double kAllowedError = 2; 
+    public static final double kAllowedError = 2;
 
     // Default angle for RPM calculations
     public static final double kDefaultYAngle = 12;
@@ -64,7 +64,6 @@ public final class Constants {
     public static final double kWinchRaisedPosition = 0.2;
     public static final double kWinchLoweredPosition = -60;
     public static final double kIntakeWinchMotionThreshold = 4;
-    
 
     public static final int kIndexerLowerBottomBeltPort = 11;
     public static final int kIndexerUpperBottomBeltPort = 12;
@@ -115,9 +114,6 @@ public final class Constants {
     // Speed/power limits during teleop
     public static final double kMaxForwardPower = 1.0;
     public static final double kMaxRotationPower = 0.6;
-
-    // Controller stick deadband while driving
-    public static final double kJoystickDeadband = 0.1;
 
     // Split PID-related constants based on whether robot is turning/going straight
     public static final class StraightPID {
@@ -187,7 +183,13 @@ public final class Constants {
   }
 
   public static final class ControllerConstants {
-    public static final int kDriver = 0;
-    public static final int kSecondary = 1;
+    // Controller ports
+    public static final int kDriverPort = 0;
+    public static final int kSecondaryPort = 1;
+
+    // Thresholds for triggers & joysticks
+    // TODO: Tune the trigger threshold
+    public static final double kJoystickDeadband = 0.1;
+    public static final double kTriggerActiveThreshold = 0.2;
   }
 }
