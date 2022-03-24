@@ -5,7 +5,9 @@
 package frc.robot;
 
 import static frc.robot.Constants.ControllerConstants.*;
+import static frc.robot.Constants.DrivetrainConstants.Ramsete.*;
 
+import com.pathplanner.lib.PathPlanner;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.util.net.PortForwarder;
@@ -23,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.autonomous.FiveBallAuto;
+import frc.robot.commands.autonomous.FollowTrajectory;
 import frc.robot.commands.autonomous.TaxiThenShoot;
 import frc.robot.commands.climber.ClimbTimed;
 import frc.robot.commands.drive.AlignWithHub;
@@ -74,9 +77,11 @@ public class RobotContainer {
   private final TaxiThenShoot m_taxiThenShoot =
       new TaxiThenShoot(
           m_robotDrive, m_intakeSubsystem, m_indexerSubsystem, m_shooterSubsystem, m_limelight);
-  private final FiveBallAuto m_fiveBall =
-      new FiveBallAuto(
-          m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
+  private final FollowTrajectory m_testTrajectory =
+      new FollowTrajectory(
+          m_robotDrive,
+          PathPlanner.loadPath(
+              "Test Path", kMaxSpeedMetersPerSecond, kMaxAccelerationMetersPerSecondSquared));
 
   // Sets up driver controlled auto choices
   private final SendableChooser<Command> m_autoChooser = new SendableChooser<>();
@@ -181,7 +186,7 @@ public class RobotContainer {
   private void setupAutoChooser() {
     // IMPORTANT: Add any automodes here, don't override the chooser
     m_autoChooser.setDefaultOption("Taxi & Shoot", m_taxiThenShoot);
-    // m_chooser.addOption("Five Ball Auto*", m_fiveBall);
+    m_autoChooser.addOption("Follow Trajectory", m_testTrajectory);
 
     // Display the chooser on the dashboard
     SmartDashboard.putData(m_autoChooser);
