@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -184,6 +185,21 @@ public final class Constants {
 
       public static final double kTurnToleranceDeg = 3.0;
       public static final double kTurnRateToleranceDegPerS = 20.0;
+    }
+
+    public static final class Ramsete {
+      // Track width & friends
+      public static final double kEffectiveTrackWidth = 0.69883;
+      public static final DifferentialDriveKinematics kDriveKinematics =
+          new DifferentialDriveKinematics(kEffectiveTrackWidth);
+
+      // Max velocity & acceleration
+      public static final double kMaxSpeedMetersPerSecond = 2;
+      public static final double kMaxAccelerationMetersPerSecondSquared = 1.5;
+
+      // Ramsete constants
+      public static final double kRamseteB = 2;
+      public static final double kRamseteZeta = 0.7;
     }
   }
 
