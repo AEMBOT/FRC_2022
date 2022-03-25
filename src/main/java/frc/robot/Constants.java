@@ -16,11 +16,13 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public final class ClimberConstants {
-    public static final int ClimbSolenoidRight = 0;
-    public static final int ClimbSolenoidRightChoke = 1;
+    public static final int ClimbSolenoidRightRetract = 2;
+    public static final int ClimbSolenoidRightExtend = 1;
+    public static final int ClimbSolenoidRightChoke = 0;
 
-    public static final int ClimbSolenoidLeft = 7;
-    public static final int ClimbSolenoidLeftChoke = 6;
+    public static final int ClimbSolenoidLeftRetract = 5;
+    public static final int ClimbSolenoidLeftExtend = 6;
+    public static final int ClimbSolenoidLeftChoke = 7;
 
     public static final int AngleSolenoid = 3;
   }
@@ -53,12 +55,12 @@ public final class Constants {
     public static final int kCANWinchID = 8;
     public static final int kCANInnerRollerID = 9;
 
-    public static final double kRollerPower = 0.75;
-    public static final double kWinchRaisingPower = 0.7;
+    public static final double kRollerPower = 0.5;
+    public static final double kWinchRaisingPower = 0;
     // Want to avoid the motor going faster than the spring / gravity can
     // lower the arm, leading to the cable going over the edge of the
     // spool
-    public static final double kWinchLoweringPower = -0.4;
+    public static final double kWinchLoweringPower = -0;
     public static final int kWinchMaxExpectedCurrent = 25;
     // Raised position is same as home
     public static final double kWinchRaisedPosition = 0.2;

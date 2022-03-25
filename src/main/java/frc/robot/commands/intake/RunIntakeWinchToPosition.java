@@ -37,7 +37,10 @@ public class RunIntakeWinchToPosition extends CommandBase {
 
   @Override
   public boolean isFinished() {
+    return true;
+    /*
     return (Math.abs(goalPosition - m_intake.getWinchPosition())
         < Constants.IntakeConstants.kIntakeWinchMotionThreshold);
+        */
   }
 }

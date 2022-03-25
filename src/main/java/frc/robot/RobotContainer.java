@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PerpetualCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -155,19 +156,18 @@ public class RobotContainer {
     // Using andThen since they share the same subsystem
 
     /**
-     * new JoystickButton(m_secondaryController, Button.kA.value) .whileHeld(new
-     * StartIntakeRoller(m_intakeSubsystem, CargoDirection.Intake) .andThen(new
-     * RunIntakeWinchToPosition(m_intakeSubsystem,
-     * Constants.IntakeConstants.kWinchLoweredPosition)));
-     *
-     * <p>// Move the intake lift up new JoystickButton(m_secondaryController,
-     * Button.kLeftBumper.value) .whileHeld(new RunIntakeWinch(m_intakeSubsystem,
-     * WinchDirection.Up));
-     *
-     * <p>// Move the intake lift down new JoystickButton(m_secondaryController,
-     * Button.kRightBumper.value) .whileHeld(new RunIntakeWinch(m_intakeSubsystem,
-     * WinchDirection.Down));
-     */
+    new JoystickButton(m_secondaryController, Button.kA.value)
+        .whileHeld(new StartIntakeRoller(m_intakeSubsystem, CargoDirection.Intake)
+        .andThen(new RunIntakeWinchToPosition(m_intakeSubsystem, Constants.IntakeConstants.kWinchLoweredPosition)));
+
+    // Move the intake lift up
+    new JoystickButton(m_secondaryController, Button.kLeftBumper.value)
+        .whileHeld(new RunIntakeWinch(m_intakeSubsystem, WinchDirection.Up));
+*/
+    // Move the intake lift down
+    new JoystickButton(m_secondaryController, Button.kRightBumper.value)
+        .whileHeld(new InstantCommand(m_intakeSubsystem::runRollerInwards));
+    
     // Eject any cargo in the indexer/intake
     new JoystickButton(m_secondaryController, Button.kX.value)
         .whileHeld(

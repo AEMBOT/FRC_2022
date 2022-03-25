@@ -28,11 +28,11 @@ public class ClimbTimed extends SequentialCommandGroup {
         new WaitUntilCommand(condition_button_press),
 
         // Take over intake and lower it for the rest of the climb
-        new RunIntakeWinchToPosition(intake, Constants.IntakeConstants.kWinchLoweredPosition),
+        //new RunIntakeWinchToPosition(intake, Constants.IntakeConstants.kWinchLoweredPosition),
 
         // send hooks up
         new InstantCommand(climber::setExtending, climber),
-        new WaitCommand(1.25),
+        new WaitCommand(1.0),
         new InstantCommand(climber::setCoasting, climber),
         new WaitCommand(2),
         new WaitUntilCommand(condition_button_press),
@@ -87,7 +87,8 @@ public class ClimbTimed extends SequentialCommandGroup {
 
         // retract hooks all the way
         new InstantCommand(climber::setRetracting, climber),
-        new WaitCommand(2.2),
+        new WaitCommand(2.5),
+
         new InstantCommand(climber::setCoasting, climber),
         new WaitCommand(1.0),
 
