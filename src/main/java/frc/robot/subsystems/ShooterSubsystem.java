@@ -11,7 +11,6 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.hardware.Limelight;
 import frc.robot.utilities.ShooterMath;
@@ -64,13 +63,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private void updateDashboard() {
     // The current flywheel speed
-    SmartDashboard.putNumber("Shooter Current Power", getFlywheelRPM());
-    SmartDashboard.putNumber("Shooter Target Power", targetPower);
+    // SmartDashboard.putNumber("Shooter Current Power", getFlywheelRPM());
+    // SmartDashboard.putNumber("Shooter Target Power", targetPower);
   }
 
   private void setSmartMotionConstants(SparkMaxPIDController controller) {
     controller.setP(kP);
     controller.setI(kI);
+    controller.setIZone(kIZone);
     controller.setD(kD);
     controller.setFF(kFF);
     controller.setOutputRange(kMinOutput, kMaxOutput);

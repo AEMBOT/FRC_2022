@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.commands.indexer.RunUpperIndexer;
-import frc.robot.commands.intake.StartIntakeRoller;
+import frc.robot.commands.intake.RunIntakeRoller;
 import frc.robot.commands.utilities.Noop;
 import frc.robot.commands.utilities.TimedRumble;
 import frc.robot.commands.utilities.enums.CargoDirection;
@@ -50,8 +50,9 @@ public class RampThenShoot extends SequentialCommandGroup {
             new RunShooterWithLimelight(shooter),
             new SequentialCommandGroup(
                 new WaitUntilCommand(shooter::atTargetRPM).withTimeout(1),
-                new StartIntakeRoller(intake, CargoDirection.Intake),
-                new RunUpperIndexer(indexer, CargoDirection.Intake))));
+                parallel(
+                    new RunIntakeRoller(intake, CargoDirection.Intake),
+                    new RunUpperIndexer(indexer, CargoDirection.Intake)))));
   }
 
   @Override

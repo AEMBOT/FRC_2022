@@ -8,6 +8,7 @@ import static frc.robot.Constants.ControllerConstants.*;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.util.net.PortForwarder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -15,7 +16,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.PerpetualCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.autonomous.FiveBallAuto;
 import frc.robot.commands.autonomous.TaxiThenShoot;
@@ -24,11 +24,9 @@ import frc.robot.commands.climber.ClimbTimed;
 import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.indexer.RunUpperIndexer;
-import frc.robot.commands.intake.HomeIntakeCommand;
+import frc.robot.commands.intake.FullyLiftIntake;
+import frc.robot.commands.intake.LowerIntake;
 import frc.robot.commands.intake.RunIntakeRoller;
-import frc.robot.commands.intake.RunIntakeWinchToPosition;
-import frc.robot.commands.intake.StartIntakeRoller;
-import frc.robot.commands.intake.StopIntakeRoller;
 import frc.robot.commands.shooter.RampThenShoot;
 import frc.robot.commands.utilities.enums.CargoDirection;
 import frc.robot.hardware.Limelight;
@@ -73,6 +71,7 @@ public class RobotContainer {
   private TaxiThenShoot m_taxiThenShoot =
       new TaxiThenShoot(
           m_robotDrive, m_intakeSubsystem, m_indexerSubsystem, m_shooterSubsystem, m_limelight);
+  private FullyLiftIntake m_liftIntake = new FullyLiftIntake(m_intakeSubsystem);
 
   // Sets up driver controlled auto choices
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -92,14 +91,15 @@ public class RobotContainer {
     camera.setResolution(320, 240);
 
     // Forward limelight ports over USB
-    // PortForwarder.add(5800, "10.64.43.205", 5800);
-    // PortForwarder.add(5801, "10.64.43.205", 5801);
-    // PortForwarder.add(5805, "10.64.43.205", 5805);
+    PortForwarder.add(5800, "10.64.43.11", 5800);
+    PortForwarder.add(5801, "10.64.43.11", 5801);
+    PortForwarder.add(5805, "10.64.43.11", 5805);
 
     // Set up autonomous chooser
     // IMPORTANT: Add Automodes here, don't override the chooser
     m_chooser.setDefaultOption("Taxi & Shoot", m_taxiThenShoot);
     m_chooser.addOption("Two Ball Auto", m_twoBall);
+    m_chooser.addOption("Raise Intake", m_liftIntake);
     // m_chooser.addOption("Five Ball Auto*", m_fiveBall);
 
     SmartDashboard.putData(m_chooser);
@@ -110,12 +110,15 @@ public class RobotContainer {
             m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
 
     // Default intake to raised and no roller running
-    m_intakeSubsystem.setDefaultCommand(
-        new StopIntakeRoller(m_intakeSubsystem)
-            .andThen(
-                new PerpetualCommand(
-                    new RunIntakeWinchToPosition(
-                        m_intakeSubsystem, Constants.IntakeConstants.kWinchRaisedPosition))));
+    // m_intakeSubsystem.setDefaultCommand(
+    //     new StopIntakeRoller(m_intakeSubsystem)
+    //         .andThen(
+    //             new PerpetualCommand(
+    //                 new RunIntakeWinchToPosition(
+    //                     m_intakeSubsystem, Constants.IntakeConstants.kWinchRaisedPosition))));
+    // TODO: remove this after testing
+    // m_intakeSubsystem.setDefaultCommand(
+    //     new ManualIntakeLift(m_intakeSubsystem, m_secondaryController::getLeftY));
   }
 
   /**
@@ -165,24 +168,35 @@ public class RobotContainer {
      * Button.kLeftBumper.value) .whileHeld(new RunIntakeWinch(m_intakeSubsystem,
      * WinchDirection.Up));
      */
+
+    // Operate the intake lift
+    new JoystickButton(m_secondaryController, Button.kRightBumper.value)
+        .whenPressed(new FullyLiftIntake(m_intakeSubsystem));
+
+    new JoystickButton(m_secondaryController, Button.kLeftBumper.value)
+        .whileHeld(new LowerIntake(m_intakeSubsystem));
+
+    // new JoystickButton(m_secondaryController, Button.kY.value)
+    //     .whileHeld(new LowerIntake(m_intakeSubsystem));
+
     // Move the intake lift down
     // FIXME: This should be lifting/lowering the intake?
-    new JoystickButton(m_secondaryController, Button.kRightBumper.value)
+    new JoystickButton(m_secondaryController, Button.kA.value)
         .whileHeld(new RunIntakeRoller(m_intakeSubsystem, CargoDirection.Intake));
 
     // Eject any cargo in the indexer/intake
     new JoystickButton(m_secondaryController, Button.kX.value)
         .whileHeld(
             new ParallelCommandGroup(
-                new StartIntakeRoller(m_intakeSubsystem, CargoDirection.Eject),
+                new RunIntakeRoller(m_intakeSubsystem, CargoDirection.Eject),
                 new RunUpperIndexer(m_indexerSubsystem, CargoDirection.Eject)));
   }
 
   public void homeIntake() {
 
-    if (!m_intakeSubsystem.getHomingComplete()) {
-      new HomeIntakeCommand(m_intakeSubsystem).schedule(false);
-    }
+    // if (!m_intakeSubsystem.getHomingComplete()) {
+    //   new HomeIntakeCommand(m_intakeSubsystem).schedule(false);
+    // }
   }
 
   /** Clears all sticky faults on the PCM and PDP. */

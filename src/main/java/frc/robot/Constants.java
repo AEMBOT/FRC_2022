@@ -31,10 +31,11 @@ public final class Constants {
     public static final int kLeftMotorCANId = 13;
     public static final int kRightMotorCANId = 14;
 
-    public static final double kP = 1.2481e-11;
+    public static final double kP = 6e-5; // 1.7637e-8;
     public static final double kI = 0;
+    public static final double kIZone = 100; // rpm
     public static final double kD = 0.0000;
-    public static final double kFF = 0.000173;
+    public static final double kFF = 0.000183;
     public static final double kMaxVel = 5700;
     public static final double kMinVel = 0;
     public static final double kMaxAcc = 1500;
@@ -56,16 +57,17 @@ public final class Constants {
     public static final int kCANInnerRollerID = 9;
 
     public static final double kRollerPower = 0.5;
-    public static final double kWinchRaisingPower = 0;
+    public static final double kWinchRaisingPower = 0.1;
     // Want to avoid the motor going faster than the spring / gravity can
     // lower the arm, leading to the cable going over the edge of the
     // spool
-    public static final double kWinchLoweringPower = -0;
+    public static final double kWinchLoweringPower = -0.2;
     public static final int kWinchMaxExpectedCurrent = 25;
     // Raised position is same as home
-    public static final double kWinchRaisedPosition = 0.2;
-    public static final double kWinchLoweredPosition = -60;
-    public static final double kIntakeWinchMotionThreshold = 4;
+    public static final double kLiftRangeOfMotion = 8; // rotations
+    public static final double kWinchRaisedPosition = 0;
+    public static final double kWinchLoweredPosition = -4.5;
+    public static final double kWinchPositionTolerance = 4;
 
     public static final int kIndexerLowerBottomBeltPort = 11;
     public static final int kIndexerUpperBottomBeltPort = 12;

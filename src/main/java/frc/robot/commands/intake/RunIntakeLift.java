@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.commands.utilities.enums.WinchDirection;
 import frc.robot.subsystems.IntakeSubsystem;
 
-public class RunIntakeWinch extends CommandBase {
+public class RunIntakeLift extends CommandBase {
   private IntakeSubsystem m_intake;
   private WinchDirection m_direction;
 
@@ -17,7 +17,7 @@ public class RunIntakeWinch extends CommandBase {
    *
    * @param intake The robot's {@link IntakeSubsystem} instance.
    */
-  public RunIntakeWinch(IntakeSubsystem intake, WinchDirection direction) {
+  public RunIntakeLift(IntakeSubsystem intake, WinchDirection direction) {
     m_intake = intake;
     m_direction = direction;
     addRequirements(intake);

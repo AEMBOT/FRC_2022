@@ -5,7 +5,6 @@ import static frc.robot.Constants.DriveConstants.TurnPID.*;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.function.DoubleSupplier;
@@ -53,12 +52,12 @@ public class TurnToAngleProfiled extends ProfiledPIDCommand {
 
   @Override
   public void execute() {
-    SmartDashboard.putNumber("Setpoint Velocity", getController().getSetpoint().velocity);
-    SmartDashboard.putNumber(
-        "Current Velocity",
-        super.getController().getSetpoint().velocity + getController().getVelocityError());
-    SmartDashboard.putNumber(
-        "Profiled turn power", m_feedforward.calculate(getController().getSetpoint().velocity));
+    // SmartDashboard.putNumber("Setpoint Velocity", getController().getSetpoint().velocity);
+    // SmartDashboard.putNumber(
+    //     "Current Velocity",
+    //     super.getController().getSetpoint().velocity + getController().getVelocityError());
+    // SmartDashboard.putNumber(
+    //     "Profiled turn power", m_feedforward.calculate(getController().getSetpoint().velocity));
 
     super.execute();
   }

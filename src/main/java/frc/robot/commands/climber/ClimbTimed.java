@@ -74,13 +74,6 @@ public class ClimbTimed extends SequentialCommandGroup {
 
         // adjust angle to attach hooks to second bar
         new InstantCommand(climber::verticalMainCylinders, climber),
-
-        /////////////////////
-        // ADJUST ME, or just remove and do button press instead?
-        new WaitCommand(4.0),
-        // give them a little time to vertical enough
-        /////////////////////
-
         new WaitUntilCommand(condition_button_press),
 
         // retract hooks all the way
@@ -123,12 +116,6 @@ public class ClimbTimed extends SequentialCommandGroup {
 
         // adjust angle to attach hooks to second bar
         new InstantCommand(climber::verticalMainCylinders, climber),
-
-        //////////////////
-        // ADJUST OR REMOVE
-        // give them a little time to extend enough
-        new WaitCommand(5.0),
-        //////////////////
         new WaitUntilCommand(condition_button_press),
 
         // retract hooks fully

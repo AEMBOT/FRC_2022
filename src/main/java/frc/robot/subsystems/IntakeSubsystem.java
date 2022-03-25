@@ -48,7 +48,7 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Winch Current", m_intakeWinch.getOutputCurrent());
-    SmartDashboard.putNumber("Winch Position", getWinchPosition());
+    // SmartDashboard.putNumber("Winch Position", getWinchPosition());
   }
 
   // INTAKE ROLLER CONTROL
@@ -105,5 +105,36 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public double getWinchPosition() {
     return m_winchEncoder.getPosition();
+  }
+
+  public void resetLiftEncoder() {
+    m_winchEncoder.setPosition(0);
+  }
+
+  public void maintainLowerWinchPosition() {
+    double targetPosition = kWinchLoweredPosition;
+    double currentPosition = getWinchPosition();
+
+    // TODO: This may be reversed
+    // Don't supply the winch any power if it's above the lower position
+    if (currentPosition > targetPosition + kWinchPositionTolerance) {
+      stopWinch();
+    }
+
+    // Simplified P control if below
+    else if (currentPosition < targetPosition - kWinchPositionTolerance) {
+      final double kWinchP = 0.05;
+      m_intakeWinch.set(kWinchP * currentPosition);
+    }
+
+    // If within tolerable range, set an idle power to maintain the intake position
+    else {
+      // TODO: This has to be tuned
+      m_intakeWinch.set(0.05);
+    }
+  }
+
+  public void setLiftPower(double power) {
+    m_intakeWinch.set(power);
   }
 }

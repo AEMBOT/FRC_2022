@@ -48,7 +48,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   // TODO: We probably don't really need this, so remove it?
   // Whether or not to log debug information to the SmartDashboard
-  private final boolean m_debug = true;
+  private final boolean m_debug = false;
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
