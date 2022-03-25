@@ -33,8 +33,8 @@ public class IntakeSubsystem extends SubsystemBase {
     m_innerRoller.restoreFactoryDefaults();
 
     // Lower indexer belt & inner roller follow the intake roller
-    m_lowerIndexBelt.follow(m_intakeRoller);
-    m_innerRoller.follow(m_intakeRoller);
+    m_lowerIndexBelt.follow(m_intakeRoller, true);
+    m_innerRoller.follow(m_intakeRoller, true);
 
     // Winch shouldn't drift, so set it to brake mode
     m_intakeWinch.setIdleMode(CANSparkMax.IdleMode.kBrake);
@@ -55,12 +55,12 @@ public class IntakeSubsystem extends SubsystemBase {
 
   /** Runs the intake roller inward to intake cargo. */
   public void runRollerInwards() {
-    m_intakeRoller.set(kRollerPower);
+    m_intakeRoller.set(-kRollerPower);
   }
 
   /** Runs the intake roller outward to eject cargo. */
   public void runRollerOutwards() {
-    m_intakeRoller.set(-kRollerPower);
+    m_intakeRoller.set(kRollerPower);
   }
 
   /** Stops the intake roller. */

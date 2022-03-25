@@ -28,11 +28,11 @@ public class ClimbTimed extends SequentialCommandGroup {
         new WaitUntilCommand(condition_button_press),
 
         // Take over intake and lower it for the rest of the climb
-        new RunIntakeWinchToPosition(intake, Constants.IntakeConstants.kWinchLoweredPosition),
+        //new RunIntakeWinchToPosition(intake, Constants.IntakeConstants.kWinchLoweredPosition),
 
         // send hooks up
         new InstantCommand(climber::setExtending, climber),
-        new WaitCommand(1.25),
+        new WaitCommand(1.0),
         new InstantCommand(climber::setCoasting, climber),
         new WaitCommand(2),
 
@@ -79,17 +79,12 @@ public class ClimbTimed extends SequentialCommandGroup {
         // adjust angle to attach hooks to second bar
         new InstantCommand(climber::verticalMainCylinders, climber),
 
-/////////////////////
-// ADJUST ME, or just remove and do button press instead?  
-        new WaitCommand(4.0),
-        // give them a little time to vertical enough
-/////////////////////
 
         new WaitUntilCommand(condition_button_press),
 
         // retract hooks all the way
         new InstantCommand(climber::setRetracting, climber),
-        new WaitCommand(2.2),
+        new WaitCommand(2.5),
         
         new InstantCommand(climber::setCoasting, climber),
         new WaitCommand(1.0),
@@ -132,11 +127,7 @@ public class ClimbTimed extends SequentialCommandGroup {
         // adjust angle to attach hooks to second bar
         new InstantCommand(climber::verticalMainCylinders, climber),
 
-//////////////////
-// ADJUST OR REMOVE
-        // give them a little time to extend enough
-        new WaitCommand(5.0),
-//////////////////        
+   
         new WaitUntilCommand(condition_button_press),
 
         // retract hooks fully

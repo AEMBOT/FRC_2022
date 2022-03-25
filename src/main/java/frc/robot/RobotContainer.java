@@ -15,13 +15,14 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PerpetualCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.autonomous.FiveBallAuto;
 import frc.robot.commands.autonomous.TaxiThenShoot;
 import frc.robot.commands.autonomous.TwoBallAuto;
-import frc.robot.commands.climber.ClimbManual;
+import frc.robot.commands.climber.ClimbTimed;
 import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.indexer.RunUpperIndexer;
@@ -129,7 +130,7 @@ public class RobotContainer {
 
     // Climb sequence - Start Button
     new JoystickButton(m_driverController, Button.kStart.value)
-        .whenPressed(new ClimbManual(m_climberSubsystem, m_intakeSubsystem, m_driverController::getStartButtonPressed));
+        .whenPressed(new ClimbTimed(m_climberSubsystem, m_intakeSubsystem, m_driverController::getStartButtonPressed));
 
 
     // SECONDARY CONTROLLER
@@ -155,11 +156,11 @@ public class RobotContainer {
     // Move the intake lift up
     new JoystickButton(m_secondaryController, Button.kLeftBumper.value)
         .whileHeld(new RunIntakeWinch(m_intakeSubsystem, WinchDirection.Up));
-
+*/
     // Move the intake lift down
     new JoystickButton(m_secondaryController, Button.kRightBumper.value)
-        .whileHeld(new RunIntakeWinch(m_intakeSubsystem, WinchDirection.Down));
-    */
+        .whileHeld(new InstantCommand(m_intakeSubsystem::runRollerInwards));
+    
     // Eject any cargo in the indexer/intake
     new JoystickButton(m_secondaryController, Button.kX.value)
         .whileHeld(
