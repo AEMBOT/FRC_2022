@@ -46,8 +46,11 @@ public class ClimberSubsystem extends SubsystemBase {
 
   /** Creates a new ClimberSubsystem. */
   public ClimberSubsystem() {
-    leftArm = new ClimberArm(ClimbSolenoidLeftExtend, ClimbSolenoidLeftRetract, ClimbSolenoidLeftChoke);
-    rightArm = new ClimberArm(ClimbSolenoidRightExtend, ClimbSolenoidRightRetract, ClimbSolenoidRightChoke);
+    leftArm =
+        new ClimberArm(ClimbSolenoidLeftExtend, ClimbSolenoidLeftRetract, ClimbSolenoidLeftChoke);
+    rightArm =
+        new ClimberArm(
+            ClimbSolenoidRightExtend, ClimbSolenoidRightRetract, ClimbSolenoidRightChoke);
 
     anglePistonsControl = new Solenoid(PneumaticsModuleType.CTREPCM, AngleSolenoid);
     setRetracting();
