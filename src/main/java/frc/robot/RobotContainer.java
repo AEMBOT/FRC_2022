@@ -10,6 +10,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.util.net.PortForwarder;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PneumaticsControlModule;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -59,7 +60,9 @@ public class RobotContainer {
   // PDP and PCM
   // FIXME: Initializing the PDP this way leads to repeated CAN errors for some reason
   // private final PowerDistribution m_pdp = new PowerDistribution();
-  // private final PneumaticsControlModule m_pcm = new PneumaticsControlModule();
+  private final PneumaticsControlModule m_pcm = new PneumaticsControlModule();
+
+  private boolean m_compressorEnabled = true;
 
   // Automodes - if you add more here, add them to the chooser in the container
   private TwoBallAuto m_twoBall =
@@ -197,6 +200,19 @@ public class RobotContainer {
     // if (!m_intakeSubsystem.getHomingComplete()) {
     //   new HomeIntakeCommand(m_intakeSubsystem).schedule(false);
     // }
+  }
+
+  /** Used to toggle the compressor using the dashboard. */
+  public void updateCompressorStatus() {
+    m_compressorEnabled = SmartDashboard.getBoolean("Enable Compressor", m_compressorEnabled);
+    if (m_compressorEnabled) {
+      m_pcm.enableCompressorDigital();
+    } else {
+      m_pcm.disableCompressor();
+    }
+
+    // Put the toggle onto the dashboard
+    SmartDashboard.putBoolean("Enable Compressor", m_compressorEnabled);
   }
 
   /** Clears all sticky faults on the PCM and PDP. */
