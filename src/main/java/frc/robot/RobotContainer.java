@@ -110,17 +110,6 @@ public class RobotContainer {
     m_robotDrive.setDefaultCommand(
         new DefaultDrive(
             m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
-
-    // Default intake to raised and no roller running
-    // m_intakeSubsystem.setDefaultCommand(
-    //     new StopIntakeRoller(m_intakeSubsystem)
-    //         .andThen(
-    //             new PerpetualCommand(
-    //                 new RunIntakeWinchToPosition(
-    //                     m_intakeSubsystem, Constants.IntakeConstants.kWinchRaisedPosition))));
-    // TODO: remove this after testing
-    // m_intakeSubsystem.setDefaultCommand(
-    //     new ManualIntakeLift(m_intakeSubsystem, m_secondaryController::getLeftY));
   }
 
   /**
@@ -142,9 +131,6 @@ public class RobotContainer {
                 m_climberSubsystem, m_intakeSubsystem, m_driverController::getStartButtonPressed));
 
     // SECONDARY CONTROLLER
-    // Shooter control based on limelight distance
-    // new JoystickButton(m_secondaryController, Button.kX.value)
-    //     .whileHeld(new TeleOpShooter(m_shooterSubsystem));
 
     // Ramps up the shooter then runs the upper indexer into it
     // TODO: the limelight needs to be turned on before checking if it has a valid target
@@ -156,20 +142,6 @@ public class RobotContainer {
                 m_shooterSubsystem,
                 m_limelight,
                 m_driverController));
-
-    // Run the intake roller and lower intake when A is held
-    // Using andThen since they share the same subsystem
-
-    /**
-     * new JoystickButton(m_secondaryController, Button.kA.value) .whileHeld(new
-     * StartIntakeRoller(m_intakeSubsystem, CargoDirection.Intake) .andThen(new
-     * RunIntakeWinchToPosition(m_intakeSubsystem,
-     * Constants.IntakeConstants.kWinchLoweredPosition)));
-     *
-     * <p>// Move the intake lift up new JoystickButton(m_secondaryController,
-     * Button.kLeftBumper.value) .whileHeld(new RunIntakeWinch(m_intakeSubsystem,
-     * WinchDirection.Up));
-     */
 
     // Operate the intake lift
     new JoystickButton(m_secondaryController, Button.kRightBumper.value)
@@ -185,7 +157,7 @@ public class RobotContainer {
     dpadUp.whenActive(m_shooterSubsystem::incrementRPMOffset, m_shooterSubsystem);
     dpadDown.whenActive(m_shooterSubsystem::decrementRPMOffset, m_shooterSubsystem);
 
-    // Run the intake roller
+    // Run the intake roller & lower indexer belts (?)
     // TODO: Also lower the intake before doing this?
     new JoystickButton(m_secondaryController, Button.kA.value)
         .whileHeld(new RunIntakeRoller(m_intakeSubsystem, CargoDirection.Intake));
