@@ -1,5 +1,7 @@
 package frc.robot.utilities;
 
+import static frc.robot.Constants.ShooterConstants.*;
+
 import edu.wpi.first.math.MathUtil;
 import java.util.Map;
 import java.util.TreeMap;
@@ -19,9 +21,8 @@ public class ShooterMath {
     Double keyBelow = m_rpmMap.floorKey(yAngle);
 
     // Return an RPM of 0 if the angle is outside of the pre-sampled range
-    // TODO: Maybe use the default RPM/angle instead of 0?
     if (keyAbove == null || keyBelow == null) {
-      return 0;
+      return calculateRPM(kDefaultYAngle);
     }
 
     // Otherwise interpolate between the keys surrounding yAngle

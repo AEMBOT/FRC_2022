@@ -78,9 +78,12 @@ public class ClimbTimed extends SequentialCommandGroup {
 
         // retract hooks all the way
         new InstantCommand(climber::setRetracting, climber),
-        new WaitCommand(2.5),
-        new InstantCommand(climber::setCoasting, climber),
         new WaitCommand(1.0),
+        new InstantCommand(climber::setCoasting, climber),
+        new WaitCommand(2.5),
+        new InstantCommand(climber::setRetracting, climber),
+        new WaitCommand(1.5),
+        new InstantCommand(climber::setCoasting, climber),
 
         /// REPEATED FROM ABOVE, except for slight "wait" differences
         new WaitUntilCommand(condition_button_press),

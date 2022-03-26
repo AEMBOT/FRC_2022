@@ -30,7 +30,7 @@ public class ShooterSubsystem extends SubsystemBase {
   // Limelight for vision processing
   private Limelight m_limelight;
 
-  private double targetPower = 0;
+  private double m_rpmOffset = 0;
 
   /** Creates a new ArcShooter. */
   public ShooterSubsystem(Limelight limelight) {
@@ -108,7 +108,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   /** Runs the shooter flywheels at the given RPM. */
   public void runAtRPM(double rpm) {
-    m_mainPIDController.setReference(rpm, ControlType.kVelocity);
+    m_mainPIDController.setReference(rpm + m_rpmOffset, ControlType.kVelocity);
   }
 
   /** Stops the shooter flywheels. */
@@ -119,5 +119,14 @@ public class ShooterSubsystem extends SubsystemBase {
   /** Returns true if the flywheel is within some tolerance of the target RPM. */
   public boolean atTargetRPM() {
     return m_flywheelEncoder.getVelocity() >= getTargetRPM() - kRPMTolerance;
+  }
+
+  // MANUAL RPM COMPENSATION
+  public void incrementRPMOffset() {
+    m_rpmOffset += 50;
+  }
+
+  public void decrementRPMOffset() {
+    m_rpmOffset -= 50;
   }
 }

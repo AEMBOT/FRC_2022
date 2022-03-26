@@ -17,14 +17,16 @@ public class FullyLiftIntake extends CommandBase {
   }
 
   @Override
-  public void end(boolean _interrupted) {
+  public void end(boolean interrupted) {
     m_intake.stopWinch();
-    m_intake.resetLiftEncoder();
+
+    if (!interrupted) {
+      m_intake.resetLiftEncoder();
+    }
   }
 
   @Override
   public boolean isFinished() {
-    // return false;
     return m_intake.isAtHardLimit();
   }
 }

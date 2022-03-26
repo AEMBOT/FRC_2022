@@ -2,8 +2,10 @@ package frc.robot.commands.autonomous;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.DriveStraightSmart;
+import frc.robot.commands.intake.FullyLiftIntake;
 import frc.robot.commands.intake.LowerIntake;
 import frc.robot.commands.intake.StartIntakeRoller;
 import frc.robot.commands.intake.StopIntakeRoller;
@@ -29,23 +31,32 @@ public class TaxiThenShoot extends SequentialCommandGroup {
     m_intake = intake;
     m_drive = drive;
     addCommands(
+        // Home the intake at the beginning of auto
+        new FullyLiftIntake(intake),
+
         // Lower and turn on the intake
         new LowerIntake(intake),
         new StartIntakeRoller(intake, CargoDirection.Intake),
 
         // Run the intake while driving away from the hub
         // TODO: Tune this distance
-        new DriveStraightSmart(Units.feetToMeters(-6), drive),
+        new DriveStraightSmart(Units.feetToMeters(-6), drive).withTimeout(4),
+
+        // Stop running the intake
+        new StopIntakeRoller(intake),
+
+        // Drive forward a bit to make alignment easier if we hit the wall
+        new DriveStraightSmart(Units.feetToMeters(1), drive),
+        new WaitCommand(1),
 
         // Align with the hub using the limelight
+        new AlignWithHub(limelight, drive).withTimeout(1),
+        new WaitCommand(0.2),
         new AlignWithHub(limelight, drive).withTimeout(1),
 
         // A driver controller has to be passed in order for this command to work (it includes
         // rumble)
-        new RampThenShoot(intake, indexer, shooter, limelight).withTimeout(5),
-
-        // Stop running the intake
-        new StopIntakeRoller(intake));
+        new RampThenShoot(intake, indexer, shooter, limelight).withTimeout(5));
   }
 
   @Override

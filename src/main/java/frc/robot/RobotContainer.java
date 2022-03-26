@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.autonomous.FiveBallAuto;
 import frc.robot.commands.autonomous.TaxiThenShoot;
 import frc.robot.commands.autonomous.TwoBallAuto;
@@ -74,7 +75,6 @@ public class RobotContainer {
   private TaxiThenShoot m_taxiThenShoot =
       new TaxiThenShoot(
           m_robotDrive, m_intakeSubsystem, m_indexerSubsystem, m_shooterSubsystem, m_limelight);
-  private FullyLiftIntake m_liftIntake = new FullyLiftIntake(m_intakeSubsystem);
 
   // Sets up driver controlled auto choices
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -101,8 +101,7 @@ public class RobotContainer {
     // Set up autonomous chooser
     // IMPORTANT: Add Automodes here, don't override the chooser
     m_chooser.setDefaultOption("Taxi & Shoot", m_taxiThenShoot);
-    m_chooser.addOption("Two Ball Auto", m_twoBall);
-    m_chooser.addOption("Raise Intake", m_liftIntake);
+    // m_chooser.addOption("Two Ball Auto", m_twoBall);
     // m_chooser.addOption("Five Ball Auto*", m_fiveBall);
 
     SmartDashboard.putData(m_chooser);
@@ -179,11 +178,15 @@ public class RobotContainer {
     new JoystickButton(m_secondaryController, Button.kLeftBumper.value)
         .whileHeld(new LowerIntake(m_intakeSubsystem));
 
-    // new JoystickButton(m_secondaryController, Button.kY.value)
-    //     .whileHeld(new LowerIntake(m_intakeSubsystem));
+    // Manual modification of the shooter RPM during a match
+    Trigger dpadUp = new Trigger(() -> m_secondaryController.getPOV() == 0);
+    Trigger dpadDown = new Trigger(() -> m_secondaryController.getPOV() == 180);
 
-    // Move the intake lift down
-    // FIXME: This should be lifting/lowering the intake?
+    dpadUp.whenActive(m_shooterSubsystem::incrementRPMOffset, m_shooterSubsystem);
+    dpadDown.whenActive(m_shooterSubsystem::decrementRPMOffset, m_shooterSubsystem);
+
+    // Run the intake roller
+    // TODO: Also lower the intake before doing this?
     new JoystickButton(m_secondaryController, Button.kA.value)
         .whileHeld(new RunIntakeRoller(m_intakeSubsystem, CargoDirection.Intake));
 
