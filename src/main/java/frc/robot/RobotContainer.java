@@ -79,8 +79,6 @@ public class RobotContainer {
   // Sets up driver controlled auto choices
   SendableChooser<Command> m_chooser = new SendableChooser<>();
 
-  boolean m_babyMode = false;
-
   /** The container for the robot. Contains subsystems, IO devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings

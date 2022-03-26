@@ -20,9 +20,9 @@ public final class Constants {
     public static final int ClimbSolenoidRightExtend = 1;
     public static final int ClimbSolenoidRightChoke = 0;
 
-    public static final int ClimbSolenoidLeftRetract = 5;
-    public static final int ClimbSolenoidLeftExtend = 6;
-    public static final int ClimbSolenoidLeftChoke = 7;
+    public static final int ClimbSolenoidLeftRetract = 6;
+    public static final int ClimbSolenoidLeftExtend = 7;
+    public static final int ClimbSolenoidLeftChoke = 4;
 
     public static final int AngleSolenoid = 3;
   }
@@ -62,7 +62,7 @@ public final class Constants {
     // lower the arm, leading to the cable going over the edge of the
     // spool
     public static final double kWinchLoweringPower = -0.2;
-    public static final int kWinchMaxExpectedCurrent = 25;
+    public static final int kWinchMaxExpectedCurrent = 30;
     // Raised position is same as home
     public static final double kLiftRangeOfMotion = 8; // rotations
     public static final double kWinchRaisedPosition = 0;
