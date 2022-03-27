@@ -139,7 +139,8 @@ public class RobotContainer {
                 m_indexerSubsystem,
                 m_shooterSubsystem,
                 m_limelight,
-                m_driverController));
+                m_driverController,
+                m_secondaryController));
 
     // Operate the intake lift
     new JoystickButton(m_secondaryController, Button.kRightBumper.value)
@@ -193,6 +194,11 @@ public class RobotContainer {
     // TODO: Update the PDP firmware?
     // m_pdp.clearStickyFaults();
     // m_pcm.clearAllStickyFaults();
+  }
+
+  public void enableCompressor() {
+    m_pcm.enableCompressorDigital();
+    m_compressorEnabled = true;
   }
 
   /**
