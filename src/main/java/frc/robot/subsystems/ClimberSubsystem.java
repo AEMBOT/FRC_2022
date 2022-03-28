@@ -46,12 +46,12 @@ public class ClimberSubsystem extends SubsystemBase {
   /** Creates a new ClimberSubsystem. */
   public ClimberSubsystem() {
     leftArm =
-        new ClimberArm(ClimbSolenoidLeftExtend, ClimbSolenoidLeftRetract, ClimbSolenoidLeftChoke);
+        new ClimberArm(kClimbSolenoidLeftExtend, kClimbSolenoidLeftRetract, kClimbSolenoidLeftChoke);
     rightArm =
         new ClimberArm(
-            ClimbSolenoidRightExtend, ClimbSolenoidRightRetract, ClimbSolenoidRightChoke);
+            kClimbSolenoidRightExtend, kClimbSolenoidRightRetract, kClimbSolenoidRightChoke);
 
-    anglePistonsControl = new Solenoid(PneumaticsModuleType.CTREPCM, AngleSolenoid);
+    anglePistonsControl = new Solenoid(PneumaticsModuleType.CTREPCM, kAngleSolenoid);
     setRetracting();
 
     m_sensor = new LIDAR07_100W_Module(I2C.Port.kMXP);
