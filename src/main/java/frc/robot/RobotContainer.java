@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.autonomous.FiveBallAuto;
 import frc.robot.commands.autonomous.TaxiThenShoot;
-import frc.robot.commands.autonomous.TwoBallAuto;
 import frc.robot.commands.climber.ClimbTimed;
 import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.DefaultDrive;
@@ -66,15 +65,12 @@ public class RobotContainer {
   private boolean m_compressorEnabled = true;
 
   // Automodes - if you add more here, add them to the chooser in the container
-  private TwoBallAuto m_twoBall =
-      new TwoBallAuto(
-          m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
-  private FiveBallAuto m_fiveBall =
-      new FiveBallAuto(
-          m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
   private TaxiThenShoot m_taxiThenShoot =
       new TaxiThenShoot(
           m_robotDrive, m_intakeSubsystem, m_indexerSubsystem, m_shooterSubsystem, m_limelight);
+  private FiveBallAuto m_fiveBall =
+      new FiveBallAuto(
+          m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
 
   // Sets up driver controlled auto choices
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -131,7 +127,6 @@ public class RobotContainer {
     // SECONDARY CONTROLLER
 
     // Ramps up the shooter then runs the upper indexer into it
-    // TODO: the limelight needs to be turned on before checking if it has a valid target
     new JoystickButton(m_secondaryController, Button.kB.value)
         .whileHeld(
             new RampThenShoot(
@@ -156,8 +151,7 @@ public class RobotContainer {
     dpadUp.whenActive(m_shooterSubsystem::incrementRPMOffset, m_shooterSubsystem);
     dpadDown.whenActive(m_shooterSubsystem::decrementRPMOffset, m_shooterSubsystem);
 
-    // Run the intake roller & lower indexer belts (?)
-    // TODO: Also lower the intake before doing this?
+    // Run the intake roller & lower indexer belts
     new JoystickButton(m_secondaryController, Button.kA.value)
         .whileHeld(new RunIntakeRoller(m_intakeSubsystem, CargoDirection.Intake));
 

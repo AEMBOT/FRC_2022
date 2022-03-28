@@ -10,6 +10,7 @@ public class TimeRotation extends CommandBase {
   private double m_power;
   private final Timer m_timer = new Timer();
 
+  // TODO: Rewrite this command to be more accurate
   public TimeRotation(double power, DriveSubsystem drive) {
     m_power = power;
     m_drive = drive;

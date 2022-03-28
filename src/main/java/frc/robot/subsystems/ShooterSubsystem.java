@@ -18,7 +18,6 @@ import frc.robot.utilities.ShooterMath;
 public class ShooterSubsystem extends SubsystemBase {
 
   // Flywheel motors & related devices
-  // TODO: Figure out which one is left vs. right and name accordingly
   private static CANSparkMax m_leftFlywheelMotor =
       new CANSparkMax(kLeftMotorCANId, MotorType.kBrushless);
   private static CANSparkMax m_rightFlywheelMotor =
@@ -39,7 +38,6 @@ public class ShooterSubsystem extends SubsystemBase {
     m_rightFlywheelMotor.restoreFactoryDefaults();
 
     // Set smart motion constants for main flywheel
-    // TODO: Should this be done for both flywheels?
     setSmartMotionConstants(m_mainPIDController);
 
     // Have the secondary shooter motor be inverted relative to the primary

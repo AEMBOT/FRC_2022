@@ -35,9 +35,6 @@ public class RampThenShoot extends SequentialCommandGroup {
       XboxController secondaryController) {
     m_limelight = limelight;
     addCommands(
-        // TODO: A wait might be necessary to allow the Limelight to turn on
-        // new WaitCommand(0.1),
-
         // Ramp up the shooter to the desired power, rumbling the driver controller if there's no
         // detected target
         new ConditionalCommand(

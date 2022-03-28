@@ -10,7 +10,7 @@ public class AlignWithHub extends SequentialCommandGroup {
 
   public AlignWithHub(Limelight limelight, DriveSubsystem drive) {
     m_limelight = limelight;
-    addCommands(new TurnToAngleProfiled(() -> this.m_goalAngle, drive));
+    addCommands(new TurnDegrees(() -> this.m_goalAngle, drive));
   }
 
   @Override

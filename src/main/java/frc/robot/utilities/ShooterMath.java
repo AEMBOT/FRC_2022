@@ -28,7 +28,6 @@ public class ShooterMath {
     // Otherwise interpolate between the keys surrounding yAngle
     else {
       // distanceBetween has to be on the interval [0, 1]
-      // TODO: I think this formula should work, but I'm not entirely sure
       double distanceBetween = (yAngle - keyBelow) / (keyAbove - keyBelow);
       return MathUtil.interpolate(m_rpmMap.get(keyBelow), m_rpmMap.get(keyAbove), distanceBetween);
     }

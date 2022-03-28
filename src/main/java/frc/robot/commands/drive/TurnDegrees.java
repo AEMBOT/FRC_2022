@@ -9,17 +9,19 @@ import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.function.DoubleSupplier;
 
-public class TurnToAngleProfiled extends ProfiledPIDCommand {
+public class TurnDegrees extends ProfiledPIDCommand {
 
   private static final SimpleMotorFeedforward m_feedforward =
-      new SimpleMotorFeedforward(kSVolts, kVVoltDegreesPerSecond);
+      new SimpleMotorFeedforward(kS, kVDegreesPerSecond);
   private DriveSubsystem m_drive;
 
-  public TurnToAngleProfiled(double goalAngle, DriveSubsystem drive) {
+  /** Turns the specified number of degrees. */
+  public TurnDegrees(double goalAngle, DriveSubsystem drive) {
     this(() -> goalAngle, drive);
   }
 
-  public TurnToAngleProfiled(DoubleSupplier goalAngle, DriveSubsystem drive) {
+  /** Turns the number of degrees supplied by goalAngle when this command is run. */
+  public TurnDegrees(DoubleSupplier goalAngle, DriveSubsystem drive) {
     super(
         new ProfiledPIDController(
             kP,

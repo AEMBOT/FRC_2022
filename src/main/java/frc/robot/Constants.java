@@ -140,16 +140,13 @@ public final class Constants {
     }
 
     // Spark MAX Smart Motion constants
-    // TODO: Tune these for the 2022 chassis
     public static final class SmartMotion {
       public static final double kP = 0;
-      public static final double kTurnP = 8e-5;
       public static final double kI = 0;
       public static final double kD = 0;
       public static final double kIz = 0;
-
       public static final double kFF = 0.000457;
-      public static final double kTurnFF = 0.000657;
+
       public static final double kMaxOutput = 1;
       public static final double kMinOutput = -1;
       public static final double kAllowedErr = 0.01; // meters
@@ -173,13 +170,9 @@ public final class Constants {
       public static final double kMaxVelocityDegreesPerSecond = 360 / 5;
       public static final double kMaxAccelerationDegreesPerSecondSquared = 240;
 
-      // Feedforward
-      private static final double kSecondsPerRotation = .85; // works for dead-er battery
-      private static final double kTestPower = 0.4;
-
-      public static final double kSVolts = 0.058;
-      public static final double kVVoltDegreesPerSecond = 0.0008;
-      // (kTestPower - kSVolts) / (356.494 / kSecondsPerRotation);
+      // Feedforward (both in power units, i.e. on [-1, 1])
+      public static final double kS = 0.058;
+      public static final double kVDegreesPerSecond = 0.0008;
 
       public static final double kTurnToleranceDeg = 3.0;
       public static final double kTurnRateToleranceDegPerS = 20.0;
