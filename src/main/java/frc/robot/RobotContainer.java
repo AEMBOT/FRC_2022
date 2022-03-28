@@ -45,60 +45,49 @@ import frc.robot.subsystems.ShooterSubsystem;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
+  // Limelight doesn't warrant being a subsystem for how we're using it
   private final Limelight m_limelight = new Limelight();
 
+  // Robot subsystems (see subsystems/ folder for more info)
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(m_limelight);
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final IndexerSubsystem m_indexerSubsystem = new IndexerSubsystem();
   private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
 
+  // Controllers (we use Xbox ones)
   private final XboxController m_driverController = new XboxController(kDriverPort);
   private final XboxController m_secondaryController = new XboxController(kSecondaryPort);
 
-  // PDP and PCM
+  // Power Distribution Panel (PDP) and Pneumatics Control Module (PCM)
   // FIXME: Initializing the PDP this way leads to repeated CAN errors for some reason
   // private final PowerDistribution m_pdp = new PowerDistribution();
   private final PneumaticsControlModule m_pcm = new PneumaticsControlModule();
 
+  // Used for toggling the compressor state (see updateCompressorState() method)
   private boolean m_compressorEnabled = true;
 
-  // Automodes - if you add more here, add them to the chooser in the container
-  private TaxiThenShoot m_taxiThenShoot =
+  // Automodes - if you add more here, add them to the chooser in setupAutoChooser()
+  private final TaxiThenShoot m_taxiThenShoot =
       new TaxiThenShoot(
           m_robotDrive, m_intakeSubsystem, m_indexerSubsystem, m_shooterSubsystem, m_limelight);
-  private FiveBallAuto m_fiveBall =
+  private final FiveBallAuto m_fiveBall =
       new FiveBallAuto(
           m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
 
   // Sets up driver controlled auto choices
-  SendableChooser<Command> m_chooser = new SendableChooser<>();
+  private final SendableChooser<Command> m_autoChooser = new SendableChooser<>();
 
   /** The container for the robot. Contains subsystems, IO devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
 
-    // Turn on the limelight's LEDs
-    m_limelight.setLEDMode(LEDMode.On);
+    // Setup the Limelight & USB camera
+    setupCameras();
 
-    // Set up USB (rear-facing) camera
-    UsbCamera camera = CameraServer.startAutomaticCapture();
-    camera.setResolution(320, 240);
-
-    // Forward limelight ports over USB
-    PortForwarder.add(5800, "10.64.43.11", 5800);
-    PortForwarder.add(5801, "10.64.43.11", 5801);
-    PortForwarder.add(5805, "10.64.43.11", 5805);
-
-    // Set up autonomous chooser
-    // IMPORTANT: Add Automodes here, don't override the chooser
-    m_chooser.setDefaultOption("Taxi & Shoot", m_taxiThenShoot);
-    // m_chooser.addOption("Two Ball Auto", m_twoBall);
-    // m_chooser.addOption("Five Ball Auto*", m_fiveBall);
-
-    SmartDashboard.putData(m_chooser);
+    // Display an autonomous chooser on the dashboard
+    setupAutoChooser();
 
     // Set default drivetrain command to arcade driving (happens during teleop)
     m_robotDrive.setDefaultCommand(
@@ -126,7 +115,7 @@ public class RobotContainer {
 
     // SECONDARY CONTROLLER
 
-    // Ramps up the shooter then runs the upper indexer into it
+    // Ramps up the shooter then runs the upper indexer into it - B
     new JoystickButton(m_secondaryController, Button.kB.value)
         .whileHeld(
             new RampThenShoot(
@@ -137,14 +126,14 @@ public class RobotContainer {
                 m_driverController,
                 m_secondaryController));
 
-    // Operate the intake lift
+    // Operate the intake lift - Left/Right bumper
     new JoystickButton(m_secondaryController, Button.kRightBumper.value)
         .whenPressed(new LiftIntake(m_intakeSubsystem));
 
     new JoystickButton(m_secondaryController, Button.kLeftBumper.value)
         .whileHeld(new LowerIntake(m_intakeSubsystem));
 
-    // Manual modification of the shooter RPM during a match
+    // Manual modification of the shooter RPM during a match - dpad up/down
     Trigger dpadUp = new Trigger(() -> m_secondaryController.getPOV() == 0);
     Trigger dpadDown = new Trigger(() -> m_secondaryController.getPOV() == 180);
 
@@ -163,11 +152,29 @@ public class RobotContainer {
                 new RunUpperIndexer(m_indexerSubsystem, CargoDirection.Eject)));
   }
 
-  public void homeIntake() {
+  /** Configures the secondary USB camera & Limelight port forwarding. */
+  private void setupCameras() {
+    // Turn on the limelight's LEDs
+    m_limelight.setLEDMode(LEDMode.On);
 
-    // if (!m_intakeSubsystem.getHomingComplete()) {
-    //   new HomeIntakeCommand(m_intakeSubsystem).schedule(false);
-    // }
+    // Set up USB (rear-facing) camera
+    UsbCamera camera = CameraServer.startAutomaticCapture();
+    camera.setResolution(320, 240);
+
+    // Forward limelight ports over USB
+    PortForwarder.add(5800, "10.64.43.11", 5800);
+    PortForwarder.add(5801, "10.64.43.11", 5801);
+    PortForwarder.add(5805, "10.64.43.11", 5805);
+  }
+
+  /** Sets up the autonomous chooser on the dashboard. */
+  private void setupAutoChooser() {
+    // IMPORTANT: Add any automodes here, don't override the chooser
+    m_autoChooser.setDefaultOption("Taxi & Shoot", m_taxiThenShoot);
+    // m_chooser.addOption("Five Ball Auto*", m_fiveBall);
+
+    // Display the chooser on the dashboard
+    SmartDashboard.putData(m_autoChooser);
   }
 
   /** Used to toggle the compressor using the dashboard. */
@@ -202,6 +209,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // Returns the autonomous command selected on the dashboard
-    return m_chooser.getSelected();
+    // NOTE: Don't override this, you'll forget to change it back during competition
+    return m_autoChooser.getSelected();
   }
 }
