@@ -164,6 +164,9 @@ public class RobotContainer {
     // Forward limelight ports over USB
     PortForwarder.add(5800, "10.64.43.11", 5800);
     PortForwarder.add(5801, "10.64.43.11", 5801);
+    PortForwarder.add(5802, "10.64.43.11", 5802);
+    PortForwarder.add(5803, "10.64.43.11", 5803);
+    PortForwarder.add(5804, "10.64.43.11", 5804);
     PortForwarder.add(5805, "10.64.43.11", 5805);
   }
 
