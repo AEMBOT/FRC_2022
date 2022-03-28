@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.DriveStraightSmart;
-import frc.robot.commands.intake.FullyLiftIntake;
+import frc.robot.commands.intake.LiftIntake;
 import frc.robot.commands.intake.LowerIntake;
 import frc.robot.commands.intake.StartIntakeRoller;
 import frc.robot.commands.intake.StopIntakeRoller;
@@ -32,7 +32,7 @@ public class TaxiThenShoot extends SequentialCommandGroup {
     m_drive = drive;
     addCommands(
         // Home the intake at the beginning of auto
-        new FullyLiftIntake(intake),
+        new LiftIntake(intake),
 
         // Lower and turn on the intake
         new LowerIntake(intake),

@@ -10,44 +10,35 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class IntakeSubsystem extends SubsystemBase {
   // Intake motors
   private final CANSparkMax m_intakeRoller = new CANSparkMax(kCANRollerID, MotorType.kBrushless);
-  private final CANSparkMax m_intakeWinch = new CANSparkMax(kCANWinchID, MotorType.kBrushless);
+  private final CANSparkMax m_intakeLift = new CANSparkMax(kCANLiftID, MotorType.kBrushless);
   private final CANSparkMax m_innerRoller =
       new CANSparkMax(kCANInnerRollerID, MotorType.kBrushless);
 
   // Lowest indexer belt
   private final CANSparkMax m_lowerIndexBelt =
-      new CANSparkMax(kIndexerLowerBottomBeltPort, MotorType.kBrushless);
+      new CANSparkMax(kCANIndexerLowerBottomBeltID, MotorType.kBrushless);
 
-  // Winch encoder
-  private final RelativeEncoder m_winchEncoder = m_intakeWinch.getEncoder();
-
-  // whether the subsystem is successfully homed to its max point
-  private boolean m_homingComplete = false;
+  // Lift encoder
+  private final RelativeEncoder m_liftEncoder = m_intakeLift.getEncoder();
 
   // motor geared 125:1 -> 24:72 gearing
   public IntakeSubsystem() {
     // Restore motors to factory defaults for settings to be consistent
     m_intakeRoller.restoreFactoryDefaults();
-    m_intakeWinch.restoreFactoryDefaults();
+    m_intakeLift.restoreFactoryDefaults();
     m_innerRoller.restoreFactoryDefaults();
 
     // Lower indexer belt & inner roller follow the intake roller
     m_lowerIndexBelt.follow(m_intakeRoller, true);
     m_innerRoller.follow(m_intakeRoller, true);
 
-    // Winch shouldn't drift, so set it to brake mode
-    m_intakeWinch.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    // Lift shouldn't drift, so set it to brake mode
+    m_intakeLift.setIdleMode(CANSparkMax.IdleMode.kBrake);
     // Set max current the winch can draw
-    m_intakeWinch.setSmartCurrentLimit(kWinchMaxExpectedCurrent, 0, 20000);
+    m_intakeLift.setSmartCurrentLimit(kLiftMaxExpectedCurrent, 0, 20000);
 
-    // Roller can be in coast mode, since preciseness isn't important (I think)
+    // Roller can be in coast mode, since preciseness isn't important
     m_intakeRoller.setIdleMode(CANSparkMax.IdleMode.kCoast);
-  }
-
-  @Override
-  public void periodic() {
-    // SmartDashboard.putNumber("Winch Current", m_intakeWinch.getOutputCurrent());
-    // SmartDashboard.putNumber("Winch Position", getWinchPosition());
   }
 
   // INTAKE ROLLER CONTROL
@@ -71,69 +62,33 @@ public class IntakeSubsystem extends SubsystemBase {
 
   /** Raises the intake lift at a constant speed. */
   public void raiseIntake() {
-    m_intakeWinch.set(kWinchRaisingPower);
+    m_intakeLift.set(kLiftRaisingPower);
   }
 
   /** Lowers the intake lift at a constant speed. */
   public void lowerIntake() {
-    m_intakeWinch.set(kWinchLoweringPower);
+    m_intakeLift.set(kLiftLoweringPower);
   }
 
   /** Stops moving the intake lift. */
-  public void stopWinch() {
-    m_intakeWinch.set(0);
+  public void stopLift() {
+    m_intakeLift.set(0);
   }
 
-  // HOMING (not quite functional)
+  // HOMING
 
-  // TODO: This may not work with the intake winch design
   /** Returns true if the intake lift is drawing too much current. */
   public boolean isAtHardLimit() {
-    return m_intakeWinch.getOutputCurrent() > kWinchMaxExpectedCurrent;
+    return m_intakeLift.getOutputCurrent() > kLiftMaxExpectedCurrent;
   }
 
-  /** sets the range of motion for the intake lift */
-  public void setHome() {
-    m_homingComplete = true;
-    m_intakeWinch.getEncoder().setPosition(0);
+  /** Returns the current position of the intake lift motor, in rotations. */
+  public double getLiftPosition() {
+    return m_liftEncoder.getPosition();
   }
 
-  public boolean getHomingComplete() {
-    return m_homingComplete;
-  }
-
-  public double getWinchPosition() {
-    return m_winchEncoder.getPosition();
-  }
-
+  /** Resets the encoder on the intake lift motor. */
   public void resetLiftEncoder() {
-    m_winchEncoder.setPosition(0);
-  }
-
-  public void maintainLowerWinchPosition() {
-    double targetPosition = kWinchLoweredPosition;
-    double currentPosition = getWinchPosition();
-
-    // TODO: This may be reversed
-    // Don't supply the winch any power if it's above the lower position
-    if (currentPosition > targetPosition + kWinchPositionTolerance) {
-      stopWinch();
-    }
-
-    // Simplified P control if below
-    else if (currentPosition < targetPosition - kWinchPositionTolerance) {
-      final double kWinchP = 0.05;
-      m_intakeWinch.set(kWinchP * currentPosition);
-    }
-
-    // If within tolerable range, set an idle power to maintain the intake position
-    else {
-      // TODO: This has to be tuned
-      m_intakeWinch.set(0.05);
-    }
-  }
-
-  public void setLiftPower(double power) {
-    m_intakeWinch.set(power);
+    m_liftEncoder.setPosition(0);
   }
 }

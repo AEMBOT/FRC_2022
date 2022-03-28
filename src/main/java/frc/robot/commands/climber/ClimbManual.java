@@ -8,18 +8,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.Constants;
-import frc.robot.commands.intake.RunIntakeWinchToPosition;
 import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 import java.util.function.BooleanSupplier;
 
 public class ClimbManual extends SequentialCommandGroup {
 
-  public ClimbManual(
-      ClimberSubsystem climber, IntakeSubsystem intake, BooleanSupplier condition_button_press) {
-
-    addRequirements(climber, intake);
+  public ClimbManual(ClimberSubsystem climber, BooleanSupplier condition_button_press) {
 
     // Revert if needed. Include a few button presses still for safety during testing
     BooleanSupplier condition = condition_button_press;
@@ -29,9 +23,6 @@ public class ClimbManual extends SequentialCommandGroup {
         new InstantCommand(climber::setRetracting, climber),
         new InstantCommand(climber::verticalMainCylinders, climber),
         new WaitUntilCommand(condition_button_press),
-
-        // Take over intake and lower it for the rest of the climb
-        new RunIntakeWinchToPosition(intake, Constants.IntakeConstants.kWinchLoweredPosition),
 
         // send hooks up
         new InstantCommand(climber::setExtending, climber),

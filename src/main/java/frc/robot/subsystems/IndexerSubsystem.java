@@ -8,7 +8,6 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.IndexerConstants.*;
-import static frc.robot.Constants.IntakeConstants.*;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -24,9 +23,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class IndexerSubsystem extends SubsystemBase {
   // Belt motors
   private final CANSparkMax m_lowerBelt =
-      new CANSparkMax(kIndexerUpperBottomBeltPort, MotorType.kBrushless);
+      new CANSparkMax(kCANIndexerUpperBottomBeltID, MotorType.kBrushless);
   private final CANSparkMax m_upperBelt =
-      new CANSparkMax(kIndexerTopBeltPort, MotorType.kBrushless);
+      new CANSparkMax(kCANIndexerTopBeltID, MotorType.kBrushless);
 
   // Color sensor for detecting cargo
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(I2C.Port.kOnboard);

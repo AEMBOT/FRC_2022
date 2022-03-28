@@ -1,6 +1,5 @@
 package frc.robot.commands.intake;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.commands.utilities.enums.CargoDirection;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -19,8 +18,6 @@ public class RunIntakeRoller extends CommandBase {
       m_runIntake = m_intake::runRollerInwards;
     } else if (direction == CargoDirection.Eject) {
       m_runIntake = m_intake::runRollerOutwards;
-    } else {
-      DriverStation.reportError("", false);
     }
   }
 
@@ -32,10 +29,5 @@ public class RunIntakeRoller extends CommandBase {
   @Override
   public void end(boolean _interrupted) {
     m_intake.stopRoller();
-  }
-
-  @Override
-  public boolean isFinished() {
-    return false;
   }
 }

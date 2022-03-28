@@ -26,7 +26,7 @@ import frc.robot.commands.climber.ClimbTimed;
 import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.indexer.RunUpperIndexer;
-import frc.robot.commands.intake.FullyLiftIntake;
+import frc.robot.commands.intake.LiftIntake;
 import frc.robot.commands.intake.LowerIntake;
 import frc.robot.commands.intake.RunIntakeRoller;
 import frc.robot.commands.shooter.RampThenShoot;
@@ -144,7 +144,7 @@ public class RobotContainer {
 
     // Operate the intake lift
     new JoystickButton(m_secondaryController, Button.kRightBumper.value)
-        .whenPressed(new FullyLiftIntake(m_intakeSubsystem));
+        .whenPressed(new LiftIntake(m_intakeSubsystem));
 
     new JoystickButton(m_secondaryController, Button.kLeftBumper.value)
         .whileHeld(new LowerIntake(m_intakeSubsystem));

@@ -17,25 +17,35 @@ public class LowerIntake extends CommandBase {
 
   @Override
   public void execute() {
-    if (m_intake.getWinchPosition() >= -kLiftRangeOfMotion) {
+    // Lower the intake if it's not already all the way down
+    if (m_intake.getLiftPosition() >= -kLiftRangeOfMotion) {
       m_intake.lowerIntake();
-    } else {
-      m_intake.stopWinch();
+    }
+
+    // Stop the intake lift and run the roller to make it fall
+    else {
+      m_intake.stopLift();
       m_intake.runRollerInwards();
+
+      // The roller has to run for a bit to get the intake down
       m_rollerTimer.start();
     }
   }
 
   @Override
   public void end(boolean _interrupted) {
-    m_intake.stopWinch();
+    // Stop the intake lift and roller if they are running
+    m_intake.stopLift();
     m_intake.stopRoller();
+
+    // Stop & reset the timer for running the roller
     m_rollerTimer.stop();
     m_rollerTimer.reset();
   }
 
   @Override
   public boolean isFinished() {
+    // Finish after the roller runs for a tenth of a second
     return m_rollerTimer.get() > 0.1;
   }
 }

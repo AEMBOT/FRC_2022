@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.commands.utilities.enums.CargoDirection;
 import frc.robot.subsystems.IntakeSubsystem;
 
+/** Starts the roller on the intake then finishes immediately. */
 public class StartIntakeRoller extends CommandBase {
   private IntakeSubsystem m_intake;
   private CargoDirection m_direction;

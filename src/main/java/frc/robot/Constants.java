@@ -52,30 +52,30 @@ public final class Constants {
   }
 
   public static final class IntakeConstants {
+    // CAN IDs for intake-related motors
     public static final int kCANRollerID = 7;
-    public static final int kCANWinchID = 8;
+    public static final int kCANLiftID = 8;
     public static final int kCANInnerRollerID = 9;
+    public static final int kCANIndexerLowerBottomBeltID = 11;
 
     public static final double kRollerPower = 0.5;
-    public static final double kWinchRaisingPower = 0.1;
-    // Want to avoid the motor going faster than the spring / gravity can
-    // lower the arm, leading to the cable going over the edge of the
-    // spool
-    public static final double kWinchLoweringPower = -0.2;
-    public static final int kWinchMaxExpectedCurrent = 30;
-    // Raised position is same as home
+
+    // The lift doesn't actually move until the roller is run, so a higher power can be used to
+    // lower it
+    public static final double kLiftLoweringPower = -0.2;
+    public static final double kLiftRaisingPower = 0.1;
+
+    // Current limit for when motor stalls (?)
+    public static final int kLiftMaxExpectedCurrent = 30;
+
     public static final double kLiftRangeOfMotion = 8; // rotations
-    public static final double kWinchRaisedPosition = 0;
-    public static final double kWinchLoweredPosition = -4.5;
-    public static final double kWinchPositionTolerance = 4;
-
-    public static final int kIndexerLowerBottomBeltPort = 11;
-    public static final int kIndexerUpperBottomBeltPort = 12;
-
-    public static final int kIndexerTopBeltPort = 10;
   }
 
   public static final class IndexerConstants {
+    // Motor CAN IDs
+    public static final int kCANIndexerUpperBottomBeltID = 12;
+    public static final int kCANIndexerTopBeltID = 10;
+
     // COLOR SENSOR
     public static final int kCargoMinProximity = 300;
 
