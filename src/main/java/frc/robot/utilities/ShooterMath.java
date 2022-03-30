@@ -1,7 +1,5 @@
 package frc.robot.utilities;
 
-import static frc.robot.Constants.ShooterConstants.*;
-
 import edu.wpi.first.math.MathUtil;
 import java.util.Map;
 import java.util.TreeMap;
@@ -21,6 +19,7 @@ public class ShooterMath {
 
   /**
    * Returns the interpolated RPM based on experimentally determined values.
+   *
    * @param yAngle The y angle obtained from the Limelight
    * @return The calculated shooter RPM
    */
@@ -28,9 +27,15 @@ public class ShooterMath {
     Double keyAbove = m_rpmMap.ceilingKey(yAngle);
     Double keyBelow = m_rpmMap.floorKey(yAngle);
 
-    // Return the default RPM if the angle is outside of the pre-sampled range
-    if (keyAbove == null || keyBelow == null) {
-      return calculateRPM(kDefaultYAngle);
+    // Default to the lowest calibrated RPM if the y-angle is above the calibrated range
+    if (keyAbove == null) {
+      return m_rpmMap.get(keyBelow);
+    }
+
+    // The opposite, i.e. when the y-angle is below the calibrated range default to the highest
+    // calibrated rpm
+    else if (keyBelow == null) {
+      return m_rpmMap.get(keyAbove);
     }
 
     // Otherwise interpolate between the keys surrounding yAngle

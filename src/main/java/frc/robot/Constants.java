@@ -57,7 +57,6 @@ public final class Constants {
     public static final int kCANInnerRollerID = 9;
     public static final int kCANIndexerLowerBottomBeltID = 11;
 
-
     // Powers for moving various parts of the intake
     public static final double kRollerPower = 0.5;
     public static final double kLiftRaisingPower = 0.1;

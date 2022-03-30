@@ -46,7 +46,8 @@ public class ClimberSubsystem extends SubsystemBase {
   /** Creates a new ClimberSubsystem. */
   public ClimberSubsystem() {
     leftArm =
-        new ClimberArm(kClimbSolenoidLeftExtend, kClimbSolenoidLeftRetract, kClimbSolenoidLeftChoke);
+        new ClimberArm(
+            kClimbSolenoidLeftExtend, kClimbSolenoidLeftRetract, kClimbSolenoidLeftChoke);
     rightArm =
         new ClimberArm(
             kClimbSolenoidRightExtend, kClimbSolenoidRightRetract, kClimbSolenoidRightChoke);
