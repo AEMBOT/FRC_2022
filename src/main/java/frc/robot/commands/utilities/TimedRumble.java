@@ -14,7 +14,7 @@ public class TimedRumble extends CommandBase {
   private double m_strength;
 
   /**
-   * Creates a TimedRumble command, which rumbles a controller for the specified amount of time.
+   * Rumbles a controller for the specified amount of time.
    *
    * @param controller The {@link XboxController} to vibrate
    * @param seconds The duration to vibrate the controller for

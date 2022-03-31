@@ -2,11 +2,10 @@ package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.commands.indexer.RunUpperIndexer;
-import frc.robot.commands.intake.StartIntakeRoller;
+import frc.robot.commands.intake.RunIntakeRoller;
 import frc.robot.commands.utilities.Noop;
 import frc.robot.commands.utilities.TimedRumble;
 import frc.robot.commands.utilities.enums.CargoDirection;
@@ -24,7 +23,7 @@ public class RampThenShoot extends SequentialCommandGroup {
       IndexerSubsystem indexer,
       ShooterSubsystem shooter,
       Limelight limelight) {
-    this(intake, indexer, shooter, limelight, null);
+    this(intake, indexer, shooter, limelight, null, null);
   }
 
   public RampThenShoot(
@@ -32,26 +31,30 @@ public class RampThenShoot extends SequentialCommandGroup {
       IndexerSubsystem indexer,
       ShooterSubsystem shooter,
       Limelight limelight,
-      XboxController driverController) {
+      XboxController driverController,
+      XboxController secondaryController) {
     m_limelight = limelight;
     addCommands(
-        // TODO: A wait might be necessary to allow the Limelight to turn on
-        // new WaitCommand(0.1),
-
         // Ramp up the shooter to the desired power, rumbling the driver controller if there's no
         // detected target
         new ConditionalCommand(
             new Noop(),
-            new TimedRumble(driverController, 0.25, 0.5),
-            () -> limelight.hasValidTarget() || driverController == null),
+            parallel(
+                new TimedRumble(driverController, 0.25, 0.5),
+                new TimedRumble(secondaryController, 0.25, 0.5)),
+            () ->
+                limelight.hasValidTarget()
+                    || driverController == null
+                    || secondaryController == null),
 
         // Ramp up the shooter then run the indexer once that's finished
-        new ParallelCommandGroup(
+        parallel(
             new RunShooterWithLimelight(shooter),
-            new SequentialCommandGroup(
+            sequence(
                 new WaitUntilCommand(shooter::atTargetRPM).withTimeout(1),
-                new StartIntakeRoller(intake, CargoDirection.Intake),
-                new RunUpperIndexer(indexer, CargoDirection.Intake))));
+                parallel(
+                    new RunIntakeRoller(intake, CargoDirection.Intake),
+                    new RunUpperIndexer(indexer, CargoDirection.Intake)))));
   }
 
   @Override

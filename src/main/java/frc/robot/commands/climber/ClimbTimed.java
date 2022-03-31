@@ -8,8 +8,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.Constants;
-import frc.robot.commands.intake.RunIntakeWinchToPosition;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import java.util.function.BooleanSupplier;
@@ -28,11 +26,11 @@ public class ClimbTimed extends SequentialCommandGroup {
         new WaitUntilCommand(condition_button_press),
 
         // Take over intake and lower it for the rest of the climb
-        new RunIntakeWinchToPosition(intake, Constants.IntakeConstants.kWinchLoweredPosition),
+        // new RunIntakeWinchToPosition(intake, Constants.IntakeConstants.kWinchLoweredPosition),
 
         // send hooks up
         new InstantCommand(climber::setExtending, climber),
-        new WaitCommand(1.25),
+        new WaitCommand(1.0),
         new InstantCommand(climber::setCoasting, climber),
         new WaitCommand(2),
         new WaitUntilCommand(condition_button_press),
@@ -76,20 +74,16 @@ public class ClimbTimed extends SequentialCommandGroup {
 
         // adjust angle to attach hooks to second bar
         new InstantCommand(climber::verticalMainCylinders, climber),
-
-        /////////////////////
-        // ADJUST ME, or just remove and do button press instead?
-        new WaitCommand(4.0),
-        // give them a little time to vertical enough
-        /////////////////////
-
         new WaitUntilCommand(condition_button_press),
 
         // retract hooks all the way
         new InstantCommand(climber::setRetracting, climber),
-        new WaitCommand(2.2),
-        new InstantCommand(climber::setCoasting, climber),
         new WaitCommand(1.0),
+        new InstantCommand(climber::setCoasting, climber),
+        new WaitCommand(2.5),
+        new InstantCommand(climber::setRetracting, climber),
+        new WaitCommand(1.5),
+        new InstantCommand(climber::setCoasting, climber),
 
         /// REPEATED FROM ABOVE, except for slight "wait" differences
         new WaitUntilCommand(condition_button_press),
@@ -125,12 +119,6 @@ public class ClimbTimed extends SequentialCommandGroup {
 
         // adjust angle to attach hooks to second bar
         new InstantCommand(climber::verticalMainCylinders, climber),
-
-        //////////////////
-        // ADJUST OR REMOVE
-        // give them a little time to extend enough
-        new WaitCommand(5.0),
-        //////////////////
         new WaitUntilCommand(condition_button_press),
 
         // retract hooks fully

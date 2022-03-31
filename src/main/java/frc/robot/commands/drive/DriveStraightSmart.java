@@ -1,6 +1,5 @@
 package frc.robot.commands.drive;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -37,7 +36,7 @@ public class DriveStraightSmart extends CommandBase {
     m_drive.smartMotionToPosition(m_distance);
 
     // Debugging info
-    SmartDashboard.putNumber("Set Point", m_distance);
+    // SmartDashboard.putNumber("Set Point", m_distance);
   }
 
   @Override

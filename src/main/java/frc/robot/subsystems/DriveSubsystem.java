@@ -9,7 +9,6 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -48,7 +47,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   // TODO: We probably don't really need this, so remove it?
   // Whether or not to log debug information to the SmartDashboard
-  private final boolean m_debug = true;
+  private final boolean m_debug = false;
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
@@ -101,23 +100,21 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Sets various Smart Motion constants for a Spark Max PID controller */
   private void setSmartMotionConstants(SparkMaxPIDController controller) {
-    controller.setFF(kFF, 0);
-    controller.setFF(kTurnFF, 1);
+    int slot = 0;
 
-    controller.setP(kP, 0);
-    controller.setP(kTurnP, 1);
+    // PIDF constants
+    controller.setP(kP, slot);
+    controller.setI(kI, slot);
+    controller.setD(kD, slot);
+    controller.setIZone(kIz, slot);
+    controller.setFF(kFF, slot);
 
-    for (int slot : new int[] {0, 1}) {
-      controller.setI(kI, slot);
-      controller.setD(kD, slot);
-      controller.setIZone(kIz, slot);
-
-      controller.setOutputRange(kMinOutput, kMaxOutput, slot);
-      controller.setSmartMotionMaxVelocity(kMaxVel, slot);
-      controller.setSmartMotionMinOutputVelocity(kMinVel, slot);
-      controller.setSmartMotionMaxAccel(kMaxAcc, slot);
-      controller.setSmartMotionAllowedClosedLoopError(kAllowedErr, slot);
-    }
+    // Smart Motion-specific constants
+    controller.setOutputRange(kMinOutput, kMaxOutput, slot);
+    controller.setSmartMotionMaxVelocity(kMaxVel, slot);
+    controller.setSmartMotionMinOutputVelocity(kMinVel, slot);
+    controller.setSmartMotionMaxAccel(kMaxAcc, slot);
+    controller.setSmartMotionAllowedClosedLoopError(kAllowedErr, slot);
   }
 
   @Override
@@ -234,19 +231,10 @@ public class DriveSubsystem extends SubsystemBase {
    * @param left The distance to move the left motor
    * @param right The distance to move the right motor
    */
-  public void smartMotionToPosition(double left, double right, boolean turning) {
+  public void smartMotionToPosition(double left, double right) {
     m_drive.feed();
-    if (turning) {
-      int pidSlot = 1;
-      m_rightController.setReference(
-          right, ControlType.kSmartMotion, pidSlot, 0.04, ArbFFUnits.kPercentOut);
-      m_leftController.setReference(
-          left, ControlType.kSmartMotion, pidSlot, 0.04, ArbFFUnits.kPercentOut);
-    } else {
-      int pidSlot = 0;
-      m_rightController.setReference(right, ControlType.kSmartMotion, pidSlot);
-      m_leftController.setReference(left, ControlType.kSmartMotion, pidSlot);
-    }
+    m_rightController.setReference(right, ControlType.kSmartMotion, 0);
+    m_leftController.setReference(left, ControlType.kSmartMotion, 0);
   }
 
   /**
@@ -255,7 +243,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @param distance The distance to drive (in meters)
    */
   public void smartMotionToPosition(double distance) {
-    smartMotionToPosition(distance, distance, false);
+    smartMotionToPosition(distance, distance);
   }
 
   /**

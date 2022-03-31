@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.hardware.ClimberArm;
 import frc.robot.hardware.LIDAR07_100W_Module;
@@ -46,10 +45,14 @@ public class ClimberSubsystem extends SubsystemBase {
 
   /** Creates a new ClimberSubsystem. */
   public ClimberSubsystem() {
-    leftArm = new ClimberArm(ClimbSolenoidLeft, ClimbSolenoidLeftChoke);
-    rightArm = new ClimberArm(ClimbSolenoidRight, ClimbSolenoidRightChoke);
+    leftArm =
+        new ClimberArm(
+            kClimbSolenoidLeftExtend, kClimbSolenoidLeftRetract, kClimbSolenoidLeftChoke);
+    rightArm =
+        new ClimberArm(
+            kClimbSolenoidRightExtend, kClimbSolenoidRightRetract, kClimbSolenoidRightChoke);
 
-    anglePistonsControl = new Solenoid(PneumaticsModuleType.CTREPCM, AngleSolenoid);
+    anglePistonsControl = new Solenoid(PneumaticsModuleType.CTREPCM, kAngleSolenoid);
     setRetracting();
 
     m_sensor = new LIDAR07_100W_Module(I2C.Port.kMXP);
@@ -68,19 +71,19 @@ public class ClimberSubsystem extends SubsystemBase {
         (1000 * (m_currentDistance - m_previousDistance))
             / ((double) m_currentTimestamp - m_previousTimestamp);
 
-    SmartDashboard.putNumber("Distance diff (mm)", m_currentDistance - m_previousDistance);
-    SmartDashboard.putNumber("Timestamp diff (ms)", m_currentTimestamp - m_previousTimestamp);
-    SmartDashboard.putNumber("LIDAR distance (mm)", m_currentDistance);
-    SmartDashboard.putNumber("LIDAR velocity (mm/s)", m_currentVelocity);
+    // SmartDashboard.putNumber("Distance diff (mm)", m_currentDistance - m_previousDistance);
+    // SmartDashboard.putNumber("Timestamp diff (ms)", m_currentTimestamp - m_previousTimestamp);
+    // SmartDashboard.putNumber("LIDAR distance (mm)", m_currentDistance);
+    // SmartDashboard.putNumber("LIDAR velocity (mm/s)", m_currentVelocity);
 
     m_previousDistance = m_currentDistance;
     m_previousTimestamp = m_currentTimestamp;
 
-    SmartDashboard.putString("Climber state", climberState.toString());
+    //   SmartDashboard.putString("Climber state", climberState.toString());
 
-    SmartDashboard.putNumber("Angle X", m_accelerometer.getX());
-    SmartDashboard.putNumber("Angle Y", m_accelerometer.getY());
-    SmartDashboard.putNumber("Angle Z", m_accelerometer.getZ());
+    //   SmartDashboard.putNumber("Angle X", m_accelerometer.getX());
+    //   SmartDashboard.putNumber("Angle Y", m_accelerometer.getY());
+    //   SmartDashboard.putNumber("Angle Z", m_accelerometer.getZ());
   }
 
   @Override

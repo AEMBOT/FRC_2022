@@ -3,6 +3,7 @@ package frc.robot.commands.intake;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
 
+/** Stops the roller on the intake then finishes immediately. */
 public class StopIntakeRoller extends CommandBase {
   private IntakeSubsystem m_intake;
 
@@ -19,7 +20,6 @@ public class StopIntakeRoller extends CommandBase {
   // Just stop it and that's it
   @Override
   public boolean isFinished() {
-    // This command should only end when interrupted
     return true;
   }
 }

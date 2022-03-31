@@ -5,22 +5,23 @@ import static frc.robot.Constants.DriveConstants.TurnPID.*;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.function.DoubleSupplier;
 
-public class TurnToAngleProfiled extends ProfiledPIDCommand {
+public class TurnDegrees extends ProfiledPIDCommand {
 
   private static final SimpleMotorFeedforward m_feedforward =
-      new SimpleMotorFeedforward(kSVolts, kVVoltDegreesPerSecond);
+      new SimpleMotorFeedforward(kS, kVDegreesPerSecond);
   private DriveSubsystem m_drive;
 
-  public TurnToAngleProfiled(double goalAngle, DriveSubsystem drive) {
+  /** Turns the specified number of degrees. */
+  public TurnDegrees(double goalAngle, DriveSubsystem drive) {
     this(() -> goalAngle, drive);
   }
 
-  public TurnToAngleProfiled(DoubleSupplier goalAngle, DriveSubsystem drive) {
+  /** Turns the number of degrees supplied by goalAngle when this command is run. */
+  public TurnDegrees(DoubleSupplier goalAngle, DriveSubsystem drive) {
     super(
         new ProfiledPIDController(
             kP,
@@ -53,12 +54,12 @@ public class TurnToAngleProfiled extends ProfiledPIDCommand {
 
   @Override
   public void execute() {
-    SmartDashboard.putNumber("Setpoint Velocity", getController().getSetpoint().velocity);
-    SmartDashboard.putNumber(
-        "Current Velocity",
-        super.getController().getSetpoint().velocity + getController().getVelocityError());
-    SmartDashboard.putNumber(
-        "Profiled turn power", m_feedforward.calculate(getController().getSetpoint().velocity));
+    // SmartDashboard.putNumber("Setpoint Velocity", getController().getSetpoint().velocity);
+    // SmartDashboard.putNumber(
+    //     "Current Velocity",
+    //     super.getController().getSetpoint().velocity + getController().getVelocityError());
+    // SmartDashboard.putNumber(
+    //     "Profiled turn power", m_feedforward.calculate(getController().getSetpoint().velocity));
 
     super.execute();
   }

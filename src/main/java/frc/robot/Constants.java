@@ -15,33 +15,35 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  /** Solenoid ports on the PCM */
   public final class ClimberConstants {
-    public static final int ClimbSolenoidRight = 0;
-    public static final int ClimbSolenoidRightChoke = 1;
+    public static final int kClimbSolenoidRightRetract = 2;
+    public static final int kClimbSolenoidRightExtend = 1;
+    public static final int kClimbSolenoidRightChoke = 0;
 
-    public static final int ClimbSolenoidLeft = 7;
-    public static final int ClimbSolenoidLeftChoke = 6;
+    public static final int kClimbSolenoidLeftRetract = 6;
+    public static final int kClimbSolenoidLeftExtend = 7;
+    public static final int kClimbSolenoidLeftChoke = 4;
 
-    public static final int AngleSolenoid = 3;
+    public static final int kAngleSolenoid = 3;
   }
 
   public static final class ShooterConstants {
     public static final int kLeftMotorCANId = 13;
     public static final int kRightMotorCANId = 14;
 
-    public static final double kP = 1.2481e-11;
+    public static final double kP = 6e-5; // 1.7637e-8;
     public static final double kI = 0;
+    public static final double kIZone = 0;
     public static final double kD = 0.0000;
-    public static final double kFF = 0.000173;
+    public static final double kFF = 0.000183;
     public static final double kMaxVel = 5700;
     public static final double kMinVel = 0;
     public static final double kMaxAcc = 1500;
     public static final double kMaxOutput = 1;
     public static final double kMinOutput = -1;
-    // read more on this and change the value probably
-    public static final double kAllowedError = 2;
 
-    // Default angle for RPM calculations
+    // Default Limelight Y angle for RPM calculations
     public static final double kDefaultYAngle = 12;
 
     // RPM tolerance for ramping
@@ -49,29 +51,28 @@ public final class Constants {
   }
 
   public static final class IntakeConstants {
+    // CAN IDs for intake-related motors
     public static final int kCANRollerID = 7;
-    public static final int kCANWinchID = 8;
+    public static final int kCANLiftID = 8;
     public static final int kCANInnerRollerID = 9;
+    public static final int kCANIndexerLowerBottomBeltID = 11;
 
-    public static final double kRollerPower = 0.75;
-    public static final double kWinchRaisingPower = 0.7;
-    // Want to avoid the motor going faster than the spring / gravity can
-    // lower the arm, leading to the cable going over the edge of the
-    // spool
-    public static final double kWinchLoweringPower = -0.4;
-    public static final int kWinchMaxExpectedCurrent = 25;
-    // Raised position is same as home
-    public static final double kWinchRaisedPosition = 0.2;
-    public static final double kWinchLoweredPosition = -60;
-    public static final double kIntakeWinchMotionThreshold = 4;
+    // Powers for moving various parts of the intake
+    public static final double kRollerPower = 0.5;
+    public static final double kLiftRaisingPower = 0.1;
+    public static final double kLiftLoweringPower = -0.2;
 
-    public static final int kIndexerLowerBottomBeltPort = 11;
-    public static final int kIndexerUpperBottomBeltPort = 12;
+    // Current limit for when the intake is fully up
+    public static final int kLiftMaxExpectedCurrent = 30;
 
-    public static final int kIndexerTopBeltPort = 10;
+    public static final double kLiftRangeOfMotion = 8; // rotations
   }
 
   public static final class IndexerConstants {
+    // Motor CAN IDs
+    public static final int kCANIndexerUpperBottomBeltID = 12;
+    public static final int kCANIndexerTopBeltID = 10;
+
     // COLOR SENSOR
     public static final int kCargoMinProximity = 300;
 
@@ -93,16 +94,16 @@ public final class Constants {
   }
 
   public static final class DriveConstants {
+    // Measurements for Spark Max conversion factors
     public static final double kWheelCircumferenceMeters = Units.inchesToMeters(Math.PI * 6);
     public static final double kMotorRotationsPerWheelRotation = 7.56;
 
-    // Spark MAX conversion factors
     public static final double kMetersPerMotorRotation =
         kWheelCircumferenceMeters / kMotorRotationsPerWheelRotation;
     public static final double kRPMToMetersPerSecond =
         kMetersPerMotorRotation / 60; // 60 seconds per minute
 
-    // Motor controller ports (on 2022 bot)
+    // Motor controller ports (on Tupperware)
     public static final int kLeftFront = 4;
     public static final int kLeftCenter = 5;
     public static final int kLeftBack = 6;
@@ -135,28 +136,6 @@ public final class Constants {
       public static final double kDriveVelocityToleranceMetersPerSecond = 0.2;
     }
 
-    // Spark MAX Smart Motion constants
-    // TODO: Tune these for the 2022 chassis
-    public static final class SmartMotion {
-      public static final double kP = 0;
-      public static final double kTurnP = 8e-5;
-      public static final double kI = 0;
-      public static final double kD = 0;
-      public static final double kIz = 0;
-
-      public static final double kFF = 0.000457;
-      public static final double kTurnFF = 0.000657;
-      public static final double kMaxOutput = 1;
-      public static final double kMinOutput = -1;
-      public static final double kAllowedErr = 0.01; // meters
-
-      // All of these are measured in RPM
-      public static final double kMaxRPM = 5676;
-      public static final double kMinVel = 0;
-      public static final double kMaxVel = 2000;
-      public static final double kMaxAcc = 1500;
-    }
-
     public static final class TurnPID {
       public static final double kP = 0.006;
       public static final double kI = 0;
@@ -169,16 +148,32 @@ public final class Constants {
       public static final double kMaxVelocityDegreesPerSecond = 360 / 5;
       public static final double kMaxAccelerationDegreesPerSecondSquared = 240;
 
-      // Feedforward
-      private static final double kSecondsPerRotation = .85; // works for dead-er battery
-      private static final double kTestPower = 0.4;
-
-      public static final double kSVolts = 0.058;
-      public static final double kVVoltDegreesPerSecond = 0.0008;
-      // (kTestPower - kSVolts) / (356.494 / kSecondsPerRotation);
+      // Feedforward (both in power units, i.e. on [-1, 1])
+      public static final double kS = 0.058;
+      public static final double kVDegreesPerSecond = 0.0008;
 
       public static final double kTurnToleranceDeg = 3.0;
       public static final double kTurnRateToleranceDegPerS = 20.0;
+    }
+
+    // Spark MAX Smart Motion constants
+    public static final class SmartMotion {
+      // PIDF constants
+      public static final double kP = 0;
+      public static final double kI = 0;
+      public static final double kD = 0;
+      public static final double kIz = 0;
+      public static final double kFF = 0.000457;
+
+      public static final double kMaxOutput = 1;
+      public static final double kMinOutput = -1;
+      public static final double kAllowedErr = 0.01; // meters
+
+      // All of these are measured in RPM
+      public static final double kMaxRPM = 5676;
+      public static final double kMinVel = 0;
+      public static final double kMaxVel = 2000;
+      public static final double kMaxAcc = 1500;
     }
   }
 
@@ -188,8 +183,7 @@ public final class Constants {
     public static final int kSecondaryPort = 1;
 
     // Thresholds for triggers & joysticks
-    // TODO: Tune the trigger threshold
     public static final double kJoystickDeadband = 0.1;
-    public static final double kTriggerActiveThreshold = 0.2;
+    public static final double kTriggerActiveThreshold = 0.1;
   }
 }
