@@ -9,10 +9,13 @@ import static frc.robot.Constants.ControllerConstants.*;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.util.net.PortForwarder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticsControlModule;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -60,8 +63,7 @@ public class RobotContainer {
   private final XboxController m_secondaryController = new XboxController(kSecondaryPort);
 
   // Power Distribution Panel (PDP) and Pneumatics Control Module (PCM)
-  // FIXME: Initializing the PDP this way leads to repeated CAN errors for some reason
-  // private final PowerDistribution m_pdp = new PowerDistribution();
+  private final PowerDistribution m_pdp = new PowerDistribution();
   private final PneumaticsControlModule m_pcm = new PneumaticsControlModule();
 
   // Used for toggling the compressor state (see updateCompressorState() method)
@@ -88,6 +90,12 @@ public class RobotContainer {
 
     // Display an autonomous chooser on the dashboard
     setupAutoChooser();
+
+    // Disable LiveWindow telemetry, since we don't use it at all
+    LiveWindow.disableAllTelemetry();
+
+    // Silence joystick connection warnings since they're not useful
+    DriverStation.silenceJoystickConnectionWarning(true);
 
     // Set default drivetrain command to arcade driving (happens during teleop)
     m_robotDrive.setDefaultCommand(
@@ -195,14 +203,8 @@ public class RobotContainer {
 
   /** Clears all sticky faults on the PCM and PDP. */
   public void clearAllStickyFaults() {
-    // TODO: Update the PDP firmware?
-    // m_pdp.clearStickyFaults();
-    // m_pcm.clearAllStickyFaults();
-  }
-
-  public void enableCompressor() {
-    m_pcm.enableCompressorDigital();
-    m_compressorEnabled = true;
+    m_pdp.clearStickyFaults();
+    m_pcm.clearAllStickyFaults();
   }
 
   /**
