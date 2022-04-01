@@ -42,8 +42,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
       new DifferentialDrive(m_centerLeftMotor, m_centerRightMotor);
 
   // This allows the robot to keep track of where it is on the field
-  private final DifferentialDriveOdometry m_odometry =
-      new DifferentialDriveOdometry(new Rotation2d());
+  private final DifferentialDriveOdometry m_odometry;
 
   /** Creates a new DriveSubsystem, configuring its motors, encoders, and odometry. */
   public DrivetrainSubsystem() {
@@ -70,8 +69,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // Change encoder position readings to meters (per second)
     setupEncoderConversions();
 
-    // Reset the odometry & encoders upon initialization
-    resetOdometryAndEncoders();
+    // Initialize the tracking of the robot's position on the field
+    m_odometry = new DifferentialDriveOdometry(m_navx.getRotation2d());
   }
 
   @Override
@@ -201,14 +200,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // Feed the DifferentialDrive so it doesn't complain
     m_drive.feedWatchdog();
 
-    // Convert the speeds in meters per second to RPM, since that's what the Spark Maxes need for
-    // some reason
-    double leftRPM = leftMetersPerSecond / kRPMToMetersPerSecond;
-    double rightRPM = rightMetersPerSecond / kRPMToMetersPerSecond;
-
     // Set the motor velocities
-    m_leftController.setReference(leftRPM, CANSparkMax.ControlType.kVelocity);
-    m_rightController.setReference(rightRPM, CANSparkMax.ControlType.kVelocity);
+    m_leftController.setReference(leftMetersPerSecond, CANSparkMax.ControlType.kVelocity);
+    m_rightController.setReference(rightMetersPerSecond, CANSparkMax.ControlType.kVelocity);
   }
 
   /**
