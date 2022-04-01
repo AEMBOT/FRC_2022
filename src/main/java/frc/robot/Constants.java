@@ -104,13 +104,14 @@ public final class Constants {
         kMetersPerMotorRotation / 60; // 60 seconds per minute
 
     // Motor controller ports (on Tupperware)
-    public static final int kLeftFront = 4;
-    public static final int kLeftCenter = 5;
-    public static final int kLeftBack = 6;
+    // FIXME: Front/back IDs might be swapped (not that it affects anything)
+    public static final int kLeftFront = 1;
+    public static final int kLeftCenter = 2;
+    public static final int kLeftBack = 3;
 
-    public static final int kRightFront = 1;
-    public static final int kRightCenter = 2;
-    public static final int kRightBack = 3;
+    public static final int kRightFront = 4;
+    public static final int kRightCenter = 5;
+    public static final int kRightBack = 6;
 
     // Speed/power limits during teleop
     public static final double kMaxForwardPower = 1.0;

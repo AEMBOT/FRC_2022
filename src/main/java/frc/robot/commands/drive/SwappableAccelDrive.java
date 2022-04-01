@@ -51,8 +51,7 @@ public class SwappableAccelDrive extends CommandBase {
     double forwardPower =
         kMaxForwardPower * MathUtil.applyDeadband(-m_forwardInput.getAsDouble(), kJoystickDeadband);
     double rotationPower =
-        kMaxRotationPower
-            * MathUtil.applyDeadband(-m_turningInput.getAsDouble(), kJoystickDeadband);
+        kMaxRotationPower * MathUtil.applyDeadband(m_turningInput.getAsDouble(), kJoystickDeadband);
 
     // Apply the slew (acceleration) limiters to avoid burning the carpet/etc.
     rotationPower = m_turningSlewLimiter.calculate(rotationPower);

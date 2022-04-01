@@ -35,7 +35,7 @@ public class DefaultDrive extends CommandBase {
     forwardPower = m_forwardSlewLimiter.calculate(forwardPower);
 
     double rotationPower =
-        kMaxRotationPower * MathUtil.applyDeadband(-m_right.getAsDouble(), kJoystickDeadband);
+        kMaxRotationPower * MathUtil.applyDeadband(m_right.getAsDouble(), kJoystickDeadband);
     rotationPower = m_turningSlewLimiter.calculate(rotationPower);
 
     m_drive.arcadeDrive(forwardPower, rotationPower, true);

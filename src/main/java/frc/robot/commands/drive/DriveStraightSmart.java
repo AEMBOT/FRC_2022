@@ -15,7 +15,8 @@ public class DriveStraightSmart extends CommandBase {
    */
   public DriveStraightSmart(double distance, DriveSubsystem drive) {
     // robot drives backwards, invert to temporarily solve
-    m_distance = -distance;
+    // TODO: Test that the distance no longer needs to be negated
+    m_distance = distance;
     m_drive = drive;
 
     addRequirements(m_drive);
