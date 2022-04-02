@@ -15,9 +15,21 @@ import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
+/**
+ * Ramps up the shooter to the proper RPM using the Limelight, then runs the indexer & intake into
+ * the shooter.
+ */
 public class RampThenShoot extends SequentialCommandGroup {
   private Limelight m_limelight;
 
+  /**
+   * Constructs a RampThenShoot command for use in autonomous (doesn't rumble the controllers).
+   *
+   * @param intake The robot's intake subsystem
+   * @param indexer The robot's indexer subsystem
+   * @param shooter The robot's shooter subsystem
+   * @param limelight The robot's Limelight instance
+   */
   public RampThenShoot(
       IntakeSubsystem intake,
       IndexerSubsystem indexer,
@@ -26,6 +38,17 @@ public class RampThenShoot extends SequentialCommandGroup {
     this(intake, indexer, shooter, limelight, null, null);
   }
 
+  /**
+   * Constructs a RampThenShoot command that rumbles the controllers if the Limelight doesn't hub
+   * isn't visible.
+   *
+   * @param intake The robot's intake subsystem
+   * @param indexer The robot's indexer subsystem
+   * @param shooter The robot's shooter subsystem
+   * @param limelight The robot's Limelight instance
+   * @param driverController The primary controller
+   * @param secondaryController The secondary controller
+   */
   public RampThenShoot(
       IntakeSubsystem intake,
       IndexerSubsystem indexer,
@@ -33,7 +56,6 @@ public class RampThenShoot extends SequentialCommandGroup {
       Limelight limelight,
       XboxController driverController,
       XboxController secondaryController) {
-    m_limelight = limelight;
     addCommands(
         // Ramp up the shooter to the desired power, rumbling the driver controller if there's no
         // detected target
@@ -55,6 +77,8 @@ public class RampThenShoot extends SequentialCommandGroup {
                 parallel(
                     new RunIntakeRoller(intake, CargoDirection.Intake),
                     new RunUpperIndexer(indexer, CargoDirection.Intake)))));
+
+    m_limelight = limelight;
   }
 
   @Override

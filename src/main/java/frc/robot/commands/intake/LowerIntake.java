@@ -6,10 +6,16 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
 
+/** A command that lowers the intake, running it in the process. */
 public class LowerIntake extends CommandBase {
   private IntakeSubsystem m_intake;
   private final Timer m_rollerTimer = new Timer();
 
+  /**
+   * Constructs a LowerIntake command that lowers the intake.
+   *
+   * @param intake The robot's intake subsystem
+   */
   public LowerIntake(IntakeSubsystem intake) {
     m_intake = intake;
     addRequirements(m_intake);

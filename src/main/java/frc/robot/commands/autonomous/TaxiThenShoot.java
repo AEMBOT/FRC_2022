@@ -1,49 +1,54 @@
 package frc.robot.commands.autonomous;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.DriveStraightSmart;
 import frc.robot.commands.intake.LiftIntake;
 import frc.robot.commands.intake.LowerIntake;
-import frc.robot.commands.intake.StartIntakeRoller;
-import frc.robot.commands.intake.StopIntakeRoller;
 import frc.robot.commands.shooter.RampThenShoot;
-import frc.robot.commands.utilities.enums.CargoDirection;
 import frc.robot.hardware.Limelight;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
+/** An autonomous command that taxis, intakes a cargo, and shoots 2 cargo. */
 public class TaxiThenShoot extends SequentialCommandGroup {
   private IntakeSubsystem m_intake;
   private DriveSubsystem m_drive;
 
+  /**
+   * Constructs a TaxiThenShoot command, which is essentially a 2 ball auto.
+   *
+   * @param drive The robot's drive subsystem
+   * @param intake The robot's intake subsystem
+   * @param indexer The robot's indexer subsystem
+   * @param shooter The robot's shooter subsystem
+   * @param limelight The robot's Limelight instance
+   */
   public TaxiThenShoot(
       DriveSubsystem drive,
       IntakeSubsystem intake,
       IndexerSubsystem indexer,
       ShooterSubsystem shooter,
       Limelight limelight) {
-
-    m_intake = intake;
-    m_drive = drive;
     addCommands(
         // Home the intake at the beginning of auto
         new LiftIntake(intake),
 
         // Lower and turn on the intake
         new LowerIntake(intake),
-        new StartIntakeRoller(intake, CargoDirection.Intake),
+        new InstantCommand(intake::runRollerInwards, intake),
 
         // Run the intake while driving away from the hub
         // TODO: Tune this distance
         new DriveStraightSmart(Units.feetToMeters(-6), drive).withTimeout(4),
 
         // Stop running the intake
-        new StopIntakeRoller(intake),
+        new InstantCommand(intake::stopRoller, intake),
 
         // Drive forward a bit to make alignment easier if we hit the wall
         new DriveStraightSmart(Units.feetToMeters(1), drive),
@@ -57,12 +62,18 @@ public class TaxiThenShoot extends SequentialCommandGroup {
         // A driver controller has to be passed in order for this command to work (it includes
         // rumble)
         new RampThenShoot(intake, indexer, shooter, limelight).withTimeout(5));
+
+    m_intake = intake;
+    m_drive = drive;
   }
 
   @Override
   public void end(boolean interrupted) {
     super.end(interrupted);
+
+    // Stop all mechanisms
     m_intake.stopRoller();
+    m_intake.stopLift();
     m_drive.stopMotors();
   }
 }

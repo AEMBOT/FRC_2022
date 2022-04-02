@@ -7,6 +7,12 @@ import frc.robot.subsystems.IntakeSubsystem;
 public class LiftIntake extends CommandBase {
   private IntakeSubsystem m_intake;
 
+  /**
+   * Constructs a LiftIntake command, which fully lifts the intake and resets its encoder once it's
+   * fully raised.
+   *
+   * @param intake The robot's intake subsystem
+   */
   public LiftIntake(IntakeSubsystem intake) {
     m_intake = intake;
     addRequirements(m_intake);
@@ -21,7 +27,7 @@ public class LiftIntake extends CommandBase {
   public void end(boolean interrupted) {
     m_intake.stopLift();
 
-    // Only re-home the intake lift (reset the encoder) if this wasn't interrupted
+    // Only re-home the intake lift (reset the encoder) if this command wasn't interrupted
     if (!interrupted) {
       m_intake.resetLiftEncoder();
     }
