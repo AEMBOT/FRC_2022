@@ -69,7 +69,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // Change encoder position readings to meters (per second)
     setupEncoderConversions();
 
-    // Initialize the tracking of the robot's position on the field
+    // Initialize the odometry to track where the robot is on the field
     m_odometry = new DifferentialDriveOdometry(m_navx.getRotation2d());
   }
 
