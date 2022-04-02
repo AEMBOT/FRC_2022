@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -188,10 +187,8 @@ public final class Constants {
     }
 
     public static final class Ramsete {
-      // Track width & friends
+      // Track width (found using sysid)
       public static final double kEffectiveTrackWidth = 0.69883;
-      public static final DifferentialDriveKinematics kDriveKinematics =
-          new DifferentialDriveKinematics(kEffectiveTrackWidth);
 
       // Max velocity & acceleration
       public static final double kMaxSpeedMetersPerSecond = 2;
