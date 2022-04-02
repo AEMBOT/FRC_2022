@@ -32,7 +32,7 @@ public final class Constants {
     public static final int kLeftMotorCANId = 13;
     public static final int kRightMotorCANId = 14;
 
-    public static final double kP = 6e-5; // 1.7637e-8;
+    public static final double kP = 6e-5;
     public static final double kI = 0;
     public static final double kIZone = 0;
     public static final double kD = 0.0000;
@@ -125,15 +125,15 @@ public final class Constants {
       public static final double kD = 0;
 
       // Profiling
-      public static final double kMaxVelocityMetersPerSecond = .1;
-      public static final double kMaxAccelerationMeterPerSecondSquared = 5;
+      public static final double kMaxVelocityMetersPerSecond = 2;
+      public static final double kMaxAccelerationMeterPerSecondSquared = 1.5;
 
-      // Feedforward
-      public static final double kSVolts = 0.05; // Power!! for now
-      public static final double kVVoltMetersPerSecond = 0.269 / 0.8856;
+      // Feedforward (in power units)
+      public static final double kS = 0.05;
+      public static final double kVSecondsPerMeter = 0.269 / 0.8856;
 
       // PID tolerances
-      public static final double kDriveToleranceMeters = 0.1;
+      public static final double kDriveToleranceMeters = 0.05;
       public static final double kDriveVelocityToleranceMetersPerSecond = 0.2;
     }
 

@@ -9,7 +9,10 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.function.DoubleSupplier;
 
-/** Allows for swapping between two accelerations for defense and normal driving. */
+/**
+ * A command that allows for swapping between two accelerations for defense and normal driving
+ * during teleop.
+ */
 public class SwappableAccelDrive extends CommandBase {
   private DriveSubsystem m_drive;
 
@@ -33,6 +36,15 @@ public class SwappableAccelDrive extends CommandBase {
   // Used to swap between faster/slower accelerations
   private boolean m_inDefenseMode = false;
 
+  /**
+   * Constructs a SwappableAccellDrive command, which allows for swapping beteen accelerations while
+   * driving the robot during teleop.
+   *
+   * @param drive The robot's drive subsystem
+   * @param forward The input for driving the robot forward/backward (normally left stick Y)
+   * @param turning The input for turning the robot (normally right stick X)
+   * @param defenseToggle The input for toggling defense mode when held (normally right trigger)
+   */
   public SwappableAccelDrive(
       DriveSubsystem drive,
       DoubleSupplier forward,
@@ -47,7 +59,7 @@ public class SwappableAccelDrive extends CommandBase {
 
   @Override
   public void execute() {
-    // Calculate the deadbanded forward & rotation powers
+    // Calculate the deadbanded and scaled forward/rotation powers
     double forwardPower =
         kMaxForwardPower * MathUtil.applyDeadband(-m_forwardInput.getAsDouble(), kJoystickDeadband);
     double rotationPower =

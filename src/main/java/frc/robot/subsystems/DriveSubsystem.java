@@ -5,7 +5,6 @@ import static frc.robot.Constants.DriveConstants.SmartMotion.*;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -14,7 +13,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -43,11 +41,8 @@ public class DriveSubsystem extends SubsystemBase {
       new DifferentialDrive(m_centerLeftMotor, m_centerRightMotor);
 
   // This allows the robot to keep track of where it is on the field
-  private DifferentialDriveOdometry m_odometry;
-
-  // TODO: We probably don't really need this, so remove it?
-  // Whether or not to log debug information to the SmartDashboard
-  private final boolean m_debug = false;
+  private final DifferentialDriveOdometry m_odometry =
+      new DifferentialDriveOdometry(new Rotation2d());
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
@@ -68,16 +63,20 @@ public class DriveSubsystem extends SubsystemBase {
     setSmartMotionConstants(m_leftController);
     setSmartMotionConstants(m_rightController);
 
-    // Initialize the tracking of the robot's position on the field
-    m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
-
-    // Reset the encoders & change their position readings to meters
-    resetEncoders();
+    // Change encoder position readings to meters (per second)
     setupEncoderConversions();
 
-    // Initialize the tracking of the robot's position on the field
-    m_odometry = new DifferentialDriveOdometry(m_navx.getRotation2d());
+    // Reset the odometry & encoders upon initialization
+    resetOdometryAndEncoders();
   }
+
+  @Override
+  public void periodic() {
+    // Keep track of where the robot is on the field
+    updateOdometry();
+  }
+
+  // MOTOR CONFIGURATION
 
   /** Set all drive motors to brake mode. */
   public void setBrakeMode() {
@@ -101,7 +100,22 @@ public class DriveSubsystem extends SubsystemBase {
     m_backRightMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
   }
 
-  /** Sets various Smart Motion constants for a Spark Max PID controller */
+  /** Resets drive Spark Max configurations to their factory defaults */
+  private void restoreMotorFactoryDefaults() {
+    m_backLeftMotor.restoreFactoryDefaults();
+    m_centerLeftMotor.restoreFactoryDefaults();
+    m_frontLeftMotor.restoreFactoryDefaults();
+
+    m_backRightMotor.restoreFactoryDefaults();
+    m_centerRightMotor.restoreFactoryDefaults();
+    m_frontRightMotor.restoreFactoryDefaults();
+  }
+
+  /**
+   * Sets various Smart Motion constants for a Spark Max PID controller.
+   *
+   * @param controller The {@link SparkMaxPIDController} to configure
+   */
   private void setSmartMotionConstants(SparkMaxPIDController controller) {
     int slot = 0;
 
@@ -120,41 +134,7 @@ public class DriveSubsystem extends SubsystemBase {
     controller.setSmartMotionAllowedClosedLoopError(kAllowedErr, slot);
   }
 
-  @Override
-  public void periodic() {
-    // Keep track of where the robot is on the field
-    updateOdometry();
-
-    // Log drive-related informatin to SmartDashboard if specified
-    if (m_debug) {
-      SmartDashboard.putNumber("Robot Heading", getHeading());
-      SmartDashboard.putNumber("Rotation Velocity", getRotationRate());
-
-      // Motor positions (meters)
-      SmartDashboard.putNumber("Left Position", getLeftEncoderPosition());
-      SmartDashboard.putNumber("Right Position", getRightEncoderPosition());
-
-      // Motor velocities (meters per second)
-      SmartDashboard.putNumber("Left Velocity", m_centerLeftEncoder.getVelocity());
-      SmartDashboard.putNumber("Right Velocity", m_centerRightEncoder.getVelocity());
-
-      // Motor powers (-1 to 1)
-      SmartDashboard.putNumber("Left Power", m_centerLeftMotor.get());
-      SmartDashboard.putNumber("Right Power", m_centerRightMotor.get());
-    }
-  }
-
   // BASIC DRIVE METHODS
-
-  /**
-   * Tank-style drive of the robot.
-   *
-   * @param left the power to run the left motors at
-   * @param right the power to run the right motors at
-   */
-  public void tankDrive(double left, double right) {
-    m_drive.tankDrive(left, right);
-  }
 
   /**
    * Arcade-style drive of the robot.
@@ -173,17 +153,6 @@ public class DriveSubsystem extends SubsystemBase {
     m_centerRightMotor.set(0);
   }
 
-  /** Resets drive Spark Max configurations to their factory defaults */
-  private void restoreMotorFactoryDefaults() {
-    m_backLeftMotor.restoreFactoryDefaults();
-    m_centerLeftMotor.restoreFactoryDefaults();
-    m_frontLeftMotor.restoreFactoryDefaults();
-
-    m_backRightMotor.restoreFactoryDefaults();
-    m_centerRightMotor.restoreFactoryDefaults();
-    m_frontRightMotor.restoreFactoryDefaults();
-  }
-
   // ENCODER METHODS
 
   /** Gets the position of the center left encoder in meters. */
@@ -194,15 +163,6 @@ public class DriveSubsystem extends SubsystemBase {
   /** Gets the position of the center right encoder in meters. */
   public double getRightEncoderPosition() {
     return m_centerRightEncoder.getPosition();
-  }
-
-  /** Resets the center drive motor encoders to a position of 0 */
-  public void resetEncoders() {
-    m_centerLeftEncoder.setPosition(0);
-    m_centerRightEncoder.setPosition(0);
-
-    // Also reset the robot pose
-    resetOdometry(getPose());
   }
 
   /**
@@ -224,7 +184,7 @@ public class DriveSubsystem extends SubsystemBase {
   /** Use the internal Spark Max velocity control */
   public void driveAtVelocity(double leftMetersPerSecond, double rightMetersPerSecond) {
     // Feed the DifferentialDrive so it doesn't complain
-    m_drive.feed();
+    m_drive.feedWatchdog();
 
     // Convert the speeds in meters per second to RPM, since that's what the Spark Maxes need for
     // some reason
@@ -232,20 +192,8 @@ public class DriveSubsystem extends SubsystemBase {
     double rightRPM = rightMetersPerSecond / kRPMToMetersPerSecond;
 
     // Set the motor velocities
-    m_leftController.setReference(leftRPM, ControlType.kVelocity);
-    m_rightController.setReference(rightRPM, ControlType.kVelocity);
-  }
-
-  /**
-   * Runs the motors on both sides of the robot using SmartMotion.
-   *
-   * @param left The distance to move the left motor
-   * @param right The distance to move the right motor
-   */
-  public void smartMotionToPosition(double left, double right) {
-    m_drive.feed();
-    m_rightController.setReference(right, ControlType.kSmartMotion, 0);
-    m_leftController.setReference(left, ControlType.kSmartMotion, 0);
+    m_leftController.setReference(leftRPM, CANSparkMax.ControlType.kVelocity);
+    m_rightController.setReference(rightRPM, CANSparkMax.ControlType.kVelocity);
   }
 
   /**
@@ -254,7 +202,9 @@ public class DriveSubsystem extends SubsystemBase {
    * @param distance The distance to drive (in meters)
    */
   public void smartMotionToPosition(double distance) {
-    smartMotionToPosition(distance, distance);
+    m_drive.feedWatchdog();
+    m_rightController.setReference(distance, CANSparkMax.ControlType.kSmartMotion, 0);
+    m_leftController.setReference(distance, CANSparkMax.ControlType.kSmartMotion, 0);
   }
 
   /**
@@ -291,21 +241,12 @@ public class DriveSubsystem extends SubsystemBase {
     return -m_navx.getAngle();
   }
 
-  /** Gets the rate of change of the yaw of the robot. */
-  public double getRotationRate() {
-    // getRate only returns the difference in angles, so it has to be multiplied by
-    // the NavX update
-    // frequency
-    // (see https://github.com/kauailabs/navxmxp/issues/69)
-    return -m_navx.getRate() * m_navx.getActualUpdateRate();
-  }
-
-  /** Resets the robot heading to 0 degrees, as well as the odometry. */
+  /** Resets the robot heading to 0 degrees, as well as the drive motor encoders and odometry. */
   public void resetHeading() {
     m_navx.zeroYaw();
 
     // Reset the odometry, reusing the previous pose on the field
-    resetOdometry();
+    resetOdometryAndEncoders();
   }
 
   // ODOMETRY METHODS
@@ -316,13 +257,21 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /** Resets the odometry and encoders while maintaining the same pose. */
-  public void resetOdometry() {
-    resetOdometry(getPose());
+  public void resetOdometryAndEncoders() {
+    resetOdometryAndEncoders(getPose());
   }
 
-  /** Resets the odometry with the provided pose, also resetting the drive encoders. */
-  public void resetOdometry(Pose2d pose) {
-    resetEncoders();
+  /**
+   * Resets the odometry with the provided pose, also resetting the drive encoders.
+   *
+   * @param pose The new robot pose
+   */
+  public void resetOdometryAndEncoders(Pose2d pose) {
+    // Reset the center encoders on either side
+    m_centerLeftEncoder.setPosition(0);
+    m_centerRightEncoder.setPosition(0);
+
+    // Reset the odometry with the new pose
     m_odometry.resetPosition(pose, m_navx.getRotation2d());
   }
 

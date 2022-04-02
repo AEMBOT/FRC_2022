@@ -3,6 +3,10 @@ package frc.robot.commands.drive;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
 
+/**
+ * A command that uses Spark Max Smart Motion control (essentially motion profiling) to drive a
+ * distance.
+ */
 public class DriveStraightSmart extends CommandBase {
   private DriveSubsystem m_drive;
   private double m_distance;
@@ -14,7 +18,6 @@ public class DriveStraightSmart extends CommandBase {
    * @param drive The robot's DriveSubsystem
    */
   public DriveStraightSmart(double distance, DriveSubsystem drive) {
-    // robot drives backwards, invert to temporarily solve
     // TODO: Test that the distance no longer needs to be negated
     m_distance = distance;
     m_drive = drive;
@@ -27,17 +30,14 @@ public class DriveStraightSmart extends CommandBase {
     // Make sure motors are running in brake mode to avoid overshooting
     m_drive.setBrakeMode();
 
-    // Reset the encoders before running the motors
-    m_drive.resetEncoders();
+    // Reset the encoders (and odometry) before running the motors
+    m_drive.resetOdometryAndEncoders();
   }
 
   @Override
   public void execute() {
     // Run the motors to the provided position
     m_drive.smartMotionToPosition(m_distance);
-
-    // Debugging info
-    // SmartDashboard.putNumber("Set Point", m_distance);
   }
 
   @Override

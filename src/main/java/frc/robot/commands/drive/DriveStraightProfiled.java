@@ -8,10 +8,23 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
+/**
+ * A command that uses PID control, feedforward, and motion profiling to drive straight.
+ *
+ * <p>This hasn't been tuned recently, but it's kept around for reference.
+ */
 public class DriveStraightProfiled extends ProfiledPIDCommand {
+  // Feedforward for the drive motors
   private static SimpleMotorFeedforward m_feedforward =
-      new SimpleMotorFeedforward(kSVolts, kVVoltMetersPerSecond);
+      new SimpleMotorFeedforward(kS, kVSecondsPerMeter);
 
+  /**
+   * Constructs a DriveStraightProfiled command to drive forward some distance by following a motion
+   * profile.
+   *
+   * @param distance The distance to drive
+   * @param drive The robot's drive subsystem
+   */
   public DriveStraightProfiled(double distance, DriveSubsystem drive) {
     super(
         new ProfiledPIDController(
@@ -23,27 +36,14 @@ public class DriveStraightProfiled extends ProfiledPIDCommand {
         drive::getLeftEncoderPosition,
         distance,
         (output, setpoint) ->
-            drive.arcadeDrive(-(output + m_feedforward.calculate(setpoint.velocity)), 0, false),
+            drive.arcadeDrive(output + m_feedforward.calculate(setpoint.velocity), 0, false),
         drive);
 
-    getController().setTolerance(kDriveToleranceMeters, kDriveVelocityToleranceMetersPerSecond);
-  }
-
-  @Override
-  public void execute() {
-    // SmartDashboard.putNumber("Setpoint Velocity", getController().getSetpoint().velocity);
-    // SmartDashboard.putNumber(
-    //     "Actual Velocity",
-    //     getController().getSetpoint().velocity + getController().getVelocityError());
-    // SmartDashboard.putNumber("Measurement", m_measurement.getAsDouble());
-    // SmartDashboard.putBoolean("At goal", getController().atGoal());
-    // SmartDashboard.putNumber("Goal: ", getController().getGoal().position);
-
-    super.execute();
+    m_controller.setTolerance(kDriveToleranceMeters, kDriveVelocityToleranceMetersPerSecond);
   }
 
   @Override
   public boolean isFinished() {
-    return super.getController().atGoal();
+    return m_controller.atGoal();
   }
 }
