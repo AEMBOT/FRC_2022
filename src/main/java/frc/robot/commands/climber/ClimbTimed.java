@@ -22,28 +22,28 @@ public class ClimbTimed extends SequentialCommandGroup {
     addCommands(
         // Default state
         new InstantCommand(climber::setRetracting, climber),
-        new InstantCommand(climber::verticalMainCylinders, climber),
+        new InstantCommand(climber::setPistonsVertical, climber),
         new WaitUntilCommand(condition_button_press),
 
         // Take over intake and lower it for the rest of the climb
         // new RunIntakeWinchToPosition(intake, Constants.IntakeConstants.kWinchLoweredPosition),
 
         // send hooks up
-        new InstantCommand(climber::setExtending, climber),
+        new InstantCommand(climber::extendArms, climber),
         new WaitCommand(1.0),
-        new InstantCommand(climber::setCoasting, climber),
+        new InstantCommand(climber::cutOffPressure, climber),
         new WaitCommand(2),
         new WaitUntilCommand(condition_button_press),
 
         // retract hooks
         new InstantCommand(climber::setRetracting, climber),
         new WaitCommand(2.2),
-        new InstantCommand(climber::setCoasting, climber),
+        new InstantCommand(climber::cutOffPressure, climber),
         new WaitCommand(1),
         new WaitUntilCommand(condition_button_press),
 
         // send hooks up
-        new InstantCommand(climber::setExtending, climber),
+        new InstantCommand(climber::extendArms, climber),
 
         // ---attach chin here
         // ---robot should now be hanging from first bar
@@ -52,44 +52,44 @@ public class ClimbTimed extends SequentialCommandGroup {
 
         //////////////////////
         // REMOVE ME AFTER INITIAL TESTING
-        new InstantCommand(climber::setCoasting, climber),
+        new InstantCommand(climber::cutOffPressure, climber),
         new WaitUntilCommand(condition_button_press),
         //////////////////////
 
         // angle hooks
         // start angling a little after main cylinders start extending (want the hooks to disengage)
-        new InstantCommand(climber::angleMainCylinders, climber),
+        new InstantCommand(climber::setPistonsAngled, climber),
         new WaitUntilCommand(condition_button_press),
 
         // Choose to not angle and extend at the same time for right now
-        new InstantCommand(climber::setExtending, climber),
+        new InstantCommand(climber::extendArms, climber),
 
         // hooks are offset, aligned for second bar
 
         // continue to send main cylinders up (to full length)
         new WaitCommand(0.85),
-        new InstantCommand(climber::setCoasting, climber),
+        new InstantCommand(climber::cutOffPressure, climber),
         new WaitCommand(2.0),
         new WaitUntilCommand(condition_button_press),
 
         // adjust angle to attach hooks to second bar
-        new InstantCommand(climber::verticalMainCylinders, climber),
+        new InstantCommand(climber::setPistonsVertical, climber),
         new WaitUntilCommand(condition_button_press),
 
         // retract hooks all the way
         new InstantCommand(climber::setRetracting, climber),
         new WaitCommand(1.0),
-        new InstantCommand(climber::setCoasting, climber),
+        new InstantCommand(climber::cutOffPressure, climber),
         new WaitCommand(2.5),
         new InstantCommand(climber::setRetracting, climber),
         new WaitCommand(1.5),
-        new InstantCommand(climber::setCoasting, climber),
+        new InstantCommand(climber::cutOffPressure, climber),
 
         /// REPEATED FROM ABOVE, except for slight "wait" differences
         new WaitUntilCommand(condition_button_press),
 
         // send hooks up
-        new InstantCommand(climber::setExtending, climber),
+        new InstantCommand(climber::extendArms, climber),
 
         // ---attach chin here
         // ---robot should now be hanging from first bar
@@ -97,28 +97,28 @@ public class ClimbTimed extends SequentialCommandGroup {
         new WaitCommand(0.4),
         //////////////////
         // REMOVE ME
-        new InstantCommand(climber::setCoasting, climber),
+        new InstantCommand(climber::cutOffPressure, climber),
         new WaitUntilCommand(condition_button_press),
         //////////////////
 
         // angle hooks
         // start angling a little after main cylinders start extending (want the hooks to disengage)
-        new InstantCommand(climber::angleMainCylinders, climber),
+        new InstantCommand(climber::setPistonsAngled, climber),
         new WaitUntilCommand(condition_button_press),
 
         // Choose to not angle and extend at the same time for right now
-        new InstantCommand(climber::setExtending, climber),
+        new InstantCommand(climber::extendArms, climber),
 
         // continue to send main cylinders up (to full length)
         new WaitCommand(1.8),
-        new InstantCommand(climber::setCoasting, climber),
+        new InstantCommand(climber::cutOffPressure, climber),
         new WaitCommand(0.3),
 
         // Wait for swinging to stop?? Confirm next action with button press
         new WaitUntilCommand(condition_button_press),
 
         // adjust angle to attach hooks to second bar
-        new InstantCommand(climber::verticalMainCylinders, climber),
+        new InstantCommand(climber::setPistonsVertical, climber),
         new WaitUntilCommand(condition_button_press),
 
         // retract hooks fully

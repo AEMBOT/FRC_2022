@@ -201,6 +201,12 @@ public class RobotContainer {
     SmartDashboard.putBoolean("Enable Compressor", m_compressorEnabled);
   }
 
+  /** Retracts the climber pistons and sets them to a vertical position. */
+  public void resetClimber() {
+    m_climberSubsystem.setRetracting();
+    m_climberSubsystem.setPistonsVertical();
+  }
+
   /** Clears all sticky faults on the PCM and PDP. */
   public void clearAllStickyFaults() {
     m_pdp.clearStickyFaults();
