@@ -117,9 +117,7 @@ public class RobotContainer {
 
     // Climb sequence - Start Button
     new JoystickButton(m_driverController, Button.kStart.value)
-        .whenPressed(
-            new ClimbTimed(
-                m_climberSubsystem, m_intakeSubsystem, m_driverController::getStartButtonPressed));
+        .whenPressed(new ClimbTimed(m_climberSubsystem, m_driverController::getStartButtonPressed));
 
     // SECONDARY CONTROLLER
 
