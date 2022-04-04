@@ -23,8 +23,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
     // Lift shouldn't drift, so set it to brake mode
     m_intakeLift.setIdleMode(CANSparkMax.IdleMode.kBrake);
-    // Set max current the winch can draw
-    m_intakeLift.setSmartCurrentLimit(kLiftMaxExpectedCurrent, 0, 20000);
+
+    // Set max current the lift can draw
+    m_intakeLift.setSmartCurrentLimit(kLiftMaxExpectedCurrent);
 
     // Roller can be in coast mode, since preciseness isn't important
     m_intakeRoller.setIdleMode(CANSparkMax.IdleMode.kCoast);
