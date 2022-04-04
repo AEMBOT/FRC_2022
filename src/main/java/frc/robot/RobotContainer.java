@@ -202,7 +202,7 @@ public class RobotContainer {
 
   /** Retracts the climber pistons and sets them to a vertical position. */
   public void resetClimber() {
-    m_climberSubsystem.setRetracting();
+    m_climberSubsystem.retractArms();
     m_climberSubsystem.setPistonsVertical();
   }
 

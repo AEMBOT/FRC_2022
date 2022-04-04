@@ -31,7 +31,7 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   /** Retracts both climber pistons. */
-  public void setRetracting() {
+  public void retractArms() {
     m_leftArm.retractArm();
     m_rightArm.retractArm();
   }
