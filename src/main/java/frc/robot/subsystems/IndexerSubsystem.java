@@ -19,7 +19,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.awt.Color;
 
+/**
+ * A subsystem encompassing the robot's indexer belts as well as the color sensor located in the
+ * indexer.
+ */
 public class IndexerSubsystem extends SubsystemBase {
   // Belt motors
   private final CANSparkMax m_lowerBelt =
@@ -28,6 +33,8 @@ public class IndexerSubsystem extends SubsystemBase {
       new CANSparkMax(kCANIndexerTopBeltID, MotorType.kBrushless);
 
   // Color sensor for detecting cargo
+  // TODO: Move this to the MXP port (i.e. to the NavX) to avoid lockups
+  // https://docs.wpilib.org/en/stable/docs/yearly-overview/known-issues.html#onboard-i2c-causing-system-lockups
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
 
   // Get the alliance from the FMS for dashboard display purposes
@@ -39,8 +46,9 @@ public class IndexerSubsystem extends SubsystemBase {
   private final NetworkTableEntry m_cargoCorrect = m_indexerTable.getEntry("cargoCorrect");
   private final NetworkTableEntry m_cargoInIndexer = m_indexerTable.getEntry("cargoInIndexer");
 
+  /** Constructs a new IndexerSubsystem, configuring the belt motors. */
   public IndexerSubsystem() {
-    // Indexer shouldn't continue moving after stopping
+    // Indexer belts shouldn't continue moving after stopping
     m_lowerBelt.setIdleMode(CANSparkMax.IdleMode.kBrake);
     m_upperBelt.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
@@ -50,7 +58,7 @@ public class IndexerSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // Write diagnostic info to network tables
+    // Write diagnostic info to network tables periodically
     m_cargoCorrect.setBoolean(correctCargoColor());
     m_cargoInIndexer.setBoolean(cargoInIndexer());
   }
@@ -77,7 +85,6 @@ public class IndexerSubsystem extends SubsystemBase {
   /** Returns true if there is a piece of cargo in the indexer. */
   public boolean cargoInIndexer() {
     return m_colorSensor.getProximity() >= kCargoMinProximity;
-    // && getCargoAllianceColor() != Alliance.Invalid;
   }
 
   public boolean correctCargoColor() {
@@ -92,7 +99,7 @@ public class IndexerSubsystem extends SubsystemBase {
     double saturation = hsv[1];
     double value = hsv[2];
 
-    Alliance color = Alliance.Invalid;
+    Alliance alliance;
 
     // Red cargo
     if (hue >= kMinRedHue
@@ -101,7 +108,7 @@ public class IndexerSubsystem extends SubsystemBase {
         && saturation <= kMaxRedSaturation
         && value >= kMinRedValue
         && value <= kMaxRedValue) {
-      color = Alliance.Red;
+      alliance = Alliance.Red;
     }
 
     // Blue cargo
@@ -111,61 +118,25 @@ public class IndexerSubsystem extends SubsystemBase {
         && saturation <= kMaxBlueSaturation
         && value >= kMinBlueValue
         && value <= kMaxBlueValue) {
-      color = Alliance.Blue;
-    } else {
-      color = Alliance.Invalid;
+      alliance = Alliance.Blue;
     }
 
-    return color;
+    // Something other than cargo
+    else {
+      alliance = Alliance.Invalid;
+    }
+
+    return alliance;
   }
 
-  // TODO: Move this to the utilities folder?
+  /** Returns an array of HSV values as read from the color sensor. */
   private double[] readSensorHSV() {
-    double red, blue, green;
+    int red = m_colorSensor.getRed();
+    int green = m_colorSensor.getGreen();
+    int blue = m_colorSensor.getBlue();
 
-    red = m_colorSensor.getRed();
-    blue = m_colorSensor.getBlue();
-    green = m_colorSensor.getGreen();
-
-    // does math to make hsv
-    red /= 255;
-    blue /= 255;
-    green /= 255;
-
-    double cmax = Math.max(red, Math.max(green, blue));
-    double cmin = Math.min(red, Math.min(green, blue));
-    double diff = cmax - cmin;
-    double h = -1;
-    double s = -1;
-
-    // if cmax and cmin are equal then h = 0
-    if (cmax == cmin) h = 0;
-
-    // if cmax equal r then compute h
-    else if (cmax == red) h = (60 * ((green - blue) / diff) + 360) % 360;
-
-    // if cmax equal g then compute h
-    else if (cmax == green) h = (60 * ((blue - red) / diff) + 120) % 360;
-
-    // if cmax equal b then compute h
-    else if (cmax == blue) h = (60 * ((red - green) / diff) + 240) % 360;
-
-    // if cmax equal zero
-    if (cmax == 0) s = 0;
-    else s = (diff / cmax) * 100;
-
-    // compute v
-    double v = cmax * 100;
-
-    // updates dashboard with latest RGB and HSV readings
-    // SmartDashboard.putNumber("Red", red);
-    // SmartDashboard.putNumber("Blue", blue);
-    // SmartDashboard.putNumber("Green", green);
-
-    // SmartDashboard.putNumber("Hue", h);
-    // SmartDashboard.putNumber("Saturation", s);
-    // SmartDashboard.putNumber("Value", v);
-
-    return new double[] {h, s, v};
+    // HSV and HSB are the same thing, so ignore this difference
+    float[] output = Color.RGBtoHSB(red, green, blue, null);
+    return new double[] {output[0] * 360, output[1] * 100, output[2] * 100};
   }
 }
