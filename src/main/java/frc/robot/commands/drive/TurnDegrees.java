@@ -44,7 +44,7 @@ public class TurnDegrees extends ProfiledPIDCommand {
         drive::getAngle,
         angleSupplier,
         (output, setpoint) ->
-            drive.arcadeDrive(0, output + m_feedforward.calculate(setpoint.velocity), false),
+            drive.arcadeDrive(0, -(output + m_feedforward.calculate(setpoint.velocity)), false),
         drive);
 
     m_drive = drive;
