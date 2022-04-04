@@ -1,7 +1,7 @@
 package frc.robot.commands.drive;
 
 import static frc.robot.Constants.ControllerConstants.*;
-import static frc.robot.Constants.DriveConstants.*;
+import static frc.robot.Constants.DrivetrainConstants.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;

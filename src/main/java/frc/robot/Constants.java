@@ -15,7 +15,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  /** Solenoid ports on the PCM */
+  /** Solenoid ports on the PCM for use in the climber subsystem. */
   public final class ClimberConstants {
     public static final int kClimbSolenoidRightRetract = 2;
     public static final int kClimbSolenoidRightExtend = 1;
@@ -28,18 +28,17 @@ public final class Constants {
     public static final int kAngleSolenoid = 3;
   }
 
+  /** Shooter-related constants, including CAN IDs and PIDF coefficients. */
   public static final class ShooterConstants {
     public static final int kLeftMotorCANId = 13;
     public static final int kRightMotorCANId = 14;
 
+    // PIDF constants for velocity closed loop control
     public static final double kP = 6e-5;
     public static final double kI = 0;
     public static final double kIZone = 0;
     public static final double kD = 0.0000;
     public static final double kFF = 0.000183;
-    public static final double kMaxVel = 5700;
-    public static final double kMinVel = 0;
-    public static final double kMaxAcc = 1500;
     public static final double kMaxOutput = 1;
     public static final double kMinOutput = -1;
 
@@ -50,6 +49,10 @@ public final class Constants {
     public static final double kRPMTolerance = 50;
   }
 
+  /**
+   * Intake-related constants, including motors powers, current limits, & the intake lift range of
+   * motion.
+   */
   public static final class IntakeConstants {
     // CAN IDs for intake-related motors
     public static final int kCANRollerID = 7;
@@ -67,6 +70,7 @@ public final class Constants {
     public static final double kLiftRangeOfMotion = 8; // rotations
   }
 
+  /** Indexer motor CAN IDs as well as color sensor tolerances for detecting cargo. */
   public static final class IndexerConstants {
     // Motor CAN IDs
     public static final int kCANIndexerUpperBottomBeltID = 12;
@@ -93,11 +97,18 @@ public final class Constants {
     public static final double kMaxRedValue = 10;
   }
 
-  public static final class DriveConstants {
-    // Measurements for Spark Max conversion factors
+  /**
+   * Drivetrain-related constants, including several subclasses for PID-controlled/motion-profiled
+   * motion.
+   */
+  public static final class DrivetrainConstants {
+    // Drivetrain measurements
     public static final double kWheelCircumferenceMeters = Units.inchesToMeters(Math.PI * 6);
+
+    // This is the same as the gear ratio for the drive motor gearboxes
     public static final double kMotorRotationsPerWheelRotation = 7.56;
 
+    // Encoder conversions
     public static final double kMetersPerMotorRotation =
         kWheelCircumferenceMeters / kMotorRotationsPerWheelRotation;
     public static final double kRPMToMetersPerSecond =
@@ -117,7 +128,27 @@ public final class Constants {
     public static final double kMaxForwardPower = 1.0;
     public static final double kMaxRotationPower = 0.6;
 
-    // Split PID-related constants based on whether robot is turning/going straight
+    /** Spark MAX Smart Motion constants for drive motors. */
+    public static final class SmartMotion {
+      // PIDF constants
+      public static final double kP = 0;
+      public static final double kI = 0;
+      public static final double kD = 0;
+      public static final double kIz = 0;
+      public static final double kFF = 0.000457;
+
+      public static final double kMaxOutput = 1;
+      public static final double kMinOutput = -1;
+      public static final double kAllowedErr = 0.01; // meters
+
+      // All of these are measured in RPM
+      public static final double kMaxRPM = 5676;
+      public static final double kMinVel = 0;
+      public static final double kMaxVel = 2000;
+      public static final double kMaxAcc = 1500;
+    }
+
+    /** PID/Motion profiling constants for driving straight (used in DriveStraightProfiled). */
     public static final class StraightPID {
       // Basic PID constants
       public static final double kP = 0;
@@ -137,47 +168,26 @@ public final class Constants {
       public static final double kDriveVelocityToleranceMetersPerSecond = 0.2;
     }
 
+    /** PID/motion profiling constants for turning in place (used in TurnDegrees). */
     public static final class TurnPID {
       public static final double kP = 0.006;
       public static final double kI = 0;
       public static final double kD = 0;
 
-      // For use with encoder-based turning
-      public static final double kMetersPerDegree = 0.0075;
-
       // Profiling
       public static final double kMaxVelocityDegreesPerSecond = 360 / 5;
       public static final double kMaxAccelerationDegreesPerSecondSquared = 240;
 
-      // Feedforward (both in power units, i.e. on [-1, 1])
+      // Feedforward (both in power units, i.e. on [0, 1])
       public static final double kS = 0.058;
       public static final double kVDegreesPerSecond = 0.0008;
 
       public static final double kTurnToleranceDeg = 3.0;
       public static final double kTurnRateToleranceDegPerS = 20.0;
     }
-
-    // Spark MAX Smart Motion constants
-    public static final class SmartMotion {
-      // PIDF constants
-      public static final double kP = 0;
-      public static final double kI = 0;
-      public static final double kD = 0;
-      public static final double kIz = 0;
-      public static final double kFF = 0.000457;
-
-      public static final double kMaxOutput = 1;
-      public static final double kMinOutput = -1;
-      public static final double kAllowedErr = 0.01; // meters
-
-      // All of these are measured in RPM
-      public static final double kMaxRPM = 5676;
-      public static final double kMinVel = 0;
-      public static final double kMaxVel = 2000;
-      public static final double kMaxAcc = 1500;
-    }
   }
 
+  /** Controller ports & deadbands. */
   public static final class ControllerConstants {
     // Controller ports
     public static final int kDriverPort = 0;

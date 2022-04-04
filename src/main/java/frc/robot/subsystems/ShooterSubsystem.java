@@ -72,7 +72,7 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   /**
-   * Sets the PID/motion profiling constants for the given {@link SparkMaxPIDController}.
+   * Sets the PIDF constants for the given {@link SparkMaxPIDController}.
    *
    * @param controller The {@link SparkMaxPIDController} controller to configure
    */
@@ -83,12 +83,6 @@ public class ShooterSubsystem extends SubsystemBase {
     controller.setD(kD);
     controller.setFF(kFF);
     controller.setOutputRange(kMinOutput, kMaxOutput);
-
-    // TODO: Do we need these? We don't actually use smart motion with these motors
-    int smartMotionSlot = 0;
-    controller.setSmartMotionMaxVelocity(kMaxVel, smartMotionSlot);
-    controller.setSmartMotionMinOutputVelocity(kMinVel, smartMotionSlot);
-    controller.setSmartMotionMaxAccel(kMaxAcc, smartMotionSlot);
   }
 
   /** Get the current flywheel RPM. */

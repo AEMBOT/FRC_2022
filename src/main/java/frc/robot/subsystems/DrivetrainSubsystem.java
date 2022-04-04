@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.DriveConstants.*;
-import static frc.robot.Constants.DriveConstants.SmartMotion.*;
+import static frc.robot.Constants.DrivetrainConstants.*;
+import static frc.robot.Constants.DrivetrainConstants.SmartMotion.*;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;

@@ -1,6 +1,6 @@
 package frc.robot.commands.drive;
 
-import static frc.robot.Constants.DriveConstants.StraightPID.*;
+import static frc.robot.Constants.DrivetrainConstants.StraightPID.*;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
