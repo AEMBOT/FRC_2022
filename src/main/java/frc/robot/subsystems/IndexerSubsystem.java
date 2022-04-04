@@ -27,10 +27,12 @@ import java.awt.Color;
  */
 public class IndexerSubsystem extends SubsystemBase {
   // Belt motors
-  private final CANSparkMax m_lowerBelt =
-      new CANSparkMax(kCANIndexerUpperBottomBeltID, MotorType.kBrushless);
   private final CANSparkMax m_upperBelt =
       new CANSparkMax(kCANIndexerTopBeltID, MotorType.kBrushless);
+  private final CANSparkMax m_lowerBelt =
+      new CANSparkMax(kCANIndexerUpperBottomBeltID, MotorType.kBrushless);
+  private final CANSparkMax m_bottomBelt =
+      new CANSparkMax(kCANIndexerLowerBottomBeltID, MotorType.kBrushless);
 
   // Color sensor for detecting cargo
   // TODO: Move this to the MXP port (i.e. to the NavX) to avoid lockups
@@ -49,12 +51,14 @@ public class IndexerSubsystem extends SubsystemBase {
   /** Constructs a new IndexerSubsystem, configuring the belt motors. */
   public IndexerSubsystem() {
     // Restore motors to factory defaults for consistent settings
-    m_lowerBelt.restoreFactoryDefaults();
     m_upperBelt.restoreFactoryDefaults();
+    m_lowerBelt.restoreFactoryDefaults();
+    m_bottomBelt.restoreFactoryDefaults();
 
     // Indexer belts shouldn't continue moving after stopping
-    m_lowerBelt.setIdleMode(CANSparkMax.IdleMode.kBrake);
     m_upperBelt.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    m_lowerBelt.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    m_bottomBelt.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
     // Lower intake belt should follow the upper one
     m_lowerBelt.follow(m_upperBelt, true);
@@ -72,16 +76,30 @@ public class IndexerSubsystem extends SubsystemBase {
   /** Moves cargo towards the shooter. */
   public void moveCargoUp() {
     m_upperBelt.set(-0.7);
+    // TODO: Verify that this power has the correct sign
+    m_bottomBelt.set(-0.7);
   }
 
   /** Moves cargo down towards the intake. */
   public void moveCargoDown() {
     m_upperBelt.set(0.7);
+    // TODO: Verify that this power has the correct sign
+    m_bottomBelt.set(0.7);
   }
 
-  /** Stops the upper intake belt. */
+  /**
+   * Runs only the lower indexer belt. Meant to be used when intaking cargo to avoid accidentally
+   * ejecting any cargo currently in the indexer.
+   */
+  public void intakeCargo() {
+    // TODO: Verify that this power has the correct sign
+    m_bottomBelt.set(-0.7);
+  }
+
+  /** Stops all intake belts. */
   public void stopBelts() {
     m_upperBelt.set(0);
+    m_bottomBelt.set(0);
   }
 
   // COLOR SENSOR READING
@@ -91,11 +109,15 @@ public class IndexerSubsystem extends SubsystemBase {
     return m_colorSensor.getProximity() >= kCargoMinProximity;
   }
 
+  /**
+   * Returns ture if the cargo in the indexer is the correct color (i.e. matches our alliance
+   * color).
+   */
   public boolean correctCargoColor() {
     return getCargoAllianceColor() == m_alliance;
   }
 
-  /** Return the alliance that the loaded cargo belongs to */
+  /** Return the alliance that the loaded cargo belongs to, based on calibrated color tolerances. */
   public Alliance getCargoAllianceColor() {
     double[] hsv = readSensorHSV();
 

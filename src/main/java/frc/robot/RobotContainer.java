@@ -27,7 +27,8 @@ import frc.robot.commands.autonomous.TaxiThenShoot;
 import frc.robot.commands.climber.ClimbTimed;
 import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.DefaultDrive;
-import frc.robot.commands.indexer.RunUpperIndexer;
+import frc.robot.commands.indexer.RunIndexer;
+import frc.robot.commands.intake.IntakeCargo;
 import frc.robot.commands.intake.LiftIntake;
 import frc.robot.commands.intake.LowerIntake;
 import frc.robot.commands.intake.RunIntakeRoller;
@@ -146,16 +147,16 @@ public class RobotContainer {
     dpadUp.whenActive(m_shooterSubsystem::incrementRPMOffset, m_shooterSubsystem);
     dpadDown.whenActive(m_shooterSubsystem::decrementRPMOffset, m_shooterSubsystem);
 
-    // Run the intake roller & lower indexer belts
+    // Run the intake roller & lower indexer belts to intake cargo - A
     new JoystickButton(m_secondaryController, Button.kA.value)
-        .whileHeld(new RunIntakeRoller(m_intakeSubsystem, CargoDirection.Intake));
+        .whileHeld(new IntakeCargo(m_indexerSubsystem, m_intakeSubsystem));
 
-    // Eject any cargo in the indexer/intake
+    // Eject any cargo in the indexer/intake - X
     new JoystickButton(m_secondaryController, Button.kX.value)
         .whileHeld(
             new ParallelCommandGroup(
                 new RunIntakeRoller(m_intakeSubsystem, CargoDirection.Eject),
-                new RunUpperIndexer(m_indexerSubsystem, CargoDirection.Eject)));
+                new RunIndexer(m_indexerSubsystem, CargoDirection.Eject)));
   }
 
   /** Configures the secondary USB camera & Limelight port forwarding. */

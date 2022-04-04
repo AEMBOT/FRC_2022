@@ -14,10 +14,6 @@ public class IntakeSubsystem extends SubsystemBase {
   private final CANSparkMax m_innerRoller =
       new CANSparkMax(kCANInnerRollerID, MotorType.kBrushless);
 
-  // Lowest indexer belt
-  private final CANSparkMax m_lowerIndexBelt =
-      new CANSparkMax(kCANIndexerLowerBottomBeltID, MotorType.kBrushless);
-
   // Lift encoder
   private final RelativeEncoder m_liftEncoder = m_intakeLift.getEncoder();
 
@@ -29,7 +25,6 @@ public class IntakeSubsystem extends SubsystemBase {
     m_innerRoller.restoreFactoryDefaults();
 
     // Lower indexer belt & inner roller follow the intake roller
-    m_lowerIndexBelt.follow(m_intakeRoller, true);
     m_innerRoller.follow(m_intakeRoller, true);
 
     // Lift shouldn't drift, so set it to brake mode
