@@ -6,7 +6,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem;
 
 /**
  * A command that uses PID control, feedforward, and motion profiling to drive straight.
@@ -25,7 +25,7 @@ public class DriveStraightProfiled extends ProfiledPIDCommand {
    * @param distance The distance to drive
    * @param drive The robot's drive subsystem
    */
-  public DriveStraightProfiled(double distance, DriveSubsystem drive) {
+  public DriveStraightProfiled(double distance, DrivetrainSubsystem drive) {
     super(
         new ProfiledPIDController(
             kP,

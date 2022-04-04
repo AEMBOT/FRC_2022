@@ -10,7 +10,7 @@ import frc.robot.commands.intake.LiftIntake;
 import frc.robot.commands.intake.LowerIntake;
 import frc.robot.commands.shooter.RampThenShoot;
 import frc.robot.hardware.Limelight;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -18,7 +18,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 /** An autonomous command that taxis, intakes a cargo, and shoots 2 cargo. */
 public class TaxiThenShoot extends SequentialCommandGroup {
   private IntakeSubsystem m_intake;
-  private DriveSubsystem m_drive;
+  private DrivetrainSubsystem m_drive;
 
   /**
    * Constructs a TaxiThenShoot command, which is essentially a 2 ball auto.
@@ -30,7 +30,7 @@ public class TaxiThenShoot extends SequentialCommandGroup {
    * @param limelight The robot's Limelight instance
    */
   public TaxiThenShoot(
-      DriveSubsystem drive,
+      DrivetrainSubsystem drive,
       IntakeSubsystem intake,
       IndexerSubsystem indexer,
       ShooterSubsystem shooter,

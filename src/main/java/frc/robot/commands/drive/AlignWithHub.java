@@ -1,7 +1,7 @@
 package frc.robot.commands.drive;
 
 import frc.robot.hardware.Limelight;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem;
 
 /** A command that aligns the robot (specifically the shooter) with the central hub. */
 public class AlignWithHub extends TurnDegrees {
@@ -14,7 +14,7 @@ public class AlignWithHub extends TurnDegrees {
    * @param limelight The robot's Limelight
    * @param drive The robot's drive subsystem
    */
-  public AlignWithHub(Limelight limelight, DriveSubsystem drive) {
+  public AlignWithHub(Limelight limelight, DrivetrainSubsystem drive) {
     super(() -> -limelight.getX(), drive);
 
     m_limelight = limelight;

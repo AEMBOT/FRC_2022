@@ -48,6 +48,10 @@ public class IndexerSubsystem extends SubsystemBase {
 
   /** Constructs a new IndexerSubsystem, configuring the belt motors. */
   public IndexerSubsystem() {
+    // Restore motors to factory defaults for consistent settings
+    m_lowerBelt.restoreFactoryDefaults();
+    m_upperBelt.restoreFactoryDefaults();
+
     // Indexer belts shouldn't continue moving after stopping
     m_lowerBelt.setIdleMode(CANSparkMax.IdleMode.kBrake);
     m_upperBelt.setIdleMode(CANSparkMax.IdleMode.kBrake);

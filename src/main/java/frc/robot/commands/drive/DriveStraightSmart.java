@@ -1,14 +1,14 @@
 package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem;
 
 /**
  * A command that uses Spark Max Smart Motion control (essentially motion profiling) to drive a
  * distance.
  */
 public class DriveStraightSmart extends CommandBase {
-  private DriveSubsystem m_drive;
+  private DrivetrainSubsystem m_drive;
   private double m_distance;
 
   /**
@@ -17,7 +17,7 @@ public class DriveStraightSmart extends CommandBase {
    * @param distance The distance to drive
    * @param drive The robot's DriveSubsystem
    */
-  public DriveStraightSmart(double distance, DriveSubsystem drive) {
+  public DriveStraightSmart(double distance, DrivetrainSubsystem drive) {
     // TODO: Test that the distance no longer needs to be negated
     m_distance = distance;
     m_drive = drive;

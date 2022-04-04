@@ -15,7 +15,8 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class DriveSubsystem extends SubsystemBase {
+/** A subsystem that includes the robot's drive motors/encoders, as well as the NavX IMU. */
+public class DrivetrainSubsystem extends SubsystemBase {
   // Drive motors
   private final CANSparkMax m_frontLeftMotor = new CANSparkMax(kLeftFront, MotorType.kBrushless);
   private final CANSparkMax m_centerLeftMotor = new CANSparkMax(kLeftCenter, MotorType.kBrushless);
@@ -25,7 +26,7 @@ public class DriveSubsystem extends SubsystemBase {
       new CANSparkMax(kRightCenter, MotorType.kBrushless);
   private final CANSparkMax m_backRightMotor = new CANSparkMax(kRightBack, MotorType.kBrushless);
 
-  // Encoders for center motors
+  // Encoders for "center" motors (motor positions aren't really meaningful with gearbox)
   private final RelativeEncoder m_centerLeftEncoder = m_centerLeftMotor.getEncoder();
   private final RelativeEncoder m_centerRightEncoder = m_centerRightMotor.getEncoder();
 
@@ -44,8 +45,8 @@ public class DriveSubsystem extends SubsystemBase {
   private final DifferentialDriveOdometry m_odometry =
       new DifferentialDriveOdometry(new Rotation2d());
 
-  /** Creates a new DriveSubsystem. */
-  public DriveSubsystem() {
+  /** Creates a new DriveSubsystem, configuring its motors, encoders, and odometry. */
+  public DrivetrainSubsystem() {
     // Restore the default settings for all of the motors
     restoreMotorFactoryDefaults();
 
@@ -219,14 +220,23 @@ public class DriveSubsystem extends SubsystemBase {
         || inRangeInclusive(goal, kAllowedErr, rightPosition);
   }
 
-  /** Checks if a value is within a given margin of a goal value. */
+  /**
+   * Checks if a value is within a given margin of a goal value.
+   *
+   * @param goal The desired value at the center of the range
+   * @param margin The margin the range extends around the goal value
+   * @param val The value to check whether it's inside/outside of the range
+   */
   private boolean inRangeInclusive(double goal, double margin, double val) {
     return goal - margin <= val && val <= goal + margin;
   }
 
   // NAVX METHODS
 
-  /** Gets the heading of the robot. Ranges from -180 to 180 degrees. */
+  /**
+   * Gets the heading of the robot, with positive angles representing counterclockwise rotation.
+   * Ranges from -180 to 180 degrees.
+   */
   public double getHeading() {
     // Negated to mirror signs on a coordinate plane (+ -> counterclockwise and vice
     // versa)
@@ -236,6 +246,8 @@ public class DriveSubsystem extends SubsystemBase {
   /**
    * Gets the angle the robot has rotated since the last gyro reset. Can be greater than 360
    * degrees.
+   *
+   * <p>Positive angles represent counterclockwise rotation, as most WPILib classes expect.
    */
   public double getAngle() {
     return -m_navx.getAngle();
@@ -277,7 +289,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   /**
    * Updates the DifferentialDriveOdometry instance variable. It keeps track of where the robot is
-   * on the field, but can get thrown off if the robot is bumped into/bumps into something.
+   * on the field, but can get thrown off over time.
    */
   private void updateOdometry() {
     double currentLeftPosition = getLeftEncoderPosition();

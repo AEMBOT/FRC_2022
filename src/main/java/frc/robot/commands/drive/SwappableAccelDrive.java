@@ -6,7 +6,7 @@ import static frc.robot.Constants.DriveConstants.*;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem;
 import java.util.function.DoubleSupplier;
 
 /**
@@ -14,7 +14,7 @@ import java.util.function.DoubleSupplier;
  * during teleop.
  */
 public class SwappableAccelDrive extends CommandBase {
-  private DriveSubsystem m_drive;
+  private DrivetrainSubsystem m_drive;
 
   // Left & right stick inputs from main controller
   private DoubleSupplier m_forwardInput;
@@ -46,7 +46,7 @@ public class SwappableAccelDrive extends CommandBase {
    * @param defenseToggle The input for toggling defense mode when held (normally right trigger)
    */
   public SwappableAccelDrive(
-      DriveSubsystem drive,
+      DrivetrainSubsystem drive,
       DoubleSupplier forward,
       DoubleSupplier turning,
       DoubleSupplier defenseToggle) {

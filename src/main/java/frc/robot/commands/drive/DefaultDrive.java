@@ -6,12 +6,12 @@ import static frc.robot.Constants.DriveConstants.*;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem;
 import java.util.function.DoubleSupplier;
 
 /** A command that's responsible for driving of the robot during teleop. */
 public class DefaultDrive extends CommandBase {
-  private final DriveSubsystem m_drive;
+  private final DrivetrainSubsystem m_drive;
 
   // Left & right stick inputs from main controller
   private final DoubleSupplier m_forward;
@@ -29,7 +29,7 @@ public class DefaultDrive extends CommandBase {
    * @param turningPower The input for turning the robot (normally right stick X)
    */
   public DefaultDrive(
-      DriveSubsystem drive, DoubleSupplier forwardPower, DoubleSupplier turningPower) {
+      DrivetrainSubsystem drive, DoubleSupplier forwardPower, DoubleSupplier turningPower) {
     m_drive = drive;
     m_forward = forwardPower;
     m_turning = turningPower;

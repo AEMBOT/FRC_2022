@@ -7,7 +7,7 @@ import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.DriveStraightSmart;
 import frc.robot.commands.drive.TurnDegrees;
 import frc.robot.hardware.Limelight;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -25,7 +25,7 @@ public class FiveBallAuto extends SequentialCommandGroup {
    * @param limelight The robot's {@link Limelight} instance
    */
   public FiveBallAuto(
-      DriveSubsystem drive,
+      DrivetrainSubsystem drive,
       ShooterSubsystem shooter,
       IndexerSubsystem indexer,
       IntakeSubsystem intake,

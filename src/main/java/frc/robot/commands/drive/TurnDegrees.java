@@ -6,7 +6,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem;
 import java.util.function.DoubleSupplier;
 
 /** A command that turns the robot the specified number of degrees. */
@@ -15,7 +15,7 @@ public class TurnDegrees extends ProfiledPIDCommand {
   private static final SimpleMotorFeedforward m_feedforward =
       new SimpleMotorFeedforward(kS, kVDegreesPerSecond);
 
-  private DriveSubsystem m_drive;
+  private DrivetrainSubsystem m_drive;
 
   /**
    * Turns the specified number of degrees.
@@ -23,7 +23,7 @@ public class TurnDegrees extends ProfiledPIDCommand {
    * @param degrees The number of degrees to turn
    * @param drive The robot's drive subsystem
    */
-  public TurnDegrees(double degrees, DriveSubsystem drive) {
+  public TurnDegrees(double degrees, DrivetrainSubsystem drive) {
     this(() -> degrees, drive);
   }
 
@@ -33,7 +33,7 @@ public class TurnDegrees extends ProfiledPIDCommand {
    * @param angleSupplier A method to run in order to obtain the angle to turn to
    * @param drive The robot's drive subsystem
    */
-  public TurnDegrees(DoubleSupplier angleSupplier, DriveSubsystem drive) {
+  public TurnDegrees(DoubleSupplier angleSupplier, DrivetrainSubsystem drive) {
     super(
         new ProfiledPIDController(
             kP,
