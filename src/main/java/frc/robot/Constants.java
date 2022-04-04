@@ -57,7 +57,6 @@ public final class Constants {
     // CAN IDs for intake-related motors
     public static final int kCANRollerID = 7;
     public static final int kCANLiftID = 8;
-    public static final int kCANInnerRollerID = 9;
 
     // Powers for moving various parts of the intake
     public static final double kRollerPower = 0.5;
@@ -74,8 +73,9 @@ public final class Constants {
   public static final class IndexerConstants {
     // Motor CAN IDs
     public static final int kCANIndexerUpperBottomBeltID = 12;
-    public static final int kCANIndexerTopBeltID = 10;
+    public static final int kCANIndexerUpperTopBeltID = 10;
     public static final int kCANIndexerLowerBottomBeltID = 11;
+    public static final int kCANIndexerLowerTopBeltID = 9;
 
     // COLOR SENSOR
     public static final int kCargoMinProximity = 300;

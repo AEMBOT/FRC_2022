@@ -11,8 +11,6 @@ public class IntakeSubsystem extends SubsystemBase {
   // Intake motors
   private final CANSparkMax m_intakeRoller = new CANSparkMax(kCANRollerID, MotorType.kBrushless);
   private final CANSparkMax m_intakeLift = new CANSparkMax(kCANLiftID, MotorType.kBrushless);
-  private final CANSparkMax m_innerRoller =
-      new CANSparkMax(kCANInnerRollerID, MotorType.kBrushless);
 
   // Lift encoder
   private final RelativeEncoder m_liftEncoder = m_intakeLift.getEncoder();
@@ -22,10 +20,6 @@ public class IntakeSubsystem extends SubsystemBase {
     // Restore motors to factory defaults for settings to be consistent
     m_intakeRoller.restoreFactoryDefaults();
     m_intakeLift.restoreFactoryDefaults();
-    m_innerRoller.restoreFactoryDefaults();
-
-    // Lower indexer belt & inner roller follow the intake roller
-    m_innerRoller.follow(m_intakeRoller, true);
 
     // Lift shouldn't drift, so set it to brake mode
     m_intakeLift.setIdleMode(CANSparkMax.IdleMode.kBrake);

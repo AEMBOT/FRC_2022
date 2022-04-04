@@ -27,11 +27,13 @@ import java.awt.Color;
  */
 public class IndexerSubsystem extends SubsystemBase {
   // Belt motors
-  private final CANSparkMax m_upperBelt =
-      new CANSparkMax(kCANIndexerTopBeltID, MotorType.kBrushless);
-  private final CANSparkMax m_lowerBelt =
+  private final CANSparkMax m_upperTopBelt =
+      new CANSparkMax(kCANIndexerUpperTopBeltID, MotorType.kBrushless);
+  private final CANSparkMax m_lowerTopBelt =
+      new CANSparkMax(kCANIndexerLowerTopBeltID, MotorType.kBrushless);
+  private final CANSparkMax m_upperBottomBelt =
       new CANSparkMax(kCANIndexerUpperBottomBeltID, MotorType.kBrushless);
-  private final CANSparkMax m_bottomBelt =
+  private final CANSparkMax m_lowerBottomBelt =
       new CANSparkMax(kCANIndexerLowerBottomBeltID, MotorType.kBrushless);
 
   // Color sensor for detecting cargo
@@ -51,17 +53,21 @@ public class IndexerSubsystem extends SubsystemBase {
   /** Constructs a new IndexerSubsystem, configuring the belt motors. */
   public IndexerSubsystem() {
     // Restore motors to factory defaults for consistent settings
-    m_upperBelt.restoreFactoryDefaults();
-    m_lowerBelt.restoreFactoryDefaults();
-    m_bottomBelt.restoreFactoryDefaults();
+    m_upperTopBelt.restoreFactoryDefaults();
+    m_upperBottomBelt.restoreFactoryDefaults();
+    m_lowerBottomBelt.restoreFactoryDefaults();
+    m_lowerTopBelt.restoreFactoryDefaults();
 
     // Indexer belts shouldn't continue moving after stopping
-    m_upperBelt.setIdleMode(CANSparkMax.IdleMode.kBrake);
-    m_lowerBelt.setIdleMode(CANSparkMax.IdleMode.kBrake);
-    m_bottomBelt.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    m_upperTopBelt.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    m_upperBottomBelt.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    m_lowerBottomBelt.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
     // Lower intake belt should follow the upper one
-    m_lowerBelt.follow(m_upperBelt, true);
+    m_upperBottomBelt.follow(m_upperTopBelt, true);
+
+    // Bottom intake belt should follow the inner roller belt
+    m_lowerBottomBelt.follow(m_lowerTopBelt);
   }
 
   @Override
@@ -75,16 +81,14 @@ public class IndexerSubsystem extends SubsystemBase {
 
   /** Moves cargo towards the shooter. */
   public void moveCargoUp() {
-    m_upperBelt.set(-0.7);
-    // TODO: Verify that this power has the correct sign
-    m_bottomBelt.set(-0.7);
+    m_upperTopBelt.set(-0.7);
+    m_lowerTopBelt.set(0.7);
   }
 
   /** Moves cargo down towards the intake. */
   public void moveCargoDown() {
-    m_upperBelt.set(0.7);
-    // TODO: Verify that this power has the correct sign
-    m_bottomBelt.set(0.7);
+    m_upperTopBelt.set(0.7);
+    m_lowerTopBelt.set(-0.7);
   }
 
   /**
@@ -92,14 +96,13 @@ public class IndexerSubsystem extends SubsystemBase {
    * ejecting any cargo currently in the indexer.
    */
   public void intakeCargo() {
-    // TODO: Verify that this power has the correct sign
-    m_bottomBelt.set(-0.7);
+    m_lowerTopBelt.set(0.7);
   }
 
   /** Stops all intake belts. */
   public void stopBelts() {
-    m_upperBelt.set(0);
-    m_bottomBelt.set(0);
+    m_upperTopBelt.set(0);
+    m_lowerTopBelt.set(0);
   }
 
   // COLOR SENSOR READING
