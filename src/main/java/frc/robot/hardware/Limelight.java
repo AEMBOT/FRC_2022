@@ -40,7 +40,9 @@ public class Limelight {
   private NetworkTableEntry m_ledMode;
   private NetworkTableEntry m_camMode;
 
-  /** Create and collect tables and entries */
+  /**
+   * Constructs a Limelight instance, which provides access to the underlying NetworkTables entries.
+   */
   public Limelight() {
     NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
 
@@ -53,7 +55,7 @@ public class Limelight {
   }
 
   /**
-   * Will get the current X offset value if no object is detected it will default to 0
+   * Returns the detected object's x-offset in degrees, or NaN if no object is detected.
    *
    * @return the X offset in degrees to the target
    */
@@ -62,7 +64,7 @@ public class Limelight {
   }
 
   /**
-   * Will get the current Y offset value if no object is detected it will default to 0
+   * Returns the detected object's y-offset in degrees, or NaN if no object is detected.
    *
    * @return Y offset to target in degrees
    */

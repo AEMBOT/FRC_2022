@@ -15,8 +15,9 @@ import frc.robot.subsystems.ShooterSubsystem;
 /** A theoreticall five ball autonomous, but not everything has been implemented. DO NOT RUN YET. */
 public class FiveBallAuto extends SequentialCommandGroup {
   /**
-   * Construcsts a FiveBallAuto command, which is theoretically capable of making 5 cargo into the hub. NOT FUNCTIONAL YET.
-   * 
+   * Construcsts a FiveBallAuto command, which is theoretically capable of making 5 cargo into the
+   * hub. NOT FUNCTIONAL YET.
+   *
    * @param drive The robot's drive subsystem
    * @param shooter The robot's shooter subsystem
    * @param indexer The robot's indexer subsystem

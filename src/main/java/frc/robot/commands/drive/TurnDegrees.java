@@ -9,10 +9,12 @@ import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import java.util.function.DoubleSupplier;
 
+/** A command that turns the robot the specified number of degrees. */
 public class TurnDegrees extends ProfiledPIDCommand {
-
+  // Feedforward - converts angular velocities to power outputs
   private static final SimpleMotorFeedforward m_feedforward =
       new SimpleMotorFeedforward(kS, kVDegreesPerSecond);
+
   private DriveSubsystem m_drive;
 
   /**
