@@ -25,102 +25,90 @@ public class ClimbTimed extends SequentialCommandGroup {
    *     button press)
    */
   public ClimbTimed(ClimberSubsystem climber, BooleanSupplier triggerAdvance) {
-    // Arm-related commands
-    InstantCommand extendArms = new InstantCommand(climber::extendArms, climber);
-    InstantCommand retractArms = new InstantCommand(climber::retractArms, climber);
-    InstantCommand cutOffPressure = new InstantCommand(climber::cutOffPressure, climber);
-
-    // Angling commands
-    InstantCommand setArmsVertical = new InstantCommand(climber::setPistonsVertical, climber);
-    InstantCommand angleArms = new InstantCommand(climber::setPistonsAngled, climber);
-
-    // Advancement command
-    var waitForAdvance = new WaitUntilCommand(triggerAdvance);
-
     // NOTE: The pressure cutoffs are done to conserve air, which allows us to reach traversal
     addCommands(
         // Default state (arms retracted & vertical)
-        retractArms,
-        setArmsVertical,
+        new InstantCommand(climber::retractArms, climber),
+        new InstantCommand(climber::setPistonsVertical, climber),
 
         // MID CLIMB
 
         // Fully extend arms, cutting off air early to conserve it
-        waitForAdvance,
-        extendArms,
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::extendArms, climber),
         new WaitCommand(1),
-        cutOffPressure,
+        new InstantCommand(climber::cutOffPressure, climber),
         new WaitCommand(2),
 
         // Retract the hooks, presumably after the driver positions the bot correctly
-        waitForAdvance,
-        retractArms,
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::retractArms, climber),
         new WaitCommand(2.2),
-        cutOffPressure,
+        new InstantCommand(climber::cutOffPressure, climber),
         new WaitCommand(1),
 
         // HIGH CLIMB
 
         // Extend the arms a bit to let go with the piston hooks (acrylic ones should still be on)
-        waitForAdvance,
-        extendArms,
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::extendArms, climber),
         new WaitCommand(0.25),
-        cutOffPressure,
+        new InstantCommand(climber::cutOffPressure, climber),
 
         // Angle the arms to allow them to hook on to the high bar
-        waitForAdvance,
-        angleArms,
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::setPistonsAngled, climber),
 
         // Extend the arms (the driver should do this after they are angled properly)
-        waitForAdvance,
-        extendArms,
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::extendArms, climber),
         new WaitCommand(0.85),
-        cutOffPressure,
+        new InstantCommand(climber::cutOffPressure, climber),
         new WaitCommand(2.0),
 
         // Angle the arms vertically again, making them hit the bar
-        waitForAdvance,
-        setArmsVertical,
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::setPistonsVertical, climber),
 
         // Retract the hooks, grabbing onto the high bar
-        waitForAdvance,
-        retractArms,
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::retractArms, climber),
         new WaitCommand(1.0),
-        cutOffPressure,
+        new InstantCommand(climber::cutOffPressure, climber),
 
         // This is done to avoid only hooking on with one side
         new WaitCommand(2.5),
-        retractArms,
+        new InstantCommand(climber::retractArms, climber),
         new WaitCommand(1.5),
-        cutOffPressure,
+        new InstantCommand(climber::cutOffPressure, climber),
 
         // TRAVERSAL CLIMB
 
         // Unhook the pistons, leaving the acrylic hooks in place
-        waitForAdvance,
-        extendArms,
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::extendArms, climber),
         new WaitCommand(0.4),
-        cutOffPressure,
+        new InstantCommand(climber::cutOffPressure, climber),
 
         // Angle the climber arms to allow them to hook onto the traversal bar
-        waitForAdvance,
-        angleArms,
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::setPistonsAngled, climber),
 
         // Extend the arms
-        waitForAdvance,
-        extendArms,
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::extendArms, climber),
         new WaitCommand(1.8),
-        cutOffPressure,
+        new InstantCommand(climber::cutOffPressure, climber),
         new WaitCommand(0.3),
 
         // Return the climber arms to a vertical(ish) state so they hit the traversal bar
         // Note that this has to be timed correctly, as otherwise they won't hook on properly
-        waitForAdvance,
-        setArmsVertical,
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::setPistonsVertical, climber),
 
         // Retract the hooks without a cutoff, since timings are inconsistent with so little air
-        waitForAdvance,
-        retractArms
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::retractArms, climber)
 
         // ???
         // Profit
