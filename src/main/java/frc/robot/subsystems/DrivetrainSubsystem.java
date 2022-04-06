@@ -11,8 +11,11 @@ import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /** A subsystem that includes the robot's drive motors/encoders, as well as the NavX IMU. */
@@ -44,6 +47,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
   // This allows the robot to keep track of where it is on the field
   private final DifferentialDriveOdometry m_odometry;
 
+  // Used to display the current robot position
+  private final Field2d m_field = new Field2d();
+
   /** Creates a new DriveSubsystem, configuring its motors, encoders, and odometry. */
   public DrivetrainSubsystem() {
     // Restore the default settings for all of the motors
@@ -71,12 +77,18 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     // Initialize the odometry to track where the robot is on the field
     m_odometry = new DifferentialDriveOdometry(m_navx.getRotation2d());
+
+    // Display the robot's position on a field widget on the dashboard
+    SmartDashboard.putData(m_field);
   }
 
   @Override
   public void periodic() {
     // Keep track of where the robot is on the field
     updateOdometry();
+
+    // Update the field widget on the dashboard with the robot's current pose
+    m_field.setRobotPose(getPose());
   }
 
   // MOTOR CONFIGURATION
@@ -161,6 +173,20 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_drive.arcadeDrive(speed, rotation, squareInputs);
   }
 
+  /**
+   * Tank drive of the robot using voltages supplied to the drive motors.
+   *
+   * @param leftVolts Voltage to apply to the left motors
+   * @param rightVolts Voltage to apply to the right motors
+   */
+  public void tankDriveVolts(double leftVolts, double rightVolts) {
+    m_centerLeftMotor.setVoltage(leftVolts);
+    m_centerRightMotor.setVoltage(rightVolts);
+
+    // Feed DifferentialDrive timer so it doesn't complain
+    m_drive.feedWatchdog();
+  }
+
   /** Stops all drive motors. */
   public void stopMotors() {
     m_centerLeftMotor.set(0);
@@ -177,6 +203,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
   /** Gets the position of the center right encoder in meters. */
   public double getRightEncoderPosition() {
     return m_centerRightEncoder.getPosition();
+  }
+
+  /**
+   * Returns the current encoder velocities as a {@link DifferentialDriveWheelSpeeds} object for use
+   * in a RAMSETE controller.
+   *
+   * @return The current left and right wheel speeds in meters per second
+   */
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    return new DifferentialDriveWheelSpeeds(
+        m_centerLeftEncoder.getVelocity(), m_centerRightEncoder.getVelocity());
   }
 
   /**

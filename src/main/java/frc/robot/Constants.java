@@ -197,6 +197,13 @@ public final class Constants {
       // Ramsete constants
       public static final double kRamseteB = 2;
       public static final double kRamseteZeta = 0.7;
+
+      // PID/Feedforward constants obtained from SysId
+      public static final double kPDriveVelocity = 0.059288;
+
+      public static final double kSVolts = 0.17129;
+      public static final double kVSecondsPerMeter = 2.0522;
+      public static final double kASecondsSquaredPerMeter = 0.4259;
     }
   }
 

@@ -2,7 +2,9 @@ package frc.robot.commands.autonomous;
 
 import static frc.robot.Constants.DrivetrainConstants.Ramsete.*;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -13,7 +15,7 @@ public class FollowTrajectory extends RamseteCommand {
   private DrivetrainSubsystem m_drive;
   private Trajectory m_trajectory;
 
-  private static final DifferentialDriveKinematics kinematics =
+  private static final DifferentialDriveKinematics s_kinematics =
       new DifferentialDriveKinematics(kEffectiveTrackWidth);
 
   /**
@@ -26,9 +28,25 @@ public class FollowTrajectory extends RamseteCommand {
     super(
         trajectory,
         drive::getPose,
+
+        // Ramsete controller for staying on the trajectory
         new RamseteController(kRamseteB, kRamseteZeta),
-        kinematics,
-        drive::driveAtVelocity,
+
+        // Drivetrain motor feedforward (constants obtained from SysId)
+        new SimpleMotorFeedforward(kSVolts, kVSecondsPerMeter, kASecondsSquaredPerMeter),
+
+        // Kinematics (for trajectory curvature)
+        s_kinematics,
+
+        // Access to wheel speeds (for PID purposes)
+        drive::getWheelSpeeds,
+
+        // PID controllers for left/right wheel velocities
+        new PIDController(kPDriveVelocity, 0, 0),
+        new PIDController(kPDriveVelocity, 0, 0),
+
+        // Method to control the drive motors
+        drive::tankDriveVolts,
         drive);
 
     m_drive = drive;
