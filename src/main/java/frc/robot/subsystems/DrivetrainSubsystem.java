@@ -1,15 +1,15 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.DrivetrainConstants.*;
-import static frc.robot.Constants.DrivetrainConstants.SmartMotion.*;
+import static frc.robot.Constants.DrivetrainConstants.StraightPID.*;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.SPI;
@@ -36,6 +36,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
   // Internal PID controllers for center motors
   private final SparkMaxPIDController m_leftController = m_centerLeftMotor.getPIDController();
   private final SparkMaxPIDController m_rightController = m_centerRightMotor.getPIDController();
+
+  // Feedforward for drive motors
+  private final SimpleMotorFeedforward m_feedforward =
+      new SimpleMotorFeedforward(kSVolts, kVSecondsPerMeter, kASecondsSquaredPerMeter);
+
+  // Used to approximate acceleration for feedforward purposes
+  private double m_previousLeftVelocity = 0;
+  private double m_previousRightVelocity = 0;
 
   // This allows us to read angle information from the NavX
   private final AHRS m_navx = new AHRS(SPI.Port.kMXP);
@@ -69,8 +77,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     setCurrentLimits();
 
     // Set the SmartMotion constants for the center motors
-    setSmartMotionConstants(m_leftController);
-    setSmartMotionConstants(m_rightController);
+    configureSparkMax(m_leftController);
+    configureSparkMax(m_rightController);
 
     // Change encoder position readings to meters (per second)
     setupEncoderConversions();
@@ -142,22 +150,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
    *
    * @param controller The {@link SparkMaxPIDController} to configure
    */
-  private void setSmartMotionConstants(SparkMaxPIDController controller) {
+  private void configureSparkMax(SparkMaxPIDController controller) {
     int slot = 0;
 
-    // PIDF constants
+    // PID/feedforward constants
     controller.setP(kP, slot);
     controller.setI(kI, slot);
     controller.setD(kD, slot);
-    controller.setIZone(kIz, slot);
     controller.setFF(kFF, slot);
 
-    // Smart Motion-specific constants
+    // Output range (might not actually have to be set)
     controller.setOutputRange(kMinOutput, kMaxOutput, slot);
-    controller.setSmartMotionMaxVelocity(kMaxVel, slot);
-    controller.setSmartMotionMinOutputVelocity(kMinVel, slot);
-    controller.setSmartMotionMaxAccel(kMaxAcc, slot);
-    controller.setSmartMotionAllowedClosedLoopError(kAllowedErr, slot);
   }
 
   // BASIC DRIVE METHODS
@@ -185,6 +188,35 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     // Feed DifferentialDrive timer so it doesn't complain
     m_drive.feedWatchdog();
+  }
+
+  /**
+   * Drives the left and right wheels at the specified velocities using closed loop velocity control
+   * on the Spark Maxes.
+   *
+   * @param leftVelocity The velocity of the left wheels, in meters per second.
+   * @param rightVelocity The velocity of the right wheels, in meters per second.
+   */
+  public void tankDriveVelocities(double leftVelocity, double rightVelocity) {
+    // Calculate feedforward voltages for both sides, approximating acceleration by using 0.02 (the
+    // default TimedRobot period) as the change in time
+    double leftFeedforward =
+        m_feedforward.calculate(leftVelocity, (leftVelocity - m_previousLeftVelocity) / 0.02);
+    double rightFeedforward =
+        m_feedforward.calculate(rightVelocity, (rightVelocity - m_previousRightVelocity) / 0.02);
+
+    // Command the motors at the above feedforward voltages, using PID to correct for error
+    m_leftController.setReference(
+        leftVelocity, CANSparkMax.ControlType.kVelocity, 0, leftFeedforward);
+    m_rightController.setReference(
+        rightVelocity, CANSparkMax.ControlType.kVelocity, 0, rightFeedforward);
+
+    // Feed the DifferentialDrive motor safety timer so it doesn't complain
+    m_drive.feedWatchdog();
+
+    // Update previous velocities
+    m_previousLeftVelocity = leftVelocity;
+    m_previousRightVelocity = rightVelocity;
   }
 
   /** Stops all drive motors. */
@@ -228,52 +260,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // Convert RPM to meters per second
     m_centerLeftEncoder.setVelocityConversionFactor(kRPMToMetersPerSecond);
     m_centerRightEncoder.setVelocityConversionFactor(kRPMToMetersPerSecond);
-  }
-
-  // SMARTMOTION METHODS
-
-  /** Use the internal Spark Max velocity control */
-  public void driveAtVelocity(double leftMetersPerSecond, double rightMetersPerSecond) {
-    // Feed the DifferentialDrive so it doesn't complain
-    m_drive.feedWatchdog();
-
-    // Set the motor velocities
-    m_leftController.setReference(leftMetersPerSecond, CANSparkMax.ControlType.kVelocity);
-    m_rightController.setReference(rightMetersPerSecond, CANSparkMax.ControlType.kVelocity);
-  }
-
-  /**
-   * Runs the motors on both sides of the robot using SmartMotion.
-   *
-   * @param distance The distance to drive (in meters)
-   */
-  public void smartMotionToPosition(double distance) {
-    m_drive.feedWatchdog();
-    m_rightController.setReference(distance, CANSparkMax.ControlType.kSmartMotion, 0);
-    m_leftController.setReference(distance, CANSparkMax.ControlType.kSmartMotion, 0);
-  }
-
-  /**
-   * Returns true if the motors are close enough to a given goal position.
-   *
-   * @param goal The goal position of the motors
-   */
-  public boolean smartMotionAtGoal(double goal) {
-    double leftPosition = getLeftEncoderPosition();
-    double rightPosition = getRightEncoderPosition();
-    return inRangeInclusive(goal, kAllowedErr, leftPosition)
-        || inRangeInclusive(goal, kAllowedErr, rightPosition);
-  }
-
-  /**
-   * Checks if a value is within a given margin of a goal value.
-   *
-   * @param goal The desired value at the center of the range
-   * @param margin The margin the range extends around the goal value
-   * @param val The value to check whether it's inside/outside of the range
-   */
-  private boolean inRangeInclusive(double goal, double margin, double val) {
-    return goal - margin <= val && val <= goal + margin;
   }
 
   // NAVX METHODS

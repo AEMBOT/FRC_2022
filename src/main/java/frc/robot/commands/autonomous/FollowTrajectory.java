@@ -2,9 +2,7 @@ package frc.robot.commands.autonomous;
 
 import static frc.robot.Constants.DrivetrainConstants.Ramsete.*;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -32,21 +30,11 @@ public class FollowTrajectory extends RamseteCommand {
         // Ramsete controller for staying on the trajectory
         new RamseteController(kRamseteB, kRamseteZeta),
 
-        // Drivetrain motor feedforward (constants obtained from SysId)
-        new SimpleMotorFeedforward(kSVolts, kVSecondsPerMeter, kASecondsSquaredPerMeter),
-
-        // Kinematics (for trajectory curvature)
+        // Kinematics (for handling trajectory curvature)
         s_kinematics,
 
-        // Access to wheel speeds (for PID purposes)
-        drive::getWheelSpeeds,
-
-        // PID controllers for left/right wheel velocities
-        new PIDController(kPDriveVelocity, 0, 0),
-        new PIDController(kPDriveVelocity, 0, 0),
-
-        // Method to control the drive motors
-        drive::tankDriveVolts,
+        // Used to drive the wheels at the correct velocities
+        drive::tankDriveVelocities,
         drive);
 
     m_drive = drive;
@@ -59,13 +47,5 @@ public class FollowTrajectory extends RamseteCommand {
 
     // This is necessary to track the trajectory properly
     m_drive.resetOdometryAndEncoders(m_trajectory.getInitialPose());
-  }
-
-  @Override
-  public void end(boolean interrupted) {
-    super.end(interrupted);
-
-    // Stop the drivetrain motors after finishing the path or being interrupted
-    m_drive.stopMotors();
   }
 }

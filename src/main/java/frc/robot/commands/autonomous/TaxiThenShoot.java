@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.drive.AlignWithHub;
-import frc.robot.commands.drive.DriveStraightSmart;
+import frc.robot.commands.drive.DriveMeters;
 import frc.robot.commands.intake.LiftIntake;
 import frc.robot.commands.intake.LowerIntake;
 import frc.robot.commands.shooter.RampThenShoot;
@@ -45,13 +45,13 @@ public class TaxiThenShoot extends SequentialCommandGroup {
 
         // Run the intake while driving away from the hub
         // TODO: Tune this distance
-        new DriveStraightSmart(Units.feetToMeters(-6), drive).withTimeout(4),
+        new DriveMeters(Units.feetToMeters(-6), drive).withTimeout(4),
 
         // Stop running the intake
         new InstantCommand(intake::stopRoller, intake),
 
         // Drive forward a bit to make alignment easier if we hit the wall
-        new DriveStraightSmart(Units.feetToMeters(1), drive),
+        new DriveMeters(Units.feetToMeters(1), drive),
         new WaitCommand(1),
 
         // Align with the hub using the limelight

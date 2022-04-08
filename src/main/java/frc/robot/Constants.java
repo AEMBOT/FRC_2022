@@ -128,44 +128,28 @@ public final class Constants {
     public static final double kMaxForwardPower = 1.0;
     public static final double kMaxRotationPower = 0.6;
 
-    /** Spark MAX Smart Motion constants for drive motors. */
-    public static final class SmartMotion {
-      // PIDF constants
-      public static final double kP = 0;
+    // Max velocity & acceleration during automonous driving
+    public static final double kMaxVelocityMetersPerSecond = 2;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 1.5;
+
+    // Split PID-related constants based on whether robot is turning/going straight
+    public static final class StraightPID {
+      // Basic PID constants (obtained from SysId)
+      public static final double kP = 0.066676;
       public static final double kI = 0;
       public static final double kD = 0;
-      public static final double kIz = 0;
-      public static final double kFF = 0.000457;
 
+      // Feedforward is done from the robot code, not the Spark Max itself
+      public static final double kFF = 0;
+
+      // Feedforward constants obtained from SysId (repeated from Ramsete class)
+      public static final double kSVolts = 0.17129;
+      public static final double kVSecondsPerMeter = 2.0522;
+      public static final double kASecondsSquaredPerMeter = 0.4259;
+
+      // TODO: Check if these are still necessary to set, since these might be the default values
       public static final double kMaxOutput = 1;
       public static final double kMinOutput = -1;
-      public static final double kAllowedErr = 0.01; // meters
-
-      // All of these are measured in RPM
-      public static final double kMaxRPM = 5676;
-      public static final double kMinVel = 0;
-      public static final double kMaxVel = 2000;
-      public static final double kMaxAcc = 1500;
-    }
-
-    /** PID/Motion profiling constants for driving straight (used in DriveStraightProfiled). */
-    public static final class StraightPID {
-      // Basic PID constants
-      public static final double kP = 0;
-      public static final double kI = 0;
-      public static final double kD = 0;
-
-      // Profiling
-      public static final double kMaxVelocityMetersPerSecond = 2;
-      public static final double kMaxAccelerationMeterPerSecondSquared = 1.5;
-
-      // Feedforward (in power units)
-      public static final double kS = 0.05;
-      public static final double kVSecondsPerMeter = 0.269 / 0.8856;
-
-      // PID tolerances
-      public static final double kDriveToleranceMeters = 0.05;
-      public static final double kDriveVelocityToleranceMetersPerSecond = 0.2;
     }
 
     /** PID/motion profiling constants for turning in place (used in TurnDegrees). */
@@ -190,20 +174,16 @@ public final class Constants {
       // Track width (found using sysid)
       public static final double kEffectiveTrackWidth = 0.69883;
 
-      // Max velocity & acceleration
-      public static final double kMaxSpeedMetersPerSecond = 2;
-      public static final double kMaxAccelerationMetersPerSecondSquared = 1.5;
-
       // Ramsete constants
       public static final double kRamseteB = 2;
       public static final double kRamseteZeta = 0.7;
 
       // PID/Feedforward constants obtained from SysId
-      public static final double kPDriveVelocity = 0.059288;
+      // public static final double kPDriveVelocity = 0.059288;
 
-      public static final double kSVolts = 0.17129;
-      public static final double kVSecondsPerMeter = 2.0522;
-      public static final double kASecondsSquaredPerMeter = 0.4259;
+      // public static final double kSVolts = 0.17129;
+      // public static final double kVSecondsPerMeter = 2.0522;
+      // public static final double kASecondsSquaredPerMeter = 0.4259;
     }
   }
 

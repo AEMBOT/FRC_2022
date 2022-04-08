@@ -5,7 +5,7 @@
 package frc.robot;
 
 import static frc.robot.Constants.ControllerConstants.*;
-import static frc.robot.Constants.DrivetrainConstants.Ramsete.*;
+import static frc.robot.Constants.DrivetrainConstants.*;
 
 import com.pathplanner.lib.PathPlanner;
 import edu.wpi.first.cameraserver.CameraServer;
@@ -81,7 +81,7 @@ public class RobotContainer {
       new FollowTrajectory(
           m_robotDrive,
           PathPlanner.loadPath(
-              "Test Path", kMaxSpeedMetersPerSecond, kMaxAccelerationMetersPerSecondSquared));
+              "Test Path", kMaxVelocityMetersPerSecond, kMaxAccelerationMetersPerSecondSquared));
 
   // Sets up driver controlled auto choices
   private final SendableChooser<Command> m_autoChooser = new SendableChooser<>();
