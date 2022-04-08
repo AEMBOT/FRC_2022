@@ -219,6 +219,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_previousRightVelocity = rightVelocity;
   }
 
+  /**
+   * Resets the previous velocities used for feedforward calculations in {@link
+   * #tankDriveVelocities(double, double)}.
+   */
+  public void resetPreviousVelocities() {
+    m_previousLeftVelocity = 0;
+    m_previousRightVelocity = 0;
+  }
+
   /** Stops all drive motors. */
   public void stopMotors() {
     m_centerLeftMotor.set(0);

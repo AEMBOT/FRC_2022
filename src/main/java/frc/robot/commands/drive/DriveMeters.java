@@ -13,6 +13,8 @@ import frc.robot.subsystems.DrivetrainSubsystem;
  * <p>This is untested but should work in theory™.
  */
 public class DriveMeters extends TrapezoidProfileCommand {
+  private DriveSubsystem m_drive;
+
   /**
    * Constructs a DriveMeters command to drive forward some distance while following a trapezoidal
    * motion profile.
@@ -32,5 +34,15 @@ public class DriveMeters extends TrapezoidProfileCommand {
         // Drive at the profile velocity using closed-loop control
         state -> drive.tankDriveVelocities(state.velocity, state.velocity),
         drive);
+
+    m_drive = drive;
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    super.end(interrupted);
+
+    // Reset previous wheel velocities for acceleration calculations
+    m_drive.resetPreviousVelocities();
   }
 }
