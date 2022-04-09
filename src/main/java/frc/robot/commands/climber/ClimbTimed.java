@@ -76,7 +76,8 @@ public class ClimbTimed extends SequentialCommandGroup {
         new WaitCommand(1.0),
         new InstantCommand(climber::cutOffPressure, climber),
 
-        // This is done to avoid only hooking on with one side
+        // This is done to let the robot's swinging subside a bit to avoid only hooking on with one
+        // side of the climber
         new WaitCommand(2.5),
         new InstantCommand(climber::retractArms, climber),
         new WaitCommand(1.5),

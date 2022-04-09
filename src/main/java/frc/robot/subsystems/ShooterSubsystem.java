@@ -63,11 +63,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    updateDashboard();
-  }
-
-  /** Updates the dashboard with values of interest. */
-  private void updateDashboard() {
+    // Display the current flywheel velocity on the dashboard
     // SmartDashboard.putNumber("Shooter Velocity", getFlywheelRPM());
   }
 

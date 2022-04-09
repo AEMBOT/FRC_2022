@@ -38,8 +38,8 @@ public class RampThenShoot extends SequentialCommandGroup {
   }
 
   /**
-   * Constructs a RampThenShoot command that rumbles the controllers if the Limelight doesn't hub
-   * isn't visible.
+   * Constructs a RampThenShoot command that rumbles the controllers if the hub isn't visible to the
+   * Limelight.
    *
    * @param intake The robot's intake subsystem
    * @param indexer The robot's indexer subsystem
