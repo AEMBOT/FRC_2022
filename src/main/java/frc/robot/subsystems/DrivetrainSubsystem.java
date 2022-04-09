@@ -60,6 +60,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_frontRightMotor.follow(m_centerRightMotor);
     m_backRightMotor.follow(m_centerRightMotor);
 
+    // Set current limits for all of the drive motors
+    setCurrentLimits();
+
     // Set the SmartMotion constants for the center motors
     setSmartMotionConstants(m_leftController);
     setSmartMotionConstants(m_rightController);
@@ -110,6 +113,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_backRightMotor.restoreFactoryDefaults();
     m_centerRightMotor.restoreFactoryDefaults();
     m_frontRightMotor.restoreFactoryDefaults();
+  }
+
+  /** Sets smart current limits on all of the drive motor Spark Maxes. */
+  private void setCurrentLimits() {
+    m_backLeftMotor.setSmartCurrentLimit(60);
+    m_centerLeftMotor.setSmartCurrentLimit(60);
+    m_frontLeftMotor.setSmartCurrentLimit(60);
+
+    m_backRightMotor.setSmartCurrentLimit(60);
+    m_centerRightMotor.setSmartCurrentLimit(60);
+    m_frontRightMotor.setSmartCurrentLimit(60);
   }
 
   /**
