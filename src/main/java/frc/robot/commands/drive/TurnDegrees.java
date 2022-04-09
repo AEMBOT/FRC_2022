@@ -1,5 +1,6 @@
 package frc.robot.commands.drive;
 
+import static frc.robot.Constants.DrivetrainConstants.*;
 import static frc.robot.Constants.DrivetrainConstants.TurnPID.*;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -13,8 +14,7 @@ import java.util.function.DoubleSupplier;
 public class TurnDegrees extends ProfiledPIDCommand {
   // Feedforward - converts angular velocities to power outputs
   private static final SimpleMotorFeedforward m_feedforward =
-      new SimpleMotorFeedforward(kS, kVDegreesPerSecond);
-
+      new SimpleMotorFeedforward(kS, kVAngular);
   private DrivetrainSubsystem m_drive;
 
   /**

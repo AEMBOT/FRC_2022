@@ -8,10 +8,17 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.controller.LinearPlantInversionFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -37,13 +44,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private final SparkMaxPIDController m_leftController = m_centerLeftMotor.getPIDController();
   private final SparkMaxPIDController m_rightController = m_centerRightMotor.getPIDController();
 
-  // Feedforward for drive motors
-  private final SimpleMotorFeedforward m_feedforward =
-      new SimpleMotorFeedforward(kSVolts, kVSecondsPerMeter, kASecondsSquaredPerMeter);
+  // Linear system model of drivetrain
+  private final LinearSystem<N2, N2, N2> m_drivetrainPlant =
+      LinearSystemId.identifyDrivetrainSystem(kVLinear, kALinear, kVAngular, kAAngular);
 
-  // Used to approximate acceleration for feedforward purposes
-  private double m_previousLeftVelocity = 0;
-  private double m_previousRightVelocity = 0;
+  // Feedforward based on above linear system
+  private final LinearPlantInversionFeedforward<N2, N2, N2> m_feedforward =
+      new LinearPlantInversionFeedforward<>(m_drivetrainPlant, 0.02);
 
   // This allows us to read angle information from the NavX
   private final AHRS m_navx = new AHRS(SPI.Port.kMXP);
@@ -198,34 +205,28 @@ public class DrivetrainSubsystem extends SubsystemBase {
    * @param rightVelocity The velocity of the right wheels, in meters per second.
    */
   public void tankDriveVelocities(double leftVelocity, double rightVelocity) {
-    // Calculate feedforward voltages for both sides, approximating acceleration by using 0.02 (the
-    // default TimedRobot period) as the change in time
-    double leftFeedforward =
-        m_feedforward.calculate(leftVelocity, (leftVelocity - m_previousLeftVelocity) / 0.02);
-    double rightFeedforward =
-        m_feedforward.calculate(rightVelocity, (rightVelocity - m_previousRightVelocity) / 0.02);
+    // Use a linear model of the drivetrain to calculate feedforward voltages
+    // TODO: Handle cases where the feedforward voltage is over 12V
+    Matrix<N2, N1> velocities =
+        new MatBuilder<>(Nat.N2(), Nat.N1()).fill(leftVelocity, rightVelocity);
+    Matrix<N2, N1> feedforwards = m_feedforward.calculate(velocities);
 
     // Command the motors at the above feedforward voltages, using PID to correct for error
     m_leftController.setReference(
-        leftVelocity, CANSparkMax.ControlType.kVelocity, 0, leftFeedforward);
+        leftVelocity, CANSparkMax.ControlType.kVelocity, 0, feedforwards.get(0, 0));
     m_rightController.setReference(
-        rightVelocity, CANSparkMax.ControlType.kVelocity, 0, rightFeedforward);
+        rightVelocity, CANSparkMax.ControlType.kVelocity, 0, feedforwards.get(1, 0));
 
     // Feed the DifferentialDrive motor safety timer so it doesn't complain
     m_drive.feedWatchdog();
-
-    // Update previous velocities
-    m_previousLeftVelocity = leftVelocity;
-    m_previousRightVelocity = rightVelocity;
   }
 
   /**
    * Resets the previous velocities used for feedforward calculations in {@link
    * #tankDriveVelocities(double, double)}.
    */
-  public void resetPreviousVelocities() {
-    m_previousLeftVelocity = 0;
-    m_previousRightVelocity = 0;
+  public void resetFeedforward() {
+    m_feedforward.reset();
   }
 
   /** Stops all drive motors. */

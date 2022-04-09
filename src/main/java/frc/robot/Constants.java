@@ -132,6 +132,13 @@ public final class Constants {
     public static final double kMaxVelocityMetersPerSecond = 2;
     public static final double kMaxAccelerationMetersPerSecondSquared = 1.5;
 
+    // Feedforward constants obtained from SysId
+    public static final double kVLinear = 2.0522; // V*s/m
+    public static final double kALinear = 0.4259; // V*s^2/m
+
+    public static final double kVAngular = 2.1981; // V*s/m
+    public static final double kAAngular = 0.20213; // V*s^2/m
+
     // Split PID-related constants based on whether robot is turning/going straight
     public static final class StraightPID {
       // Basic PID constants (obtained from SysId)
@@ -144,8 +151,6 @@ public final class Constants {
 
       // Feedforward constants obtained from SysId (repeated from Ramsete class)
       public static final double kSVolts = 0.17129;
-      public static final double kVSecondsPerMeter = 2.0522;
-      public static final double kASecondsSquaredPerMeter = 0.4259;
 
       // TODO: Check if these are still necessary to set, since these might be the default values
       public static final double kMaxOutput = 1;
@@ -162,9 +167,8 @@ public final class Constants {
       public static final double kMaxVelocityDegreesPerSecond = 360 / 5;
       public static final double kMaxAccelerationDegreesPerSecondSquared = 240;
 
-      // Feedforward (both in power units, i.e. on [0, 1])
-      public static final double kS = 0.058;
-      public static final double kVDegreesPerSecond = 0.0008;
+      // Feedforward
+      public static final double kS = 0.36201;
 
       public static final double kTurnToleranceDeg = 3.0;
       public static final double kTurnRateToleranceDegPerS = 20.0;

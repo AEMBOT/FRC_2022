@@ -218,6 +218,26 @@ public class RobotContainer {
   }
 
   /**
+   * Resets all subsystems to a stable state, with motors not moving and PID setpoints to zero, if
+   * applicable. Meant to be called in {@link Robot#disabledInit()}.
+   */
+  public void resetSubsystems() {
+    // Stop drive motors & reset internal feedforward
+    m_robotDrive.stopMotors();
+    m_robotDrive.resetFeedforward();
+
+    // Stop running the shooter flywheels
+    m_shooterSubsystem.stopShooter();
+
+    // Stop the indexer belts
+    m_indexerSubsystem.stopBelts();
+
+    // Stop the intake roller/lift
+    m_intakeSubsystem.stopRoller();
+    m_intakeSubsystem.stopLift();
+  }
+
+  /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous

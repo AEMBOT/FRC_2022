@@ -48,12 +48,4 @@ public class FollowTrajectory extends RamseteCommand {
     // This is necessary to track the trajectory properly
     m_drive.resetOdometryAndEncoders(m_trajectory.getInitialPose());
   }
-
-  @Override
-  public void end(boolean interrupted) {
-    super.end(interrupted);
-
-    // Reset previous encoder velocities for acceleration calculations
-    m_drive.resetPreviousVelocities();
-  }
 }
