@@ -32,6 +32,6 @@ public class AlignWithHub extends SequentialCommandGroup {
   // @Override
   // public void end(boolean interrupted) {
   //   super.end(interrupted);
-  //   m_limelight.setLEDMode(LEDMode.Off);
+  //   m_limelight.setLEDMode(LEDMode.ForceOff);
   // }
 }

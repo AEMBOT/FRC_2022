@@ -81,7 +81,7 @@ public class RampThenShoot extends SequentialCommandGroup {
   @Override
   public void initialize() {
     super.initialize();
-    m_limelight.setLEDMode(LEDMode.On);
+    m_limelight.setLEDMode(LEDMode.ForceOn);
   }
 
   @Override
@@ -89,6 +89,6 @@ public class RampThenShoot extends SequentialCommandGroup {
     super.end(interrupted);
 
     // Turn off the limelight LED after finishing
-    // m_limelight.setLEDMode(LEDMode.Off);
+    // m_limelight.setLEDMode(LEDMode.ForceOff);
   }
 }

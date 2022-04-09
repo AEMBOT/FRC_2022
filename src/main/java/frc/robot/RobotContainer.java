@@ -162,7 +162,7 @@ public class RobotContainer {
   /** Configures the secondary USB camera & Limelight port forwarding. */
   private void setupCameras() {
     // Turn on the limelight's LEDs
-    m_limelight.setLEDMode(LEDMode.On);
+    m_limelight.setLEDMode(LEDMode.ForceOn);
 
     // Set up USB (rear-facing) camera
     UsbCamera camera = CameraServer.startAutomaticCapture();

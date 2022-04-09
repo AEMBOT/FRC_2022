@@ -9,9 +9,9 @@ public class Limelight {
   /** An enum to represent the LED mode of the Limelight. */
   public static enum LEDMode {
     Pipeline(0),
-    Off(1),
-    Blink(2),
-    On(3);
+    ForceOff(1),
+    ForceBlink(2),
+    ForceOn(3);
 
     public int value;
 
