@@ -11,6 +11,8 @@ import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.LinearPlantInversionFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
@@ -207,15 +209,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
   public void tankDriveVelocities(double leftVelocity, double rightVelocity) {
     // Use a linear model of the drivetrain to calculate feedforward voltages
     // TODO: Handle cases where the feedforward voltage is over 12V
-    Matrix<N2, N1> velocities =
-        new MatBuilder<>(Nat.N2(), Nat.N1()).fill(leftVelocity, rightVelocity);
+    Vector<N2> velocities = VecBuilder.fill(leftVelocity, rightVelocity);
     Matrix<N2, N1> feedforwards = m_feedforward.calculate(velocities);
+
+    double leftVolts = feedforwards.get(0, 0);
+    double rightVolts = feedforwards.get(1, 0);
 
     // Command the motors at the above feedforward voltages, using PID to correct for error
     m_leftController.setReference(
-        leftVelocity, CANSparkMax.ControlType.kVelocity, 0, feedforwards.get(0, 0));
+        leftVelocity, CANSparkMax.ControlType.kVelocity, 0, leftVolts);
     m_rightController.setReference(
-        rightVelocity, CANSparkMax.ControlType.kVelocity, 0, feedforwards.get(1, 0));
+        rightVelocity, CANSparkMax.ControlType.kVelocity, 0, rightVolts);
 
     // Feed the DifferentialDrive motor safety timer so it doesn't complain
     m_drive.feedWatchdog();

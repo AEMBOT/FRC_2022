@@ -129,8 +129,9 @@ public final class Constants {
     public static final double kMaxRotationPower = 0.6;
 
     // Max velocity & acceleration during automonous driving
-    public static final double kMaxVelocityMetersPerSecond = 2;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 1.5;
+    public static final double kMaxVelocityMetersPerSecond = 5;
+    // This could theoretically be 3 but 2 should be tested first
+    public static final double kMaxAccelerationMetersPerSecondSquared = 2;
 
     // Feedforward constants obtained from SysId
     public static final double kVLinear = 2.0522; // V*s/m
