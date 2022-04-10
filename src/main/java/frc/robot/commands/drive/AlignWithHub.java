@@ -1,11 +1,13 @@
 package frc.robot.commands.drive;
 
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.hardware.Limelight;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 /** A command that aligns the robot (specifically the shooter) with the central hub. */
-public class AlignWithHub extends TurnDegrees {
+public class AlignWithHub extends SequentialCommandGroup {
   private Limelight m_limelight;
+  private double m_goalAngle;
 
   /**
    * Constructs an AlignWithHub command, which uses the Limelight to align the robot with the hub in
@@ -15,15 +17,16 @@ public class AlignWithHub extends TurnDegrees {
    * @param drive The robot's drive subsystem
    */
   public AlignWithHub(Limelight limelight, DrivetrainSubsystem drive) {
-    super(() -> -limelight.getX(), drive);
-
     m_limelight = limelight;
+    addCommands(new TurnDegrees(() -> this.m_goalAngle, drive));
   }
 
   @Override
   public void initialize() {
     super.initialize();
-    // m_limelight.setLEDMode(LEDMode.On);
+
+    // Only fetch the hub angle when the command is first scheduled
+    m_goalAngle = -m_limelight.getX();
   }
 
   // @Override
