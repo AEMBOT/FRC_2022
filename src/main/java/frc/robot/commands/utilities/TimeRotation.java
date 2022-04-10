@@ -3,15 +3,22 @@ package frc.robot.commands.utilities;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem;
 
+/** A command that times how long it takes for the robot to rotate ~360 degrees. */
 public class TimeRotation extends CommandBase {
-  private DriveSubsystem m_drive;
+  private DrivetrainSubsystem m_drive;
   private double m_power;
   private final Timer m_timer = new Timer();
 
-  // TODO: Rewrite this command to be more accurate
-  public TimeRotation(double power, DriveSubsystem drive) {
+  /**
+   * Constructs a new TimeRotation command, which times how long it takes for the robot to rotate
+   * ~360 degrees at a specific power.
+   *
+   * @param power The power to rotate the robot at
+   * @param drive The robot's drive subsystem
+   */
+  public TimeRotation(double power, DrivetrainSubsystem drive) {
     m_power = power;
     m_drive = drive;
 

@@ -1,27 +1,39 @@
 package frc.robot.commands.drive;
 
-import static frc.robot.Constants.DriveConstants.TurnPID.*;
+import static frc.robot.Constants.DrivetrainConstants.TurnPID.*;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem;
 import java.util.function.DoubleSupplier;
 
+/** A command that turns the robot the specified number of degrees. */
 public class TurnDegrees extends ProfiledPIDCommand {
-
+  // Feedforward - converts angular velocities to power outputs
   private static final SimpleMotorFeedforward m_feedforward =
       new SimpleMotorFeedforward(kS, kVDegreesPerSecond);
-  private DriveSubsystem m_drive;
 
-  /** Turns the specified number of degrees. */
-  public TurnDegrees(double goalAngle, DriveSubsystem drive) {
-    this(() -> goalAngle, drive);
+  private DrivetrainSubsystem m_drive;
+
+  /**
+   * Turns the specified number of degrees.
+   *
+   * @param degrees The number of degrees to turn
+   * @param drive The robot's drive subsystem
+   */
+  public TurnDegrees(double degrees, DrivetrainSubsystem drive) {
+    this(() -> degrees, drive);
   }
 
-  /** Turns the number of degrees supplied by goalAngle when this command is run. */
-  public TurnDegrees(DoubleSupplier goalAngle, DriveSubsystem drive) {
+  /**
+   * Turns the number of degrees supplied by angleSupplier when this command is run.
+   *
+   * @param angleSupplier A method to run in order to obtain the angle to turn to
+   * @param drive The robot's drive subsystem
+   */
+  public TurnDegrees(DoubleSupplier angleSupplier, DrivetrainSubsystem drive) {
     super(
         new ProfiledPIDController(
             kP,
@@ -29,20 +41,16 @@ public class TurnDegrees extends ProfiledPIDCommand {
             kD,
             new TrapezoidProfile.Constraints(
                 kMaxVelocityDegreesPerSecond, kMaxAccelerationDegreesPerSecondSquared)),
-        drive::getHeading,
-        goalAngle,
+        drive::getAngle,
+        angleSupplier,
         (output, setpoint) ->
-            drive.arcadeDrive(0, output + m_feedforward.calculate(setpoint.velocity), false),
+            drive.arcadeDrive(0, -(output + m_feedforward.calculate(setpoint.velocity)), false),
         drive);
 
     m_drive = drive;
 
-    // Make gyro values wrap around to avoid taking the long route to an angle
-    getController().enableContinuousInput(-180, 180);
-
-    // Set the controller tolerance - the delta tolerance ensures the robot is stationary at the
-    // setpoint before it is considered as having reached the reference
-    getController().setTolerance(kTurnToleranceDeg, kTurnRateToleranceDegPerS);
+    // Set the controller position & velocity tolerances
+    m_controller.setTolerance(kTurnToleranceDeg, kTurnRateToleranceDegPerS);
   }
 
   @Override
@@ -53,20 +61,8 @@ public class TurnDegrees extends ProfiledPIDCommand {
   }
 
   @Override
-  public void execute() {
-    // SmartDashboard.putNumber("Setpoint Velocity", getController().getSetpoint().velocity);
-    // SmartDashboard.putNumber(
-    //     "Current Velocity",
-    //     super.getController().getSetpoint().velocity + getController().getVelocityError());
-    // SmartDashboard.putNumber(
-    //     "Profiled turn power", m_feedforward.calculate(getController().getSetpoint().velocity));
-
-    super.execute();
-  }
-
-  @Override
   public boolean isFinished() {
     // The command finishes once the robot is done turning
-    return getController().atGoal();
+    return m_controller.atGoal();
   }
 }

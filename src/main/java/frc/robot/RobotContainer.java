@@ -27,7 +27,8 @@ import frc.robot.commands.autonomous.TaxiThenShoot;
 import frc.robot.commands.climber.ClimbTimed;
 import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.DefaultDrive;
-import frc.robot.commands.indexer.RunUpperIndexer;
+import frc.robot.commands.indexer.RunIndexer;
+import frc.robot.commands.intake.IntakeCargo;
 import frc.robot.commands.intake.LiftIntake;
 import frc.robot.commands.intake.LowerIntake;
 import frc.robot.commands.intake.RunIntakeRoller;
@@ -36,7 +37,7 @@ import frc.robot.commands.utilities.enums.CargoDirection;
 import frc.robot.hardware.Limelight;
 import frc.robot.hardware.Limelight.LEDMode;
 import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -52,7 +53,7 @@ public class RobotContainer {
   private final Limelight m_limelight = new Limelight();
 
   // Robot subsystems (see subsystems/ folder for more info)
-  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final DrivetrainSubsystem m_robotDrive = new DrivetrainSubsystem();
   private final ShooterSubsystem m_shooterSubsystem = new ShooterSubsystem(m_limelight);
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final IndexerSubsystem m_indexerSubsystem = new IndexerSubsystem();
@@ -117,9 +118,7 @@ public class RobotContainer {
 
     // Climb sequence - Start Button
     new JoystickButton(m_driverController, Button.kStart.value)
-        .whenPressed(
-            new ClimbTimed(
-                m_climberSubsystem, m_intakeSubsystem, m_driverController::getStartButtonPressed));
+        .whenPressed(new ClimbTimed(m_climberSubsystem, m_driverController::getStartButtonPressed));
 
     // SECONDARY CONTROLLER
 
@@ -148,22 +147,22 @@ public class RobotContainer {
     dpadUp.whenActive(m_shooterSubsystem::incrementRPMOffset, m_shooterSubsystem);
     dpadDown.whenActive(m_shooterSubsystem::decrementRPMOffset, m_shooterSubsystem);
 
-    // Run the intake roller & lower indexer belts
+    // Run the intake roller & lower indexer belts to intake cargo - A
     new JoystickButton(m_secondaryController, Button.kA.value)
-        .whileHeld(new RunIntakeRoller(m_intakeSubsystem, CargoDirection.Intake));
+        .whileHeld(new IntakeCargo(m_indexerSubsystem, m_intakeSubsystem));
 
-    // Eject any cargo in the indexer/intake
+    // Eject any cargo in the indexer/intake - X
     new JoystickButton(m_secondaryController, Button.kX.value)
         .whileHeld(
             new ParallelCommandGroup(
                 new RunIntakeRoller(m_intakeSubsystem, CargoDirection.Eject),
-                new RunUpperIndexer(m_indexerSubsystem, CargoDirection.Eject)));
+                new RunIndexer(m_indexerSubsystem, CargoDirection.Eject)));
   }
 
   /** Configures the secondary USB camera & Limelight port forwarding. */
   private void setupCameras() {
     // Turn on the limelight's LEDs
-    m_limelight.setLEDMode(LEDMode.On);
+    m_limelight.setLEDMode(LEDMode.ForceOn);
 
     // Set up USB (rear-facing) camera
     UsbCamera camera = CameraServer.startAutomaticCapture();
@@ -199,6 +198,12 @@ public class RobotContainer {
 
     // Put the toggle onto the dashboard
     SmartDashboard.putBoolean("Enable Compressor", m_compressorEnabled);
+  }
+
+  /** Retracts the climber pistons and sets them to a vertical position. */
+  public void resetClimber() {
+    m_climberSubsystem.retractArms();
+    m_climberSubsystem.setPistonsVertical();
   }
 
   /** Clears all sticky faults on the PCM and PDP. */

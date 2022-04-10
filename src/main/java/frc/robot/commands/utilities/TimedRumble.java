@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
+/** A command that rumbles an Xbox controller for a specific amount of time. */
 public class TimedRumble extends CommandBase {
   // A timer to keep track of how long the controller has been rumbling
   private final Timer m_timer = new Timer();

@@ -15,25 +15,36 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.hardware.Limelight;
 import frc.robot.utilities.ShooterMath;
 
+/**
+ * A subsystem that's responsible for control of the shooter, either manually or using the
+ * Limelight.
+ */
 public class ShooterSubsystem extends SubsystemBase {
-
-  // Flywheel motors & related devices
+  // Flywheel motors
   private static CANSparkMax m_leftFlywheelMotor =
       new CANSparkMax(kLeftMotorCANId, MotorType.kBrushless);
   private static CANSparkMax m_rightFlywheelMotor =
       new CANSparkMax(kRightMotorCANId, MotorType.kBrushless);
 
+  // The encoder & PID controller only have to be fetched from one motor, since the other follows it
   private RelativeEncoder m_flywheelEncoder = m_leftFlywheelMotor.getEncoder();
   private SparkMaxPIDController m_mainPIDController = m_leftFlywheelMotor.getPIDController();
 
   // Limelight for vision processing
   private Limelight m_limelight;
 
+  // An RPM offset that can be changed on the fly in case the shooter is consistently
+  // over/undershooting
   private double m_rpmOffset = 0;
 
-  /** Creates a new ArcShooter. */
+  /**
+   * Creates a new ShooterSubsystem, configuring the flywheel motors & storing a reference to the
+   * Limelight.
+   *
+   * @param limelight The robot's {@link Limelight} instance
+   */
   public ShooterSubsystem(Limelight limelight) {
-    // Restore motor factory defaults without persisting
+    // Restore motor factory defaults for consistent settings
     m_leftFlywheelMotor.restoreFactoryDefaults();
     m_rightFlywheelMotor.restoreFactoryDefaults();
 
@@ -52,19 +63,15 @@ public class ShooterSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // FIXME: This might not play well with teleop control of the shooter
-    // targetPower = SmartDashboard.getNumber("Shooter Target Power", targetPower);
-    // runAtRPM(targetPower);
-
-    updateDashboard();
+    // Display the current flywheel velocity on the dashboard
+    // SmartDashboard.putNumber("Shooter Velocity", getFlywheelRPM());
   }
 
-  private void updateDashboard() {
-    // The current flywheel speed
-    // SmartDashboard.putNumber("Shooter Current Power", getFlywheelRPM());
-    // SmartDashboard.putNumber("Shooter Target Power", targetPower);
-  }
-
+  /**
+   * Sets the PIDF constants for the given {@link SparkMaxPIDController}.
+   *
+   * @param controller The {@link SparkMaxPIDController} controller to configure
+   */
   private void setSmartMotionConstants(SparkMaxPIDController controller) {
     controller.setP(kP);
     controller.setI(kI);
@@ -72,11 +79,6 @@ public class ShooterSubsystem extends SubsystemBase {
     controller.setD(kD);
     controller.setFF(kFF);
     controller.setOutputRange(kMinOutput, kMaxOutput);
-
-    int smartMotionSlot = 0;
-    controller.setSmartMotionMaxVelocity(kMaxVel, smartMotionSlot);
-    controller.setSmartMotionMinOutputVelocity(kMinVel, smartMotionSlot);
-    controller.setSmartMotionMaxAccel(kMaxAcc, smartMotionSlot);
   }
 
   /** Get the current flywheel RPM. */
@@ -98,13 +100,16 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   /** Runs the shooter at a given RPM using the Limelight */
-  // TODO: Find a better name for this method
   public void runAtCalibratedRPM() {
     double rpm = getTargetRPM();
     runAtRPM(rpm);
   }
 
-  /** Runs the shooter flywheels at the given RPM. */
+  /**
+   * Runs the shooter flywheels at the given RPM.
+   *
+   * @param rpm The speed in RPM to run the shooter flywheels at
+   */
   public void runAtRPM(double rpm) {
     m_mainPIDController.setReference(rpm + m_rpmOffset, ControlType.kVelocity);
   }
@@ -120,10 +125,13 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   // MANUAL RPM COMPENSATION
+
+  /** Increments the manual RPM offset by 50rpm. */
   public void incrementRPMOffset() {
     m_rpmOffset += 50;
   }
 
+  /** Decrements the manual RPM offset by 50rpm. */
   public void decrementRPMOffset() {
     m_rpmOffset -= 50;
   }

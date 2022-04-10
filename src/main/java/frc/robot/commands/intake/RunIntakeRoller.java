@@ -9,6 +9,12 @@ public class RunIntakeRoller extends CommandBase {
   private IntakeSubsystem m_intake;
   private Runnable m_runIntake;
 
+  /**
+   * Constructs a RunInakeRoller command to run the intake roller during teleop.
+   *
+   * @param intake The robot's intake subsystem
+   * @param direction The direction to move cargo
+   */
   public RunIntakeRoller(IntakeSubsystem intake, CargoDirection direction) {
     m_intake = intake;
     addRequirements(m_intake);

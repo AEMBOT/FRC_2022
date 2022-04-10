@@ -92,6 +92,9 @@ public class Robot extends TimedRobot {
 
     // Clear PCM and PDP sticky faults upon enabling test mode
     m_robotContainer.clearAllStickyFaults();
+
+    // Resets the climber to its retracted & vertical state
+    m_robotContainer.resetClimber();
   }
 
   /** This function is called periodically during test mode. */

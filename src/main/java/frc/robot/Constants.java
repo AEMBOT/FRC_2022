@@ -15,7 +15,7 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  /** Solenoid ports on the PCM */
+  /** Solenoid ports on the PCM for use in the climber subsystem. */
   public final class ClimberConstants {
     public static final int kClimbSolenoidRightRetract = 2;
     public static final int kClimbSolenoidRightExtend = 1;
@@ -28,18 +28,17 @@ public final class Constants {
     public static final int kAngleSolenoid = 3;
   }
 
+  /** Shooter-related constants, including CAN IDs and PIDF coefficients. */
   public static final class ShooterConstants {
     public static final int kLeftMotorCANId = 13;
     public static final int kRightMotorCANId = 14;
 
-    public static final double kP = 6e-5; // 1.7637e-8;
+    // PIDF constants for velocity closed loop control
+    public static final double kP = 6e-5;
     public static final double kI = 0;
     public static final double kIZone = 0;
     public static final double kD = 0.0000;
     public static final double kFF = 0.000183;
-    public static final double kMaxVel = 5700;
-    public static final double kMinVel = 0;
-    public static final double kMaxAcc = 1500;
     public static final double kMaxOutput = 1;
     public static final double kMinOutput = -1;
 
@@ -50,28 +49,33 @@ public final class Constants {
     public static final double kRPMTolerance = 50;
   }
 
+  /**
+   * Intake-related constants, including motors powers, current limits, & the intake lift range of
+   * motion.
+   */
   public static final class IntakeConstants {
     // CAN IDs for intake-related motors
     public static final int kCANRollerID = 7;
     public static final int kCANLiftID = 8;
-    public static final int kCANInnerRollerID = 9;
-    public static final int kCANIndexerLowerBottomBeltID = 11;
 
     // Powers for moving various parts of the intake
     public static final double kRollerPower = 0.5;
-    public static final double kLiftRaisingPower = 0.1;
+    public static final double kLiftRaisingPower = 0.2;
     public static final double kLiftLoweringPower = -0.2;
 
     // Current limit for when the intake is fully up
-    public static final int kLiftMaxExpectedCurrent = 30;
+    public static final int kLiftMaxExpectedCurrent = 35;
 
     public static final double kLiftRangeOfMotion = 8; // rotations
   }
 
+  /** Indexer motor CAN IDs as well as color sensor tolerances for detecting cargo. */
   public static final class IndexerConstants {
     // Motor CAN IDs
     public static final int kCANIndexerUpperBottomBeltID = 12;
-    public static final int kCANIndexerTopBeltID = 10;
+    public static final int kCANIndexerUpperTopBeltID = 10;
+    public static final int kCANIndexerLowerBottomBeltID = 11;
+    public static final int kCANIndexerLowerTopBeltID = 9;
 
     // COLOR SENSOR
     public static final int kCargoMinProximity = 300;
@@ -93,70 +97,38 @@ public final class Constants {
     public static final double kMaxRedValue = 10;
   }
 
-  public static final class DriveConstants {
-    // Measurements for Spark Max conversion factors
+  /**
+   * Drivetrain-related constants, including several subclasses for PID-controlled/motion-profiled
+   * motion.
+   */
+  public static final class DrivetrainConstants {
+    // Drivetrain measurements
     public static final double kWheelCircumferenceMeters = Units.inchesToMeters(Math.PI * 6);
+
+    // This is the same as the gear ratio for the drive motor gearboxes
     public static final double kMotorRotationsPerWheelRotation = 7.56;
 
+    // Encoder conversions
     public static final double kMetersPerMotorRotation =
         kWheelCircumferenceMeters / kMotorRotationsPerWheelRotation;
     public static final double kRPMToMetersPerSecond =
         kMetersPerMotorRotation / 60; // 60 seconds per minute
 
     // Motor controller ports (on Tupperware)
-    public static final int kLeftFront = 4;
-    public static final int kLeftCenter = 5;
-    public static final int kLeftBack = 6;
+    // FIXME: Front/back IDs might be swapped (not that it affects anything)
+    public static final int kLeftFront = 1;
+    public static final int kLeftCenter = 2;
+    public static final int kLeftBack = 3;
 
-    public static final int kRightFront = 1;
-    public static final int kRightCenter = 2;
-    public static final int kRightBack = 3;
+    public static final int kRightFront = 4;
+    public static final int kRightCenter = 5;
+    public static final int kRightBack = 6;
 
     // Speed/power limits during teleop
     public static final double kMaxForwardPower = 1.0;
     public static final double kMaxRotationPower = 0.6;
 
-    // Split PID-related constants based on whether robot is turning/going straight
-    public static final class StraightPID {
-      // Basic PID constants
-      public static final double kP = 0;
-      public static final double kI = 0;
-      public static final double kD = 0;
-
-      // Profiling
-      public static final double kMaxVelocityMetersPerSecond = .1;
-      public static final double kMaxAccelerationMeterPerSecondSquared = 5;
-
-      // Feedforward
-      public static final double kSVolts = 0.05; // Power!! for now
-      public static final double kVVoltMetersPerSecond = 0.269 / 0.8856;
-
-      // PID tolerances
-      public static final double kDriveToleranceMeters = 0.1;
-      public static final double kDriveVelocityToleranceMetersPerSecond = 0.2;
-    }
-
-    public static final class TurnPID {
-      public static final double kP = 0.006;
-      public static final double kI = 0;
-      public static final double kD = 0;
-
-      // For use with encoder-based turning
-      public static final double kMetersPerDegree = 0.0075;
-
-      // Profiling
-      public static final double kMaxVelocityDegreesPerSecond = 360 / 5;
-      public static final double kMaxAccelerationDegreesPerSecondSquared = 240;
-
-      // Feedforward (both in power units, i.e. on [-1, 1])
-      public static final double kS = 0.058;
-      public static final double kVDegreesPerSecond = 0.0008;
-
-      public static final double kTurnToleranceDeg = 3.0;
-      public static final double kTurnRateToleranceDegPerS = 20.0;
-    }
-
-    // Spark MAX Smart Motion constants
+    /** Spark MAX Smart Motion constants for drive motors. */
     public static final class SmartMotion {
       // PIDF constants
       public static final double kP = 0;
@@ -175,8 +147,47 @@ public final class Constants {
       public static final double kMaxVel = 2000;
       public static final double kMaxAcc = 1500;
     }
+
+    /** PID/Motion profiling constants for driving straight (used in DriveStraightProfiled). */
+    public static final class StraightPID {
+      // Basic PID constants
+      public static final double kP = 0;
+      public static final double kI = 0;
+      public static final double kD = 0;
+
+      // Profiling
+      public static final double kMaxVelocityMetersPerSecond = 2;
+      public static final double kMaxAccelerationMeterPerSecondSquared = 1.5;
+
+      // Feedforward (in power units)
+      public static final double kS = 0.05;
+      public static final double kVSecondsPerMeter = 0.269 / 0.8856;
+
+      // PID tolerances
+      public static final double kDriveToleranceMeters = 0.05;
+      public static final double kDriveVelocityToleranceMetersPerSecond = 0.2;
+    }
+
+    /** PID/motion profiling constants for turning in place (used in TurnDegrees). */
+    public static final class TurnPID {
+      public static final double kP = 0.006;
+      public static final double kI = 0;
+      public static final double kD = 0;
+
+      // Profiling
+      public static final double kMaxVelocityDegreesPerSecond = 360 / 5;
+      public static final double kMaxAccelerationDegreesPerSecondSquared = 240;
+
+      // Feedforward (both in power units, i.e. on [0, 1])
+      public static final double kS = 0.058;
+      public static final double kVDegreesPerSecond = 0.0008;
+
+      public static final double kTurnToleranceDeg = 3.0;
+      public static final double kTurnRateToleranceDegPerS = 20.0;
+    }
   }
 
+  /** Controller ports & deadbands. */
   public static final class ControllerConstants {
     // Controller ports
     public static final int kDriverPort = 0;

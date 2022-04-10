@@ -9,121 +9,110 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.ClimberSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 import java.util.function.BooleanSupplier;
 
+/**
+ * A command that progresses through a mid-high-traversal climb sequence. Advancement is done via a
+ * button press, but extension/retraction timings are handled programmatically.
+ */
 public class ClimbTimed extends SequentialCommandGroup {
-
-  public ClimbTimed(
-      ClimberSubsystem climber, IntakeSubsystem intake, BooleanSupplier condition_button_press) {
-
-    addRequirements(climber, intake);
-
+  /**
+   * Constructs a ClimbTimed command, which progresses through a mid-high-traversal climb sequence
+   * using button presses.
+   *
+   * @param climber The robot's climber subsystem
+   * @param triggerAdvance The method to trigger an advance in the climbing sequence (normally a
+   *     button press)
+   */
+  public ClimbTimed(ClimberSubsystem climber, BooleanSupplier triggerAdvance) {
+    // NOTE: The pressure cutoffs are done to conserve air, which allows us to reach traversal
     addCommands(
-        // Default state
-        new InstantCommand(climber::setRetracting, climber),
-        new InstantCommand(climber::verticalMainCylinders, climber),
-        new WaitUntilCommand(condition_button_press),
+        // Default state (arms retracted & vertical)
+        new InstantCommand(climber::retractArms, climber),
+        new InstantCommand(climber::setPistonsVertical, climber),
 
-        // Take over intake and lower it for the rest of the climb
-        // new RunIntakeWinchToPosition(intake, Constants.IntakeConstants.kWinchLoweredPosition),
+        // MID CLIMB
 
-        // send hooks up
-        new InstantCommand(climber::setExtending, climber),
-        new WaitCommand(1.0),
-        new InstantCommand(climber::setCoasting, climber),
-        new WaitCommand(2),
-        new WaitUntilCommand(condition_button_press),
-
-        // retract hooks
-        new InstantCommand(climber::setRetracting, climber),
-        new WaitCommand(2.2),
-        new InstantCommand(climber::setCoasting, climber),
+        // Fully extend arms, cutting off air early to conserve it
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::extendArms, climber),
         new WaitCommand(1),
-        new WaitUntilCommand(condition_button_press),
+        new InstantCommand(climber::cutOffPressure, climber),
+        new WaitCommand(2),
 
-        // send hooks up
-        new InstantCommand(climber::setExtending, climber),
+        // Retract the hooks, presumably after the driver positions the bot correctly
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::retractArms, climber),
+        new WaitCommand(2.2),
+        new InstantCommand(climber::cutOffPressure, climber),
+        new WaitCommand(1),
 
-        // ---attach chin here
-        // ---robot should now be hanging from first bar
-        // But do it slowly-ish to prevent bouncing!
+        // HIGH CLIMB
+
+        // Extend the arms a bit to let go with the piston hooks (acrylic ones should still be on)
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::extendArms, climber),
         new WaitCommand(0.25),
+        new InstantCommand(climber::cutOffPressure, climber),
 
-        //////////////////////
-        // REMOVE ME AFTER INITIAL TESTING
-        new InstantCommand(climber::setCoasting, climber),
-        new WaitUntilCommand(condition_button_press),
-        //////////////////////
+        // Angle the arms to allow them to hook on to the high bar
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::setPistonsAngled, climber),
 
-        // angle hooks
-        // start angling a little after main cylinders start extending (want the hooks to disengage)
-        new InstantCommand(climber::angleMainCylinders, climber),
-        new WaitUntilCommand(condition_button_press),
-
-        // Choose to not angle and extend at the same time for right now
-        new InstantCommand(climber::setExtending, climber),
-
-        // hooks are offset, aligned for second bar
-
-        // continue to send main cylinders up (to full length)
+        // Extend the arms (the driver should do this after they are angled properly)
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::extendArms, climber),
         new WaitCommand(0.85),
-        new InstantCommand(climber::setCoasting, climber),
+        new InstantCommand(climber::cutOffPressure, climber),
         new WaitCommand(2.0),
-        new WaitUntilCommand(condition_button_press),
 
-        // adjust angle to attach hooks to second bar
-        new InstantCommand(climber::verticalMainCylinders, climber),
-        new WaitUntilCommand(condition_button_press),
+        // Angle the arms vertically again, making them hit the bar
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::setPistonsVertical, climber),
 
-        // retract hooks all the way
-        new InstantCommand(climber::setRetracting, climber),
+        // Retract the hooks, grabbing onto the high bar
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::retractArms, climber),
         new WaitCommand(1.0),
-        new InstantCommand(climber::setCoasting, climber),
+        new InstantCommand(climber::cutOffPressure, climber),
+
+        // This is done to let the robot's swinging subside a bit to avoid only hooking on with one
+        // side of the climber
         new WaitCommand(2.5),
-        new InstantCommand(climber::setRetracting, climber),
+        new InstantCommand(climber::retractArms, climber),
         new WaitCommand(1.5),
-        new InstantCommand(climber::setCoasting, climber),
+        new InstantCommand(climber::cutOffPressure, climber),
 
-        /// REPEATED FROM ABOVE, except for slight "wait" differences
-        new WaitUntilCommand(condition_button_press),
+        // TRAVERSAL CLIMB
 
-        // send hooks up
-        new InstantCommand(climber::setExtending, climber),
-
-        // ---attach chin here
-        // ---robot should now be hanging from first bar
-        // But do it slowly-ish to prevent bouncing!
+        // Unhook the pistons, leaving the acrylic hooks in place
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::extendArms, climber),
         new WaitCommand(0.4),
-        //////////////////
-        // REMOVE ME
-        new InstantCommand(climber::setCoasting, climber),
-        new WaitUntilCommand(condition_button_press),
-        //////////////////
+        new InstantCommand(climber::cutOffPressure, climber),
 
-        // angle hooks
-        // start angling a little after main cylinders start extending (want the hooks to disengage)
-        new InstantCommand(climber::angleMainCylinders, climber),
-        new WaitUntilCommand(condition_button_press),
+        // Angle the climber arms to allow them to hook onto the traversal bar
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::setPistonsAngled, climber),
 
-        // Choose to not angle and extend at the same time for right now
-        new InstantCommand(climber::setExtending, climber),
-
-        // continue to send main cylinders up (to full length)
+        // Extend the arms
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::extendArms, climber),
         new WaitCommand(1.8),
-        new InstantCommand(climber::setCoasting, climber),
+        new InstantCommand(climber::cutOffPressure, climber),
         new WaitCommand(0.3),
 
-        // Wait for swinging to stop?? Confirm next action with button press
-        new WaitUntilCommand(condition_button_press),
+        // Return the climber arms to a vertical(ish) state so they hit the traversal bar
+        // Note that this has to be timed correctly, as otherwise they won't hook on properly
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::setPistonsVertical, climber),
 
-        // adjust angle to attach hooks to second bar
-        new InstantCommand(climber::verticalMainCylinders, climber),
-        new WaitUntilCommand(condition_button_press),
+        // Retract the hooks without a cutoff, since timings are inconsistent with so little air
+        new WaitUntilCommand(triggerAdvance),
+        new InstantCommand(climber::retractArms, climber)
 
-        // retract hooks fully
-        new InstantCommand(climber::setRetracting, climber));
-
-    // Maybe add a coast here so we don't run out of air?
+        // ???
+        // Profit
+        );
   }
 }

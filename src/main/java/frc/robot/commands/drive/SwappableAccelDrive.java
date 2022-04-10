@@ -1,17 +1,20 @@
 package frc.robot.commands.drive;
 
 import static frc.robot.Constants.ControllerConstants.*;
-import static frc.robot.Constants.DriveConstants.*;
+import static frc.robot.Constants.DrivetrainConstants.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem;
 import java.util.function.DoubleSupplier;
 
-/** Allows for swapping between two accelerations for defense and normal driving. */
+/**
+ * A command that allows for swapping between two accelerations for defense and normal driving
+ * during teleop.
+ */
 public class SwappableAccelDrive extends CommandBase {
-  private DriveSubsystem m_drive;
+  private DrivetrainSubsystem m_drive;
 
   // Left & right stick inputs from main controller
   private DoubleSupplier m_forwardInput;
@@ -33,8 +36,17 @@ public class SwappableAccelDrive extends CommandBase {
   // Used to swap between faster/slower accelerations
   private boolean m_inDefenseMode = false;
 
+  /**
+   * Constructs a SwappableAccellDrive command, which allows for swapping beteen accelerations while
+   * driving the robot during teleop.
+   *
+   * @param drive The robot's drive subsystem
+   * @param forward The input for driving the robot forward/backward (normally left stick Y)
+   * @param turning The input for turning the robot (normally right stick X)
+   * @param defenseToggle The input for toggling defense mode when held (normally right trigger)
+   */
   public SwappableAccelDrive(
-      DriveSubsystem drive,
+      DrivetrainSubsystem drive,
       DoubleSupplier forward,
       DoubleSupplier turning,
       DoubleSupplier defenseToggle) {
@@ -47,12 +59,11 @@ public class SwappableAccelDrive extends CommandBase {
 
   @Override
   public void execute() {
-    // Calculate the deadbanded forward & rotation powers
+    // Calculate the deadbanded and scaled forward/rotation powers
     double forwardPower =
         kMaxForwardPower * MathUtil.applyDeadband(-m_forwardInput.getAsDouble(), kJoystickDeadband);
     double rotationPower =
-        kMaxRotationPower
-            * MathUtil.applyDeadband(-m_turningInput.getAsDouble(), kJoystickDeadband);
+        kMaxRotationPower * MathUtil.applyDeadband(m_turningInput.getAsDouble(), kJoystickDeadband);
 
     // Apply the slew (acceleration) limiters to avoid burning the carpet/etc.
     rotationPower = m_turningSlewLimiter.calculate(rotationPower);

@@ -4,11 +4,18 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.commands.utilities.enums.CargoDirection;
 import frc.robot.subsystems.IndexerSubsystem;
 
-public class RunUpperIndexer extends CommandBase {
+/** A command that runs all indexer belts in the given direction during teleop. */
+public class RunIndexer extends CommandBase {
   private IndexerSubsystem m_indexer;
   private CargoDirection m_direction;
 
-  public RunUpperIndexer(IndexerSubsystem indexer, CargoDirection direction) {
+  /**
+   * Constructs a RunIndexer command, which runs the indexer in the given direction.
+   *
+   * @param indexer The robot's indexer subsystem
+   * @param direction The direction to move cargo in
+   */
+  public RunIndexer(IndexerSubsystem indexer, CargoDirection direction) {
     m_indexer = indexer;
     m_direction = direction;
     addRequirements(indexer);
