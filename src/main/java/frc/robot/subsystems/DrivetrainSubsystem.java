@@ -8,9 +8,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.LinearPlantInversionFeedforward;
@@ -216,10 +214,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     double rightVolts = feedforwards.get(1, 0);
 
     // Command the motors at the above feedforward voltages, using PID to correct for error
-    m_leftController.setReference(
-        leftVelocity, CANSparkMax.ControlType.kVelocity, 0, leftVolts);
-    m_rightController.setReference(
-        rightVelocity, CANSparkMax.ControlType.kVelocity, 0, rightVolts);
+    m_leftController.setReference(leftVelocity, CANSparkMax.ControlType.kVelocity, 0, leftVolts);
+    m_rightController.setReference(rightVelocity, CANSparkMax.ControlType.kVelocity, 0, rightVolts);
 
     // Feed the DifferentialDrive motor safety timer so it doesn't complain
     m_drive.feedWatchdog();
