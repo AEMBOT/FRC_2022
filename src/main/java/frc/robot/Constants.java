@@ -114,6 +114,9 @@ public final class Constants {
     public static final double kRPMToMetersPerSecond =
         kMetersPerMotorRotation / 60; // 60 seconds per minute
 
+    // Effective track width (found using sysid)
+    public static final double kEffectiveTrackWidth = 0.69883;
+
     // Motor controller ports (on Tupperware)
     // FIXME: Front/back IDs might be swapped (not that it affects anything)
     public static final int kLeftFront = 1;
@@ -176,8 +179,6 @@ public final class Constants {
     }
 
     public static final class Ramsete {
-      // Track width (found using sysid)
-      public static final double kEffectiveTrackWidth = 0.69883;
 
       // Ramsete constants
       public static final double kRamseteB = 2;

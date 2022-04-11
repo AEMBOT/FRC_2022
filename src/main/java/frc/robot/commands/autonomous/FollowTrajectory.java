@@ -1,5 +1,6 @@
 package frc.robot.commands.autonomous;
 
+import static frc.robot.Constants.DrivetrainConstants.*;
 import static frc.robot.Constants.DrivetrainConstants.Ramsete.*;
 
 import edu.wpi.first.math.controller.RamseteController;

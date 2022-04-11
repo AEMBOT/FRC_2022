@@ -6,8 +6,11 @@ import static frc.robot.Constants.DrivetrainConstants.StraightPID.*;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.REVPhysicsSim;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import edu.wpi.first.hal.SimDouble;
+import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -17,10 +20,14 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -67,7 +74,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
   // Used to display the current robot position
   private final Field2d m_field = new Field2d();
 
-  /** Creates a new DriveSubsystem, configuring its motors, encoders, and odometry. */
+  private DifferentialDrivetrainSim m_driveSim;
+  private SimDouble m_yawAngleSim;
+
+  /** Creates a new DriveSubsystem. */
   public DrivetrainSubsystem() {
     // Restore the default settings for all of the motors
     restoreMotorFactoryDefaults();
@@ -97,6 +107,28 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     // Display the robot's position on a field widget on the dashboard
     SmartDashboard.putData(m_field);
+
+    if (RobotBase.isSimulation()) {
+      // Simulate the center spark maxes on either side
+      var revPhysicsSim = REVPhysicsSim.getInstance();
+      revPhysicsSim.addSparkMax(m_centerLeftMotor, DCMotor.getNEO(3));
+      revPhysicsSim.addSparkMax(m_centerRightMotor, DCMotor.getNEO(3));
+
+      // Initialize the drivetrain simulation using SysId values & other drivetrain properties
+      m_driveSim =
+          new DifferentialDrivetrainSim(
+              m_drivetrainPlant,
+              DCMotor.getNEO(3),
+              7.56,
+              kEffectiveTrackWidth,
+              Units.inchesToMeters(3),
+              // These are a bunch of standard deviations that should probably be tuned
+              VecBuilder.fill(0.005, 0.005, 0.0001, 0.05, 0.05, 0.005, 0.005));
+
+      // Allows for the updating of the simulated robot heading read by the NavX
+      var navxHandle = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
+      m_yawAngleSim = new SimDouble(SimDeviceDataJNI.getSimValueHandle(navxHandle, "Yaw"));
+    }
   }
 
   @Override
@@ -106,6 +138,22 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     // Update the field widget on the dashboard with the robot's current pose
     m_field.setRobotPose(newPose);
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    // Update the simulation with input voltages supplied via tankDriveVelocities
+    m_driveSim.update(0.020);
+
+    // Update the simulated center motors
+    REVPhysicsSim.getInstance().run();
+
+    // Encoders have to be updated manually because they move super slowly otherwise
+    m_centerLeftEncoder.setPosition(m_driveSim.getLeftPositionMeters());
+    m_centerRightEncoder.setPosition(m_driveSim.getRightPositionMeters());
+
+    // NavX angle is clockwise-positive, which is the opposite of the sim heading
+    m_yawAngleSim.set(-m_driveSim.getHeading().getDegrees());
   }
 
   // MOTOR CONFIGURATION
@@ -182,7 +230,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
    * @param squareInputs whether to "square" input parameter (magnitude only)
    */
   public void arcadeDrive(double speed, double rotation, boolean squareInputs) {
-    m_drive.arcadeDrive(speed, rotation, squareInputs);
+    var wheelSpeeds = DifferentialDrive.arcadeDriveIK(speed, rotation, squareInputs);
+
+    // For now, wheel speeds are just scaled by the max (autonomous) velocity
+    tankDriveVelocities(
+        wheelSpeeds.left * kMaxVelocityMetersPerSecond,
+        wheelSpeeds.right * kMaxVelocityMetersPerSecond);
   }
 
   /**
@@ -194,7 +247,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
    */
   public void tankDriveVelocities(double leftVelocity, double rightVelocity) {
     // Use a linear model of the drivetrain to calculate feedforward voltages
-    // TODO: Handle cases where the feedforward voltage is over 12V
+    // TODO: StateSpaceUtil.desaturateInputVector could be used to make sure the voltages don't go
+    // over 12V, but the velocities would also have to be scaled
     Vector<N2> velocities = VecBuilder.fill(leftVelocity, rightVelocity);
     Matrix<N2, N1> feedforwards = m_feedforward.calculate(velocities);
 
@@ -204,6 +258,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // Command the motors at the above feedforward voltages, using PID to correct for error
     m_leftController.setReference(leftVelocity, CANSparkMax.ControlType.kVelocity, 0, leftVolts);
     m_rightController.setReference(rightVelocity, CANSparkMax.ControlType.kVelocity, 0, rightVolts);
+
+    if (RobotBase.isSimulation()) {
+      // Log feedforward voltages to the dashboard during simulation
+      SmartDashboard.putNumber("Left feedforward", leftVolts);
+      SmartDashboard.putNumber("Right feedforward", rightVolts);
+
+      // Update the drivetrain simulation when simulating
+      m_driveSim.setInputs(leftVolts, rightVolts);
+    }
 
     // Feed the DifferentialDrive motor safety timer so it doesn't complain
     m_drive.feedWatchdog();
