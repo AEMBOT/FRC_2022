@@ -23,9 +23,9 @@ public class TrajectoryCommandGroup extends CommandGroupBase {
   // A map of every command that is part of this group
   private final Map<Command, PositionTrigger> m_allCommands = new HashMap<>();
 
-  // A map of commands that haven't executed (or finished executing)
+  // A map of commands that haven't executed
   // This is kept to avoid triggering a command multiple times
-  private final Map<Command, PositionTrigger> m_unfinishedCommands = new HashMap<>();
+  private final Map<Command, PositionTrigger> m_unexecutedCommands = new HashMap<>();
 
   // A list of currently executing commands (for ending purposes)
   private final List<Command> m_executingCommands = new ArrayList<>();
@@ -50,11 +50,14 @@ public class TrajectoryCommandGroup extends CommandGroupBase {
   @Override
   public void initialize() {
     // Clear and repopulate the unfinished command map
-    m_unfinishedCommands.clear();
-    m_unfinishedCommands.putAll(m_allCommands);
+    m_unexecutedCommands.clear();
+    m_unexecutedCommands.putAll(m_allCommands);
 
     // Clear the executing command list
     m_executingCommands.clear();
+
+    // Initialize the trajectory following command
+    m_trajectoryCommand.initialize();
   }
 
   @Override
@@ -62,36 +65,39 @@ public class TrajectoryCommandGroup extends CommandGroupBase {
     // Drive along the trajectory
     m_trajectoryCommand.execute();
 
+    // Execute the previously triggered commands
+    for (Command command : m_executingCommands) {
+      command.execute();
+
+      // Check if the command is finished
+      if (command.isFinished()) {
+        // End the command, which finished naturally if isFinished() returns true
+        command.end(false);
+
+        // Remove the command from the currently executing list since it's finished executing
+        m_executingCommands.remove(command);
+      }
+    }
+
     // Get the robot's current position on the field as a Translation2d
     Translation2d currentPosition = m_drive.getPose().getTranslation();
 
-    // Iterate over all unfinished commands in the group
-    for (Map.Entry<Command, PositionTrigger> poseCommand : m_unfinishedCommands.entrySet()) {
+    // Check if any commands should be triggered by the robot's position
+    for (Map.Entry<Command, PositionTrigger> poseCommand : m_unexecutedCommands.entrySet()) {
       Command command = poseCommand.getKey();
       PositionTrigger goal = poseCommand.getValue();
 
-      boolean currentlyExecuting = m_executingCommands.contains(command);
-
       // Execute the command if it just got triggered, or has been previously
-      if (currentlyExecuting || currentPosition.getDistance(goal.position) <= goal.tolerance) {
+      if (currentPosition.getDistance(goal.position) <= goal.tolerance) {
 
-        // Add the command to the currently executing list if it's not there already
-        if (!currentlyExecuting) {
-          m_executingCommands.add(command);
-        }
+        // Add the command to the currently executing list
+        m_executingCommands.add(command);
 
-        // Execute the command
-        command.execute();
+        // Initialize the command
+        command.initialize();
 
-        // Check if the command is finished
-        if (command.isFinished()) {
-          // End the command, which finished naturally if isFinished() returns true
-          command.end(false);
-
-          // Remove the command from the unfinished map & currently executing list
-          m_unfinishedCommands.remove(command);
-          m_executingCommands.remove(command);
-        }
+        // Remove the command from the unexecuted list
+        m_unexecutedCommands.remove(command);
       }
     }
   }
@@ -116,7 +122,7 @@ public class TrajectoryCommandGroup extends CommandGroupBase {
   @Override
   public void addCommands(Command... commands) {
     throw new IllegalArgumentException(
-        "Commands can't be added to a TrajectoryCommandGroup without goal poses.");
+        "Commands can't be added to a TrajectoryCommandGroup without position triggers.");
   }
 
   /**
