@@ -89,15 +89,14 @@ public class TrajectoryCommandGroup extends CommandGroupBase {
 
       // Execute the command if it just got triggered, or has been previously
       if (currentPosition.getDistance(goal.position) <= goal.tolerance) {
-
-        // Add the command to the currently executing list
-        m_executingCommands.add(command);
-
         // Initialize the command
         command.initialize();
 
         // Remove the command from the unexecuted list
         m_unexecutedCommands.remove(command);
+
+        // Add the command to the currently executing list
+        m_executingCommands.add(command);
       }
     }
   }

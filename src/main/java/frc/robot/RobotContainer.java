@@ -7,9 +7,12 @@ package frc.robot;
 import static frc.robot.Constants.ControllerConstants.*;
 import static frc.robot.Constants.DrivetrainConstants.*;
 
+import java.util.Map;
+
 import com.pathplanner.lib.PathPlanner;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.net.PortForwarder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -26,6 +29,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.autonomous.FollowTrajectory;
 import frc.robot.commands.autonomous.TaxiThenShoot;
+import frc.robot.commands.autonomous.TrajectoryCommandGroup;
+import frc.robot.commands.autonomous.TrajectoryCommandGroup.PositionTrigger;
 import frc.robot.commands.climber.ClimbTimed;
 import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.DefaultDrive;
@@ -81,6 +86,18 @@ public class RobotContainer {
           m_robotDrive,
           PathPlanner.loadPath(
               "Test Path", kMaxVelocityMetersPerSecond, kMaxAccelerationMetersPerSecondSquared));
+  private final TrajectoryCommandGroup m_intakeAlongTrajectory = 
+      new TrajectoryCommandGroup(
+        PathPlanner.loadPath("Squiggle", kMaxVelocityMetersPerSecond, kMaxAccelerationMetersPerSecondSquared),
+        m_robotDrive,
+        Map.ofEntries(
+          // Lift the intake to home it & lower it right off the bat (this trajectory starts at (1, 3))
+          Map.entry(new LiftIntake(m_intakeSubsystem).andThen(new LowerIntake(m_intakeSubsystem)), new PositionTrigger(new Translation2d(1, 3), 0.5)),
+
+          // Enable the intake roller for a bit towards the end of the path
+          Map.entry(new IntakeCargo(m_indexerSubsystem, m_intakeSubsystem).withTimeout(1.5), new PositionTrigger(new Translation2d(3, 3.5), 0.5))
+        )
+      );
 
   // Sets up driver controlled auto choices
   private final SendableChooser<Command> m_autoChooser = new SendableChooser<>();
@@ -186,6 +203,7 @@ public class RobotContainer {
     // IMPORTANT: Add any automodes here, don't override the chooser
     m_autoChooser.setDefaultOption("Taxi & Shoot", m_taxiThenShoot);
     m_autoChooser.addOption("Follow Trajectory", m_testTrajectory);
+    m_autoChooser.addOption("Intake along trajectory", m_intakeAlongTrajectory);
 
     // Display the chooser on the dashboard
     SmartDashboard.putData(m_autoChooser);
