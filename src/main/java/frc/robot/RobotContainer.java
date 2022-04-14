@@ -7,8 +7,6 @@ package frc.robot;
 import static frc.robot.Constants.ControllerConstants.*;
 import static frc.robot.Constants.DrivetrainConstants.*;
 
-import java.util.Map;
-
 import com.pathplanner.lib.PathPlanner;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
@@ -48,6 +46,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import java.util.Map;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -86,18 +85,21 @@ public class RobotContainer {
           m_robotDrive,
           PathPlanner.loadPath(
               "Test Path", kMaxVelocityMetersPerSecond, kMaxAccelerationMetersPerSecondSquared));
-  private final TrajectoryCommandGroup m_intakeAlongTrajectory = 
+  private final TrajectoryCommandGroup m_intakeAlongTrajectory =
       new TrajectoryCommandGroup(
-        PathPlanner.loadPath("Squiggle", kMaxVelocityMetersPerSecond, kMaxAccelerationMetersPerSecondSquared),
-        m_robotDrive,
-        Map.ofEntries(
-          // Lift the intake to home it & lower it right off the bat (this trajectory starts at (1, 3))
-          Map.entry(new LiftIntake(m_intakeSubsystem).andThen(new LowerIntake(m_intakeSubsystem)), new PositionTrigger(new Translation2d(1, 3), 0.5)),
+          PathPlanner.loadPath(
+              "Squiggle", kMaxVelocityMetersPerSecond, kMaxAccelerationMetersPerSecondSquared),
+          m_robotDrive,
+          Map.ofEntries(
+              // Home the intake & lower it right off the bat (this trajectory starts at (1, 3))
+              Map.entry(
+                  new LiftIntake(m_intakeSubsystem).andThen(new LowerIntake(m_intakeSubsystem)),
+                  new PositionTrigger(new Translation2d(1, 3), 0.5)),
 
-          // Enable the intake roller for a bit towards the end of the path
-          Map.entry(new IntakeCargo(m_indexerSubsystem, m_intakeSubsystem).withTimeout(1.5), new PositionTrigger(new Translation2d(3, 3.5), 0.5))
-        )
-      );
+              // Enable the intake roller for a bit towards the end of the path
+              Map.entry(
+                  new IntakeCargo(m_indexerSubsystem, m_intakeSubsystem).withTimeout(1.5),
+                  new PositionTrigger(new Translation2d(3, 3.5), 0.5))));
 
   // Sets up driver controlled auto choices
   private final SendableChooser<Command> m_autoChooser = new SendableChooser<>();

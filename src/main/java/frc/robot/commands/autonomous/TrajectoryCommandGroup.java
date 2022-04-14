@@ -9,6 +9,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 /**
@@ -65,8 +66,14 @@ public class TrajectoryCommandGroup extends CommandGroupBase {
     // Drive along the trajectory
     m_trajectoryCommand.execute();
 
+    // A ListIterator allows for the modification of a list while iterating over it
+    // This avoids a ConcurrentModificationException
+    ListIterator<Command> executing = m_executingCommands.listIterator();
+
     // Execute the previously triggered commands
-    for (Command command : m_executingCommands) {
+    while (executing.hasNext()) {
+      Command command = executing.next();
+
       command.execute();
 
       // Check if the command is finished
@@ -75,7 +82,7 @@ public class TrajectoryCommandGroup extends CommandGroupBase {
         command.end(false);
 
         // Remove the command from the currently executing list since it's finished executing
-        m_executingCommands.remove(command);
+        executing.remove();
       }
     }
 
