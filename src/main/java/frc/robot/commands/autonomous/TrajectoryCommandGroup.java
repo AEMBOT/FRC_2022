@@ -27,7 +27,7 @@ public class TrajectoryCommandGroup extends CommandGroupBase {
 
   // A map of commands that haven't executed
   // This is kept to avoid triggering a command multiple times
-  private final Map<Command, PositionTrigger> m_unexecutedCommands = new HashMap<>();
+  private final Map<Command, PositionTrigger> m_untriggeredCommands = new HashMap<>();
 
   // A list of currently executing commands (for ending purposes)
   private final List<Command> m_executingCommands = new ArrayList<>();
@@ -52,8 +52,8 @@ public class TrajectoryCommandGroup extends CommandGroupBase {
   @Override
   public void initialize() {
     // Clear and repopulate the unfinished command map
-    m_unexecutedCommands.clear();
-    m_unexecutedCommands.putAll(m_allCommands);
+    m_untriggeredCommands.clear();
+    m_untriggeredCommands.putAll(m_allCommands);
 
     // Clear the executing command list
     m_executingCommands.clear();
@@ -91,7 +91,7 @@ public class TrajectoryCommandGroup extends CommandGroupBase {
     Translation2d currentPosition = m_drive.getPose().getTranslation();
 
     // Check if any commands should be triggered by the robot's position
-    for (Map.Entry<Command, PositionTrigger> poseCommand : m_unexecutedCommands.entrySet()) {
+    for (Map.Entry<Command, PositionTrigger> poseCommand : m_untriggeredCommands.entrySet()) {
       Command command = poseCommand.getKey();
       PositionTrigger goal = poseCommand.getValue();
 
@@ -100,8 +100,8 @@ public class TrajectoryCommandGroup extends CommandGroupBase {
         // Initialize the command
         command.initialize();
 
-        // Remove the command from the unexecuted list
-        m_unexecutedCommands.remove(command);
+        // Remove the command from the untriggered map
+        m_untriggeredCommands.remove(command);
 
         // Add the command to the currently executing list
         m_executingCommands.add(command);
