@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -125,6 +126,11 @@ public class TrajectoryCommandGroup extends CommandGroupBase {
     return m_trajectoryCommand.isFinished();
   }
 
+  /**
+   * Don't use this method to add commands; use {@link #addCommands(Map)} instead.
+   *
+   * @throws IllegalArgumentException Whenever this overload is called
+   */
   @Override
   public void addCommands(Command... commands) {
     throw new IllegalArgumentException(
@@ -144,13 +150,10 @@ public class TrajectoryCommandGroup extends CommandGroupBase {
     for (Map.Entry<Command, PositionTrigger> poseCommand : commands.entrySet()) {
       Command command = poseCommand.getKey();
 
-      // Throw an exception if the command depends on the drive subsystem, since
-      // two commands can't use a subsystem at the same time
-      if (command.hasRequirement(m_drive)) {
+      // Throw an exception if two commands share a subsystem dependency
+      if (!Collections.disjoint(m_requirements, command.getRequirements())) {
         throw new IllegalArgumentException(
-            "Command "
-                + command.getName()
-                + " can't require the drive subsystem in a TrajectoryCommandGroup.");
+            "Commands can't require the same subsystem in a TrajectoryCommandGroup. Use ProxyScheduleCommands if this is necessary.");
       }
 
       // Add the command to this group's map along with its position trigger
