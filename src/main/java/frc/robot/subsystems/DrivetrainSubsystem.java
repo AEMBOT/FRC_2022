@@ -13,23 +13,19 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.LinearPlantInversionFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.commands.autonomous.FollowTrajectory;
-import java.util.List;
+import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 
 /** A subsystem that includes the robot's drive motors/encoders, as well as the NavX IMU. */
 public class DrivetrainSubsystem extends SubsystemBase {
@@ -326,20 +322,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
   // COMMAND FACTORIES
 
   /**
-   * Creates a pathfollowing command that makes the robot drive the specified distance forward.
+   * Creates a command that makes the robot drive the specified distance forward while following a
+   * trapezoidal velocity profile.
    *
    * @param meters The distance for the robot to drive, in meters.
    * @return The command that makes the robot drive the specified distance.
    */
   public Command driveMetersCommand(double meters) {
-    // Generate a trajectory where the robot drives straight the specified distance
-    TrajectoryConfig config =
-        new TrajectoryConfig(kMaxVelocityMetersPerSecond, kMaxAccelerationMetersPerSecondSquared);
-    Trajectory driveTrajectory =
-        TrajectoryGenerator.generateTrajectory(
-            new Pose2d(), List.of(), new Pose2d(meters, 0, Rotation2d.fromDegrees(0)), config);
-
-    // Return a command to follow that trajectory
-    return new FollowTrajectory(this, driveTrajectory);
+    return new TrapezoidProfileCommand(
+        new TrapezoidProfile(
+            new TrapezoidProfile.Constraints(
+                kMaxVelocityMetersPerSecond, kMaxAccelerationMetersPerSecondSquared),
+            new TrapezoidProfile.State(meters, 0)),
+        state -> this.tankDriveVelocities(state.velocity, state.velocity),
+        this);
   }
 }
