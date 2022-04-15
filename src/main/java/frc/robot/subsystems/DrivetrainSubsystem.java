@@ -366,6 +366,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     // Reset the odometry with the new pose
     m_odometry.resetPosition(pose, m_navx.getRotation2d());
+
+    // Reset the pose of the drivetrain simulation, if applicable
+    if (RobotBase.isSimulation()) {
+      m_driveSim.setPose(pose);
+    }
   }
 
   /**
