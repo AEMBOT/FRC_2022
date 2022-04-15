@@ -93,12 +93,14 @@ public class RobotContainer {
           Map.ofEntries(
               // Home the intake & lower it right off the bat (this trajectory starts at (1, 3))
               Map.entry(
-                  new LiftIntake(m_intakeSubsystem).andThen(new LowerIntake(m_intakeSubsystem)),
+                  new LiftIntake(m_intakeSubsystem)
+                      .andThen(new LowerIntake(m_intakeSubsystem))
+                      .asProxy(),
                   new PositionTrigger(new Translation2d(1, 3), 0.5)),
 
               // Enable the intake roller for a bit towards the end of the path
               Map.entry(
-                  new IntakeCargo(m_indexerSubsystem, m_intakeSubsystem).withTimeout(1.5),
+                  new IntakeCargo(m_indexerSubsystem, m_intakeSubsystem).withTimeout(1.5).asProxy(),
                   new PositionTrigger(new Translation2d(3, 3.5), 0.5))));
 
   // Sets up driver controlled auto choices

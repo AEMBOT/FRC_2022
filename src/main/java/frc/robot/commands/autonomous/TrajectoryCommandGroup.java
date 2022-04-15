@@ -100,13 +100,13 @@ public class TrajectoryCommandGroup extends CommandGroupBase {
         // Initialize the command
         command.initialize();
 
-        // Remove the command from the untriggered map
-        m_untriggeredCommands.remove(command);
-
         // Add the command to the currently executing list
         m_executingCommands.add(command);
       }
     }
+
+    // Remove all executing commands from the untriggered map
+    m_executingCommands.stream().forEach(m_untriggeredCommands::remove);
   }
 
   @Override
