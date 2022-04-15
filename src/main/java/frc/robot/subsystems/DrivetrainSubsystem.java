@@ -334,7 +334,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             new TrapezoidProfile.Constraints(
                 kMaxVelocityMetersPerSecond, kMaxAccelerationMetersPerSecondSquared),
             new TrapezoidProfile.State(meters, 0)),
-        state -> this.tankDriveVelocities(state.velocity, state.velocity),
+        state -> tankDriveVelocities(state.velocity, state.velocity),
         this);
   }
 }
