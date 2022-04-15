@@ -8,6 +8,8 @@ import static frc.robot.Constants.ControllerConstants.*;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.networktables.EntryListenerFlags;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.util.net.PortForwarder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -68,7 +70,8 @@ public class RobotContainer {
   private final PneumaticsControlModule m_pcm = new PneumaticsControlModule();
 
   // Used for toggling the compressor state (see updateCompressorState() method)
-  private boolean m_compressorEnabled = true;
+  // private boolean m_compressorEnabled = true;
+  private final NetworkTableEntry m_compressorEnabled = SmartDashboard.getEntry("Compressor On?");
 
   // Automodes - if you add more here, add them to the chooser in setupAutoChooser()
   private final TaxiThenShoot m_taxiThenShoot =
@@ -97,6 +100,20 @@ public class RobotContainer {
 
     // Silence joystick connection warnings since they're not useful
     DriverStation.silenceJoystickConnectionWarning(true);
+
+    // Display a compressor toggle on the dashboard
+    SmartDashboard.setDefaultBoolean("Compressor On?", true);
+    m_compressorEnabled.addListener(
+        (event) -> {
+          // Enable or disable the compressor depending on the updated toggle value
+          boolean enabled = event.value.getBoolean();
+          if (enabled) {
+            m_pcm.enableCompressorDigital();
+          } else {
+            m_pcm.disableCompressor();
+          }
+        },
+        EntryListenerFlags.kUpdate);
 
     // Set default drivetrain command to arcade driving (happens during teleop)
     m_robotDrive.setDefaultCommand(
@@ -185,19 +202,6 @@ public class RobotContainer {
 
     // Display the chooser on the dashboard
     SmartDashboard.putData(m_autoChooser);
-  }
-
-  /** Used to toggle the compressor using the dashboard. */
-  public void updateCompressorStatus() {
-    m_compressorEnabled = SmartDashboard.getBoolean("Enable Compressor", m_compressorEnabled);
-    if (m_compressorEnabled) {
-      m_pcm.enableCompressorDigital();
-    } else {
-      m_pcm.disableCompressor();
-    }
-
-    // Put the toggle onto the dashboard
-    SmartDashboard.putBoolean("Enable Compressor", m_compressorEnabled);
   }
 
   /** Retracts the climber pistons and sets them to a vertical position. */
