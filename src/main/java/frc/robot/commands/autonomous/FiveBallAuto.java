@@ -4,7 +4,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.drive.AlignWithHub;
-import frc.robot.commands.drive.DriveMeters;
 import frc.robot.commands.drive.TurnDegrees;
 import frc.robot.hardware.Limelight;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -34,7 +33,7 @@ public class FiveBallAuto extends SequentialCommandGroup {
         // Starting position is determined by jig - see discord for specifics
         // 1
         // back up into ball nearest hub
-        new DriveMeters(Units.inchesToMeters(-55.5), drive),
+        drive.driveMetersCommand(Units.inchesToMeters(-55.5)),
         new WaitCommand(2),
 
         // --intake here
@@ -42,7 +41,7 @@ public class FiveBallAuto extends SequentialCommandGroup {
 
         // 2
         // drive forwards to line up shot
-        new DriveMeters(Units.inchesToMeters(84), drive),
+        drive.driveMetersCommand(Units.inchesToMeters(84)),
         new WaitCommand(2),
 
         // turn 1
@@ -52,28 +51,28 @@ public class FiveBallAuto extends SequentialCommandGroup {
 
         // 3
         // drive back to first ball
-        new DriveMeters(Units.inchesToMeters(-87), drive),
+        drive.driveMetersCommand(Units.inchesToMeters(-87)),
         new WaitCommand(2),
 
         // --intake here
 
         // 4
         // drive back to second ball
-        new DriveMeters(Units.inchesToMeters(-157), drive),
+        drive.driveMetersCommand(Units.inchesToMeters(-157)),
         new WaitCommand(2),
 
         // --intake here
 
         // 5
         // return to hub
-        new DriveMeters(Units.inchesToMeters(244), drive),
+        drive.driveMetersCommand(Units.inchesToMeters(244)),
         new WaitCommand(2),
 
         // turn 2
         // line up shot, shoot
         new TurnDegrees(-285, drive),
         new WaitCommand(2),
-        new DriveMeters(-1, drive),
+        drive.driveMetersCommand(-1),
         new AlignWithHub(limelight, drive)
         // --shoot here
 
