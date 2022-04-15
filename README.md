@@ -27,5 +27,5 @@ AEMBOT uses the WPILIB's Command-Based Programming pattern for implementing robo
 * [Command-Based Programming](https://docs.wpilib.org/en/stable/docs/software/commandbased/index.html)
 * [wpilibj javadocs](https://first.wpi.edu/wpilib/allwpilib/docs/release/java/index.html)
 
-![Robots](https://drive.google.com/uc?export=download&id=1FHWfhFtUOuyOHyrDigHGzEt0eMrn_GTo#gh-dark-mode-only)
-![image](https://user-images.githubusercontent.com/6174676/151886133-8e62bf21-fdb9-42f0-bb85-9702b77ee404.png)
+![Robots. Don't. Quit.](https://drive.google.com/uc?export=download&id=1FHWfhFtUOuyOHyrDigHGzEt0eMrn_GTo#gh-dark-mode-only)
+![Robots. Don't. Quit.](https://user-images.githubusercontent.com/31430937/163511327-a63c9b28-d52f-478e-8b6b-478de8449ab4.png#gh-light-mode-only)
