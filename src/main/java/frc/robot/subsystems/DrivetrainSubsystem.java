@@ -15,7 +15,6 @@ import edu.wpi.first.math.controller.LinearPlantInversionFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
-import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
@@ -107,10 +106,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Keep track of where the robot is on the field
-    updateOdometry();
+    Pose2d newPose = updateOdometry();
 
     // Update the field widget on the dashboard with the robot's current pose
-    m_field.setRobotPose(getPose());
+    m_field.setRobotPose(newPose);
   }
 
   // MOTOR CONFIGURATION
@@ -191,20 +190,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   /**
-   * Tank drive of the robot using voltages supplied to the drive motors.
-   *
-   * @param leftVolts Voltage to apply to the left motors
-   * @param rightVolts Voltage to apply to the right motors
-   */
-  public void tankDriveVolts(double leftVolts, double rightVolts) {
-    m_centerLeftMotor.setVoltage(leftVolts);
-    m_centerRightMotor.setVoltage(rightVolts);
-
-    // Feed DifferentialDrive timer so it doesn't complain
-    m_drive.feedWatchdog();
-  }
-
-  /**
    * Drives the left and right wheels at the specified velocities using closed loop velocity control
    * on the Spark Maxes.
    *
@@ -252,17 +237,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
   /** Gets the position of the center right encoder in meters. */
   public double getRightEncoderPosition() {
     return m_centerRightEncoder.getPosition();
-  }
-
-  /**
-   * Returns the current encoder velocities as a {@link DifferentialDriveWheelSpeeds} object for use
-   * in a RAMSETE controller.
-   *
-   * @return The current left and right wheel speeds in meters per second
-   */
-  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(
-        m_centerLeftEncoder.getVelocity(), m_centerRightEncoder.getVelocity());
   }
 
   /**
@@ -338,13 +312,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
   /**
    * Updates the DifferentialDriveOdometry instance variable. It keeps track of where the robot is
    * on the field, but can get thrown off over time.
+   *
+   * @return The new robot pose on the field.
    */
-  private void updateOdometry() {
+  private Pose2d updateOdometry() {
     double currentLeftPosition = getLeftEncoderPosition();
     double currentRightPosition = getRightEncoderPosition();
 
     // Update the drive odometry
-    m_odometry.update(m_navx.getRotation2d(), currentLeftPosition, currentRightPosition);
+    return m_odometry.update(m_navx.getRotation2d(), currentLeftPosition, currentRightPosition);
   }
 
   // COMMAND FACTORIES
