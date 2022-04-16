@@ -104,8 +104,7 @@ public class RobotContainer {
     // Display a compressor toggle on the dashboard
     SmartDashboard.setDefaultBoolean("Compressor On?", true);
     m_compressorEnabled.addListener(
-        (event) -> {
-          // Enable or disable the compressor depending on the updated toggle value
+        event -> {
           boolean enabled = event.value.getBoolean();
           if (enabled) {
             m_pcm.enableCompressorDigital();
