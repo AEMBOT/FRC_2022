@@ -30,7 +30,6 @@ import frc.robot.commands.autonomous.TaxiThenShoot;
 import frc.robot.commands.autonomous.TrajectoryCommandGroup;
 import frc.robot.commands.autonomous.TrajectoryCommandGroup.PositionTrigger;
 import frc.robot.commands.climber.ClimbTimed;
-import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.indexer.RunIndexer;
 import frc.robot.commands.intake.IntakeCargo;
@@ -138,8 +137,8 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // PRIMARY CONTROLLER
     // Homing to Hub - A Button
-    new JoystickButton(m_driverController, Button.kA.value)
-        .whenPressed(new AlignWithHub(m_limelight, m_robotDrive).withTimeout(1.5));
+    // new JoystickButton(m_driverController, Button.kA.value)
+    //     .whenPressed(new AlignWithHub(m_limelight, m_robotDrive).withTimeout(1.5));
 
     // Climb sequence - Start Button
     new JoystickButton(m_driverController, Button.kStart.value)

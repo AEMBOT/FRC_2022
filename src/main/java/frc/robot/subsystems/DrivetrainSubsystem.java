@@ -12,6 +12,8 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.LinearPlantInversionFeedforward;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.numbers.N1;
@@ -24,8 +26,12 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
+import frc.robot.hardware.Limelight;
+import java.util.function.DoubleSupplier;
 
 /** A subsystem that includes the robot's drive motors/encoders, as well as the NavX IMU. */
 public class DrivetrainSubsystem extends SubsystemBase {
@@ -63,6 +69,22 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   // This allows the robot to keep track of where it is on the field
   private final DifferentialDriveOdometry m_odometry;
+
+  // Turning controller and feedforward
+  private final ProfiledPIDController m_angleController =
+      new ProfiledPIDController(
+          TurnPID.kP,
+          TurnPID.kI,
+          TurnPID.kD,
+          new TrapezoidProfile.Constraints(
+              TurnPID.kMaxVelocityDegreesPerSecond,
+              TurnPID.kMaxAccelerationDegreesPerSecondSquared));
+  private SimpleMotorFeedforward m_turningFeedforward =
+      new SimpleMotorFeedforward(0, kVAngular, kAAngular);
+
+  // Turning state variables
+  private double m_angleSetpoint = 0;
+  private double m_previousAngularVelocity = 0;
 
   // Used to display the current robot position
   private final Field2d m_field = new Field2d();
@@ -211,6 +233,20 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   /**
+   * Drives the left and right drive motors at the specified voltages.
+   *
+   * @param leftVolts The voltage to supply the left motors.
+   * @param rightVolts The voltage to supply the right motors.
+   */
+  public void tankDriveVolts(double leftVolts, double rightVolts) {
+    m_centerLeftMotor.setVoltage(leftVolts);
+    m_centerRightMotor.setVoltage(rightVolts);
+
+    // Feed the DifferentialDrive watchdog
+    m_drive.feedWatchdog();
+  }
+
+  /**
    * Resets the previous velocities used for feedforward calculations in {@link
    * #tankDriveVelocities(double, double)}.
    */
@@ -280,6 +316,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
     resetOdometryAndEncoders();
   }
 
+  /**
+   * Updates the internal angle setpoint for turning. Also resets the prevoius velocity for
+   * feedforward purposes.
+   *
+   * @param newSetpoint A method that returns the new angle setpoint.
+   */
+  private void updateAngleSetpoint(DoubleSupplier newSetpoint) {
+    m_angleSetpoint = newSetpoint.getAsDouble() + getAngle();
+    m_previousAngularVelocity = 0;
+  }
+
   // ODOMETRY METHODS
 
   /** Returns the robot's current pose on the field in meters. */
@@ -337,5 +384,72 @@ public class DrivetrainSubsystem extends SubsystemBase {
             new TrapezoidProfile.State(meters, 0)),
         state -> tankDriveVelocities(state.velocity, state.velocity),
         this);
+  }
+
+  /**
+   * Turns the robot the specified number of degrees.
+   *
+   * @param degrees The number of degrees to turn.
+   * @return A command that makes the robot turn the specified number of degrees.
+   */
+  public Command turnDegreesCommand(double degrees) {
+    return setAngleSetpointCommand(degrees).andThen(turnToAngleSetpointCommand());
+  }
+
+  /**
+   * Aligns the shooter with the central hub, assuming it's in view.
+   *
+   * @param limelight The robot's {@link Limelight} instance.
+   * @return A command that aligns the robot with the hub.
+   */
+  public Command alignWithHubCommand(Limelight limelight) {
+    // Limelight angle is clockwise-positive, so it has to be negated
+    return setAngleSetpointCommand(() -> -limelight.getX()).andThen(turnToAngleSetpointCommand());
+  }
+
+  /**
+   * Turns the robot to an internal angle setpoint.
+   *
+   * @return A command that makes the robot turn to the internally set angle setpoint.
+   */
+  private Command turnToAngleSetpointCommand() {
+    return new ProfiledPIDCommand(
+        m_angleController,
+        this::getAngle,
+        m_angleSetpoint,
+        (output, state) -> {
+          double feedforward =
+              m_turningFeedforward.calculate(m_previousAngularVelocity, state.velocity, 0.02);
+
+          // A positive angular velocity means the left wheels move backwards & the right wheels
+          // move forwards
+          tankDriveVolts(-(feedforward - output), feedforward - output);
+        },
+        this);
+  }
+
+  /**
+   * Creates a command that updates the internal angle setpoint to the supplied angle, accounting
+   * for the current NavX angle.
+   *
+   * @param relativeAngle The angle setpoint relative to the current heading
+   * @return A command that updates the angle setpoint when run.
+   */
+  private Command setAngleSetpointCommand(double relativeAngle) {
+    return setAngleSetpointCommand(() -> relativeAngle);
+  }
+
+  /**
+   * Creates a command that updates the internal angle setpoint to the supplied angle, accounting
+   * for the current NavX angle.
+   *
+   * <p>This overload allows for a DoubleSupplier to be passed in, allowing for the Limelight angle
+   * to be retrieved as the command is run, for example.
+   *
+   * @param angleSupplier A method that returns the relative angle setpoint.
+   * @return A command that updates the angle setpoint when run.
+   */
+  private Command setAngleSetpointCommand(DoubleSupplier angleSupplier) {
+    return new InstantCommand(() -> updateAngleSetpoint(angleSupplier), this);
   }
 }

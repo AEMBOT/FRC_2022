@@ -140,6 +140,9 @@ public final class Constants {
     public static final double kVAngular = 2.1981; // V*s/m
     public static final double kAAngular = 0.20213; // V*s^2/m
 
+    // Track width (found using sysid)
+    public static final double kEffectiveTrackWidth = 0.69883;
+
     // Split PID-related constants based on whether robot is turning/going straight
     public static final class StraightPID {
       // Basic PID constants (obtained from SysId)
@@ -160,19 +163,24 @@ public final class Constants {
 
     /** PID/motion profiling constants for turning in place (used in TurnDegrees). */
     public static final class TurnPID {
-      public static final double kP = 0.006;
+      public static final double kTrackRadius = kEffectiveTrackWidth / 2;
+
+      // TODO: This calculation might be wrong since PID constants are different from feedforward
+      // ones
+      public static final double kP = Units.radiansToDegrees(StraightPID.kP * kTrackRadius);
       public static final double kI = 0;
       public static final double kD = 0;
 
       // Profiling
-      public static final double kMaxVelocityDegreesPerSecond = 360 / 5;
-      public static final double kMaxAccelerationDegreesPerSecondSquared = 240;
+      public static final double kMaxVelocityDegreesPerSecond = 100;
+      public static final double kMaxAccelerationDegreesPerSecondSquared = 70;
 
-      // Feedforward
-      public static final double kS = 0.36201;
-
-      public static final double kTurnToleranceDeg = 3.0;
-      public static final double kTurnRateToleranceDegPerS = 20.0;
+      // Feedforward (using straight constants converted to degrees from meters)
+      public static final double kSVolts = 0.36201;
+      public static final double kVSecondsPerDegree =
+          Units.radiansToDegrees(kVAngular * kTrackRadius);
+      public static final double kASecondsSquaredPerDegree =
+          Units.radiansToDegrees(kAAngular * kTrackRadius);
     }
 
     public static final class Ramsete {

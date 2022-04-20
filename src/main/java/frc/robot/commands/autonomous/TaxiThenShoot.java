@@ -4,7 +4,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.intake.LiftIntake;
 import frc.robot.commands.intake.LowerIntake;
 import frc.robot.commands.shooter.RampThenShoot;
@@ -54,9 +53,9 @@ public class TaxiThenShoot extends SequentialCommandGroup {
         new WaitCommand(1),
 
         // Align with the hub using the limelight
-        new AlignWithHub(limelight, drive).withTimeout(1),
+        drive.alignWithHubCommand(limelight).withTimeout(1),
         new WaitCommand(0.2),
-        new AlignWithHub(limelight, drive).withTimeout(1),
+        drive.alignWithHubCommand(limelight).withTimeout(1),
 
         // A driver controller has to be passed in order for this command to work (it includes
         // rumble)

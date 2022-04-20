@@ -3,8 +3,6 @@ package frc.robot.commands.autonomous;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commands.drive.AlignWithHub;
-import frc.robot.commands.drive.TurnDegrees;
 import frc.robot.hardware.Limelight;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
@@ -46,7 +44,7 @@ public class FiveBallAuto extends SequentialCommandGroup {
 
         // turn 1
         // rotate to align with 2 far balls
-        new TurnDegrees(-75, drive),
+        drive.turnDegreesCommand(-75),
         new WaitCommand(2),
 
         // 3
@@ -70,10 +68,10 @@ public class FiveBallAuto extends SequentialCommandGroup {
 
         // turn 2
         // line up shot, shoot
-        new TurnDegrees(-285, drive),
+        drive.turnDegreesCommand(-285),
         new WaitCommand(2),
         drive.driveMetersCommand(-1),
-        new AlignWithHub(limelight, drive)
+        drive.alignWithHubCommand(limelight)
         // --shoot here
 
         ); // end command list
