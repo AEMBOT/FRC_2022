@@ -198,8 +198,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     Vector<N2> velocities = VecBuilder.fill(leftVelocity, rightVelocity);
     Matrix<N2, N1> feedforwards = m_feedforward.calculate(velocities);
 
-    double leftVolts = feedforwards.get(0, 0);
-    double rightVolts = feedforwards.get(1, 0);
+    // TODO: Test if the static component makes other paths more accurate
+    double leftVolts = feedforwards.get(0, 0) + Math.signum(leftVelocity) * kSVolts;
+    double rightVolts = feedforwards.get(1, 0) + Math.signum(rightVelocity) * kSVolts;
 
     // Command the motors at the above feedforward voltages, using PID to correct for error
     m_leftController.setReference(leftVelocity, CANSparkMax.ControlType.kVelocity, 0, leftVolts);
