@@ -15,6 +15,9 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  // The default period of the robot loop is 20 milliseconds (0.02 seconds)
+  public static final double kRobotLoopPeriod = 0.02;
+
   /** Solenoid ports on the PCM for use in the climber subsystem. */
   public final class ClimberConstants {
     public static final int kClimbSolenoidRightRetract = 2;
@@ -114,6 +117,13 @@ public final class Constants {
     public static final double kRPMToMetersPerSecond =
         kMetersPerMotorRotation / 60; // 60 seconds per minute
 
+    // Track width (found using sysid)
+    public static final double kEffectiveTrackWidth = 0.69883;
+
+    // Ramsete constants
+    public static final double kRamseteB = 2;
+    public static final double kRamseteZeta = 0.7;
+
     // Motor controller ports (on Tupperware)
     // FIXME: Front/back IDs might be swapped (not that it affects anything)
     public static final int kLeftFront = 1;
@@ -130,35 +140,31 @@ public final class Constants {
 
     // Max velocity & acceleration during automonous driving
     public static final double kMaxVelocityMetersPerSecond = 3;
-    // This could theoretically be 3 but 2 should be tested first
     public static final double kMaxAccelerationMetersPerSecondSquared = 1.5;
 
     // Feedforward constants obtained from SysId
+    public static final double kSLinear = 0.17129; // V
     public static final double kVLinear = 2.0522; // V*s/m
     public static final double kALinear = 0.4259; // V*s^2/m
 
+    public static final double kSAngular = 0.36201; // V
     public static final double kVAngular = 2.1981; // V*s/m
     public static final double kAAngular = 0.20213; // V*s^2/m
 
-    // Split PID-related constants based on whether robot is turning/going straight
-    public static final class StraightPID {
-      // Basic PID constants (obtained from SysId)
-      public static final double kP = 0.066676;
-      public static final double kI = 0;
-      public static final double kD = 0;
+    // Feedback (PID) constants for driving straight using the Spark Max onboard control
+    public static final double kLinearP = 0.066676;
+    public static final double kLinearI = 0;
+    public static final double kLinearD = 0;
 
-      // Feedforward is done from the robot code, not the Spark Max itself
-      public static final double kFF = 0;
+    // Feedforward is done on the rio, not the Spark Maxes
+    public static final double kLinearFF = 0;
 
-      // Feedforward constants obtained from SysId (repeated from Ramsete class)
-      public static final double kSVolts = 0.17129;
-
-      // TODO: Check if these are still necessary to set, since these might be the default values
-      public static final double kMaxOutput = 1;
-      public static final double kMinOutput = -1;
-    }
+    // Minimum/maximum output for onboard Spark Max control
+    public static final double kMaxOutput = 1;
+    public static final double kMinOutput = -1;
 
     /** PID/motion profiling constants for turning in place (used in TurnDegrees). */
+    // TODO: Transition these to voltages instead of power
     public static final class TurnPID {
       public static final double kP = 0.006;
       public static final double kI = 0;
@@ -169,26 +175,8 @@ public final class Constants {
       public static final double kMaxAccelerationDegreesPerSecondSquared = 240;
 
       // Feedforward
-      public static final double kS = 0.36201;
-
-      public static final double kTurnToleranceDeg = 3.0;
-      public static final double kTurnRateToleranceDegPerS = 20.0;
-    }
-
-    public static final class Ramsete {
-      // Track width (found using sysid)
-      public static final double kEffectiveTrackWidth = 0.69883;
-
-      // Ramsete constants
-      public static final double kRamseteB = 2;
-      public static final double kRamseteZeta = 0.7;
-
-      // PID/Feedforward constants obtained from SysId
-      // public static final double kPDriveVelocity = 0.059288;
-
-      // public static final double kSVolts = 0.17129;
-      // public static final double kVSecondsPerMeter = 2.0522;
-      // public static final double kASecondsSquaredPerMeter = 0.4259;
+      public static final double kS = 0.058;
+      public static final double kVSecondsPerDegree = 0.0008;
     }
   }
 

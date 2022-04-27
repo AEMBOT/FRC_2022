@@ -1,6 +1,6 @@
 package frc.robot.commands.autonomous;
 
-import static frc.robot.Constants.DrivetrainConstants.Ramsete.*;
+import static frc.robot.Constants.DrivetrainConstants.*;
 
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
@@ -13,8 +13,13 @@ public class FollowTrajectory extends RamseteCommand {
   private DrivetrainSubsystem m_drive;
   private Trajectory m_trajectory;
 
+  // Kinematics (for handling trajectory curvature)
   private static final DifferentialDriveKinematics s_kinematics =
       new DifferentialDriveKinematics(kEffectiveTrackWidth);
+
+  // Ramsete controller for staying on the trajectory
+  private static final RamseteController s_controller =
+      new RamseteController(kRamseteB, kRamseteZeta);
 
   /**
    * Constructs a FollowTrajectory to have the robot drive along a trajectory.
@@ -26,11 +31,7 @@ public class FollowTrajectory extends RamseteCommand {
     super(
         trajectory,
         drive::getPose,
-
-        // Ramsete controller for staying on the trajectory
-        new RamseteController(kRamseteB, kRamseteZeta),
-
-        // Kinematics (for handling trajectory curvature)
+        s_controller,
         s_kinematics,
 
         // Used to drive the wheels at the correct velocities

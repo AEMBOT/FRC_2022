@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
+import frc.robot.Constants;
 import static frc.robot.Constants.DrivetrainConstants.*;
-import static frc.robot.Constants.DrivetrainConstants.StraightPID.*;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
@@ -52,7 +52,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   // Feedforward based on above linear system
   private final LinearPlantInversionFeedforward<N2, N2, N2> m_feedforward =
-      new LinearPlantInversionFeedforward<>(m_drivetrainPlant, 0.02);
+      new LinearPlantInversionFeedforward<>(m_drivetrainPlant, Constants.kRobotLoopPeriod);
 
   // This allows us to read angle information from the NavX
   private final AHRS m_navx = new AHRS(SPI.Port.kMXP);
@@ -163,10 +163,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
     int slot = 0;
 
     // PID/feedforward constants
-    controller.setP(kP, slot);
-    controller.setI(kI, slot);
-    controller.setD(kD, slot);
-    controller.setFF(kFF, slot);
+    controller.setP(kLinearP, slot);
+    controller.setI(kLinearI, slot);
+    controller.setD(kLinearD, slot);
+    controller.setFF(kLinearFF, slot);
 
     // Output range (might not actually have to be set)
     controller.setOutputRange(kMinOutput, kMaxOutput, slot);
@@ -199,8 +199,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     Matrix<N2, N1> feedforwards = m_feedforward.calculate(velocities);
 
     // TODO: Test if the static component makes other paths more accurate
-    double leftVolts = feedforwards.get(0, 0) + Math.signum(leftVelocity) * kSVolts;
-    double rightVolts = feedforwards.get(1, 0) + Math.signum(rightVelocity) * kSVolts;
+    double leftVolts = feedforwards.get(0, 0) + Math.signum(leftVelocity) * kSLinear;
+    double rightVolts = feedforwards.get(1, 0) + Math.signum(rightVelocity) * kSLinear;
 
     // Command the motors at the above feedforward voltages, using PID to correct for error
     m_leftController.setReference(leftVelocity, CANSparkMax.ControlType.kVelocity, 0, leftVolts);
