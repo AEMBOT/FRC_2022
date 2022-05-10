@@ -28,10 +28,4 @@ public class AlignWithHub extends SequentialCommandGroup {
     // Only fetch the hub angle when the command is first scheduled
     m_goalAngle = -m_limelight.getX();
   }
-
-  // @Override
-  // public void end(boolean interrupted) {
-  //   super.end(interrupted);
-  //   m_limelight.setLEDMode(LEDMode.ForceOff);
-  // }
 }

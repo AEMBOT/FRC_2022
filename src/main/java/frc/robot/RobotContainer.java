@@ -85,23 +85,20 @@ public class RobotContainer {
           m_robotDrive,
           PathPlanner.loadPath(
               "Test Path", kMaxVelocityMetersPerSecond, kMaxAccelerationMetersPerSecondSquared));
-  private final TrajectoryCommandGroup m_intakeAlongTrajectory =
-      new TrajectoryCommandGroup(
-          PathPlanner.loadPath(
-              "Squiggle", kMaxVelocityMetersPerSecond, kMaxAccelerationMetersPerSecondSquared),
-          m_robotDrive,
-          Map.ofEntries(
-              // Home the intake & lower it right off the bat (this trajectory starts at (1, 3))
-              Map.entry(
-                  new LiftIntake(m_intakeSubsystem)
-                      .andThen(new LowerIntake(m_intakeSubsystem))
-                      .asProxy(),
-                  new PositionTrigger(new Translation2d(1, 3), 0.5)),
-
-              // Enable the intake roller for a bit towards the end of the path
-              Map.entry(
-                  new IntakeCargo(m_indexerSubsystem, m_intakeSubsystem).withTimeout(1.5).asProxy(),
-                  new PositionTrigger(new Translation2d(3, 3.5), 0.5))));
+  private final Command m_intakeAlongTrajectory =
+      new LiftIntake(m_intakeSubsystem)
+          .andThen(new LowerIntake(m_intakeSubsystem))
+          .andThen(
+              new TrajectoryCommandGroup(
+                  PathPlanner.loadPath(
+                      "Squiggle",
+                      kMaxVelocityMetersPerSecond,
+                      kMaxAccelerationMetersPerSecondSquared),
+                  m_robotDrive,
+                  Map.of(
+                      // Enable the intake roller for a bit towards the end of the path
+                      new IntakeCargo(m_indexerSubsystem, m_intakeSubsystem).withTimeout(1.5),
+                      new PositionTrigger(new Translation2d(3, 3.5), 0.5))));
 
   // Sets up driver controlled auto choices
   private final SendableChooser<Command> m_autoChooser = new SendableChooser<>();

@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import frc.robot.Constants;
 import static frc.robot.Constants.DrivetrainConstants.*;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -26,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
+import frc.robot.Constants;
 
 /** A subsystem that includes the robot's drive motors/encoders, as well as the NavX IMU. */
 public class DrivetrainSubsystem extends SubsystemBase {
