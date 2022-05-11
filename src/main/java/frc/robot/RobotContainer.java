@@ -30,7 +30,6 @@ import frc.robot.commands.autonomous.TaxiThenShoot;
 import frc.robot.commands.autonomous.TrajectoryCommandGroup;
 import frc.robot.commands.autonomous.TrajectoryCommandGroup.PositionTrigger;
 import frc.robot.commands.climber.ClimbTimed;
-import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.indexer.RunIndexer;
 import frc.robot.commands.intake.IntakeCargo;
@@ -164,7 +163,11 @@ public class RobotContainer {
         .whileHeld(new LowerIntake(m_intakeSubsystem));
 
     // Moving the climber is only possible when both secondary triggers are pressed
-    Trigger bothTriggers = new Trigger(() -> m_secondaryController.getLeftTriggerAxis() > 0.1 && m_secondaryController.getRightTriggerAxis() > 0.1);
+    Trigger bothTriggers =
+        new Trigger(
+            () ->
+                m_secondaryController.getLeftTriggerAxis() > 0.1
+                    && m_secondaryController.getRightTriggerAxis() > 0.1);
     Trigger dpadUp = new Trigger(() -> m_secondaryController.getPOV() == 0).and(bothTriggers);
     Trigger dpadDown = new Trigger(() -> m_secondaryController.getPOV() == 180).and(bothTriggers);
     Trigger dpadRight = new Trigger(() -> m_secondaryController.getPOV() == 90).and(bothTriggers);
@@ -183,7 +186,8 @@ public class RobotContainer {
 
     // Run the intake roller & lower indexer belts to intake cargo - A
     new JoystickButton(m_secondaryController, Button.kA.value)
-        .whileHeld(new IntakeCargo(m_indexerSubsystem, m_intakeSubsystem));
+        .whileHeld(m_indexerSubsystem::intakeCargo, m_indexerSubsystem)
+        .whenReleased(m_indexerSubsystem::stopBelts, m_indexerSubsystem);
 
     // Eject any cargo in the indexer/intake - X
     new JoystickButton(m_secondaryController, Button.kX.value)
