@@ -2,6 +2,7 @@ package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.commands.indexer.RunIndexer;
@@ -20,6 +21,7 @@ import frc.robot.subsystems.ShooterSubsystem;
  */
 public class RampThenShoot extends SequentialCommandGroup {
   private Limelight m_limelight;
+  private ShooterSubsystem m_shooter;
 
   /**
    * Constructs a RampThenShoot command for use in autonomous (doesn't rumble the controllers).
@@ -70,23 +72,26 @@ public class RampThenShoot extends SequentialCommandGroup {
 
         // Ramp up the shooter then run the indexer once that's finished
         parallel(
-            new RunShooterWithLimelight(shooter),
+            // TODO: Figure out a good RPM for gently tossing a cargo
+            new RunCommand(() -> shooter.runAtRPM(700), shooter),
             sequence(
                 new WaitUntilCommand(shooter::atTargetRPM).withTimeout(1),
                 new RunIndexer(indexer, CargoDirection.Intake))));
 
     m_limelight = limelight;
+    m_shooter = shooter;
   }
 
-  @Override
-  public void initialize() {
-    super.initialize();
-    m_limelight.setLEDMode(LEDMode.ForceOn);
-  }
+  // @Override
+  // public void initialize() {
+  //   super.initialize();
+  //   m_limelight.setLEDMode(LEDMode.ForceOn);
+  // }
 
   @Override
   public void end(boolean interrupted) {
     super.end(interrupted);
+    m_shooter.stopShooter();
 
     // Turn off the limelight LED after finishing
     // m_limelight.setLEDMode(LEDMode.ForceOff);
