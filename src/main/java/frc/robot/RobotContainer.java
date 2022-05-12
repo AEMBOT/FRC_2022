@@ -139,8 +139,8 @@ public class RobotContainer {
     //     .whenPressed(new AlignWithHub(m_limelight, m_robotDrive).withTimeout(1.5));
 
     // Climb sequence - Start Button
-    new JoystickButton(m_driverController, Button.kStart.value)
-        .whenPressed(new ClimbTimed(m_climberSubsystem, m_driverController::getStartButtonPressed));
+    // new JoystickButton(m_driverController, Button.kStart.value)
+    //     .whenPressed(new ClimbTimed(m_climberSubsystem, m_driverController::getStartButtonPressed));
 
     // SECONDARY CONTROLLER
 
@@ -163,23 +163,12 @@ public class RobotContainer {
         .whileHeld(new LowerIntake(m_intakeSubsystem));
 
     // Moving the climber is only possible when both secondary triggers are pressed
-    Trigger bothTriggers =
-        new Trigger(
-            () ->
-                m_secondaryController.getLeftTriggerAxis() > 0.1
-                    && m_secondaryController.getRightTriggerAxis() > 0.1);
-    Trigger dpadUp = new Trigger(() -> m_secondaryController.getPOV() == 0).and(bothTriggers);
-    Trigger dpadDown = new Trigger(() -> m_secondaryController.getPOV() == 180).and(bothTriggers);
-    Trigger dpadRight = new Trigger(() -> m_secondaryController.getPOV() == 90).and(bothTriggers);
-    Trigger dpadLeft = new Trigger(() -> m_secondaryController.getPOV() == 270).and(bothTriggers);
+    Trigger dpadUp = new Trigger(() -> m_secondaryController.getPOV() == 0);
+    Trigger dpadDown = new Trigger(() -> m_secondaryController.getPOV() == 180);
 
     // Deploy/retract climber - up/down on dpad
     dpadUp.whenActive(m_climberSubsystem::extendArms, m_climberSubsystem);
     dpadDown.whenActive(m_climberSubsystem::retractArms, m_climberSubsystem);
-
-    // Angling climber - left/right on dpad
-    dpadLeft.whenActive(m_climberSubsystem::setPistonsVertical, m_climberSubsystem);
-    dpadRight.whenActive(m_climberSubsystem::setPistonsAngled, m_climberSubsystem);
 
     // dpadUp.whenActive(m_shooterSubsystem::incrementRPMOffset, m_shooterSubsystem);
     // dpadDown.whenActive(m_shooterSubsystem::decrementRPMOffset, m_shooterSubsystem);
@@ -191,10 +180,8 @@ public class RobotContainer {
 
     // Eject any cargo in the indexer/intake - X
     new JoystickButton(m_secondaryController, Button.kX.value)
-        .whileHeld(
-            new ParallelCommandGroup(
-                new RunIntakeRoller(m_intakeSubsystem, CargoDirection.Eject),
-                new RunIndexer(m_indexerSubsystem, CargoDirection.Eject)));
+        .whileHeld(m_indexerSubsystem::moveCargoDown, m_indexerSubsystem)
+        .whenReleased(m_indexerSubsystem::stopBelts, m_indexerSubsystem);
   }
 
   /** Configures the secondary USB camera & Limelight port forwarding. */
