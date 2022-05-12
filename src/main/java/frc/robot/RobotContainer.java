@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.autonomous.FollowTrajectory;
@@ -29,11 +30,14 @@ import frc.robot.commands.autonomous.TaxiThenShoot;
 import frc.robot.commands.autonomous.TrajectoryCommandGroup;
 import frc.robot.commands.autonomous.TrajectoryCommandGroup.PositionTrigger;
 import frc.robot.commands.drive.DemoDrive;
+import frc.robot.commands.indexer.RunIndexer;
 import frc.robot.commands.intake.IntakeCargo;
 import frc.robot.commands.intake.LiftIntake;
 import frc.robot.commands.intake.LowerIntake;
+import frc.robot.commands.intake.RunIntakeRoller;
 import frc.robot.commands.shooter.RampThenShoot;
 import frc.robot.commands.utilities.Noop;
+import frc.robot.commands.utilities.enums.CargoDirection;
 import frc.robot.hardware.Limelight;
 import frc.robot.hardware.Limelight.LEDMode;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -117,8 +121,9 @@ public class RobotContainer {
 
     // Set default drivetrain command to arcade driving (happens during teleop)
     m_robotDrive.setDefaultCommand(
-        new DemoDrive(
-            m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
+        new DemoDrive(m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
+
+    m_pcm.enableCompressorDigital();
   }
 
   /**
@@ -171,13 +176,14 @@ public class RobotContainer {
 
     // Run the intake roller & lower indexer belts to intake cargo - A
     new JoystickButton(m_secondaryController, Button.kA.value)
-        .whileHeld(m_indexerSubsystem::intakeCargo, m_indexerSubsystem)
-        .whenReleased(m_indexerSubsystem::stopBelts, m_indexerSubsystem);
+        .whileHeld(new IntakeCargo(m_indexerSubsystem, m_intakeSubsystem));
 
     // Eject any cargo in the indexer/intake - X
     new JoystickButton(m_secondaryController, Button.kX.value)
-        .whileHeld(m_indexerSubsystem::moveCargoDown, m_indexerSubsystem)
-        .whenReleased(m_indexerSubsystem::stopBelts, m_indexerSubsystem);
+        .whileHeld(
+            new ParallelCommandGroup(
+                new RunIntakeRoller(m_intakeSubsystem, CargoDirection.Eject),
+                new RunIndexer(m_indexerSubsystem, CargoDirection.Eject)));
   }
 
   /** Configures the secondary USB camera & Limelight port forwarding. */

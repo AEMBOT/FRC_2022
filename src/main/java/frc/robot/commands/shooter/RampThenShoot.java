@@ -72,7 +72,7 @@ public class RampThenShoot extends SequentialCommandGroup {
         // Ramp up the shooter then run the indexer once that's finished
         parallel(
             // TODO: Figure out a good RPM for gently tossing a cargo
-            new RunCommand(() -> shooter.runAtRPM(700), shooter),
+            new RunCommand(() -> shooter.runAtRPM(1500), shooter),
             sequence(
                 new WaitUntilCommand(shooter::atTargetRPM).withTimeout(1),
                 new RunIndexer(indexer, CargoDirection.Intake))));
