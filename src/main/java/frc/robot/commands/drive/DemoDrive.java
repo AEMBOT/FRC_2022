@@ -5,12 +5,13 @@ import static frc.robot.Constants.DrivetrainConstants.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import java.util.function.DoubleSupplier;
 
 /** A command that's responsible for driving of the robot during teleop. */
-public class DefaultDrive extends CommandBase {
+public class DemoDrive extends CommandBase {
   private final DrivetrainSubsystem m_drive;
 
   // Left & right stick inputs from main controller
@@ -18,8 +19,8 @@ public class DefaultDrive extends CommandBase {
   private final DoubleSupplier m_turning;
 
   // Acceleration limiter for forward/rotational movement
-  SlewRateLimiter m_forwardSlewLimiter = new SlewRateLimiter(2.0);
-  SlewRateLimiter m_turningSlewLimiter = new SlewRateLimiter(2.0);
+  private final SlewRateLimiter m_forwardSlewLimiter = new SlewRateLimiter(2.0);
+  private final SlewRateLimiter m_turningSlewLimiter = new SlewRateLimiter(2.0);
 
   /**
    * Constructs a DefaultDrive command for driving the robot during teleop.
@@ -28,21 +29,30 @@ public class DefaultDrive extends CommandBase {
    * @param forwardPower The input for driving the robot forward/backward (normally left stick Y)
    * @param turningPower The input for turning the robot (normally right stick X)
    */
-  public DefaultDrive(
+  public DemoDrive(
       DrivetrainSubsystem drive, DoubleSupplier forwardPower, DoubleSupplier turningPower) {
     m_drive = drive;
     m_forward = forwardPower;
     m_turning = turningPower;
     addRequirements(drive);
+
+    SmartDashboard.putBoolean("Demo Drive (slower)", true);
   }
 
   @Override
   public void execute() {
-    // Deadband & scale the stick inputs
-    double forwardPower =
-        kMaxForwardPower * MathUtil.applyDeadband(-m_forward.getAsDouble(), kJoystickDeadband);
-    double rotationPower =
-        kMaxRotationPower * MathUtil.applyDeadband(m_turning.getAsDouble(), kJoystickDeadband);
+    // Deadband the stick inputs
+    double forwardPower = MathUtil.applyDeadband(-m_forward.getAsDouble(), kJoystickDeadband);
+    double rotationPower = MathUtil.applyDeadband(m_turning.getAsDouble(), kJoystickDeadband);
+
+    // Limit the speed depending on if the robot's in demo mode (toggled via dashboard)
+    if (SmartDashboard.getBoolean("Demo Drive (slower)", false)) {
+      forwardPower *= kMaxDemoPower;
+      rotationPower *= kMaxDemoPower;
+    } else {
+      forwardPower *= kMaxForwardPower;
+      rotationPower *= kMaxRotationPower;
+    }
 
     // Use slew limiters to limit the robot's acceleration
     forwardPower = m_forwardSlewLimiter.calculate(forwardPower);

@@ -22,23 +22,18 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.autonomous.FollowTrajectory;
 import frc.robot.commands.autonomous.TaxiThenShoot;
 import frc.robot.commands.autonomous.TrajectoryCommandGroup;
 import frc.robot.commands.autonomous.TrajectoryCommandGroup.PositionTrigger;
-import frc.robot.commands.climber.ClimbTimed;
-import frc.robot.commands.drive.DefaultDrive;
-import frc.robot.commands.indexer.RunIndexer;
+import frc.robot.commands.drive.DemoDrive;
 import frc.robot.commands.intake.IntakeCargo;
 import frc.robot.commands.intake.LiftIntake;
 import frc.robot.commands.intake.LowerIntake;
-import frc.robot.commands.intake.RunIntakeRoller;
 import frc.robot.commands.shooter.RampThenShoot;
 import frc.robot.commands.utilities.Noop;
-import frc.robot.commands.utilities.enums.CargoDirection;
 import frc.robot.hardware.Limelight;
 import frc.robot.hardware.Limelight.LEDMode;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -122,7 +117,7 @@ public class RobotContainer {
 
     // Set default drivetrain command to arcade driving (happens during teleop)
     m_robotDrive.setDefaultCommand(
-        new DefaultDrive(
+        new DemoDrive(
             m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
   }
 
@@ -140,7 +135,8 @@ public class RobotContainer {
 
     // Climb sequence - Start Button
     // new JoystickButton(m_driverController, Button.kStart.value)
-    //     .whenPressed(new ClimbTimed(m_climberSubsystem, m_driverController::getStartButtonPressed));
+    //     .whenPressed(new ClimbTimed(m_climberSubsystem,
+    // m_driverController::getStartButtonPressed));
 
     // SECONDARY CONTROLLER
 

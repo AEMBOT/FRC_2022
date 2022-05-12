@@ -135,8 +135,9 @@ public final class Constants {
     public static final int kRightBack = 6;
 
     // Speed/power limits during teleop
-    public static final double kMaxForwardPower = 0.4;
-    public static final double kMaxRotationPower = 0.4;
+    public static final double kMaxForwardPower = 1;
+    public static final double kMaxRotationPower = 0.6;
+    public static final double kMaxDemoPower = 0.4;
 
     // Max velocity & acceleration during automonous driving
     public static final double kMaxVelocityMetersPerSecond = 3;
