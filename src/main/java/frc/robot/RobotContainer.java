@@ -8,7 +8,6 @@ import static frc.robot.Constants.ControllerConstants.*;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
-import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.util.net.PortForwarder;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -23,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.NetworkButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.autonomous.FiveBallAuto;
 import frc.robot.commands.autonomous.TaxiThenShoot;
@@ -69,10 +69,6 @@ public class RobotContainer {
   private final PowerDistribution m_pdp = new PowerDistribution();
   private final PneumaticsControlModule m_pcm = new PneumaticsControlModule();
 
-  // Used for toggling the compressor state (see updateCompressorState() method)
-  // private boolean m_compressorEnabled = true;
-  private final NetworkTableEntry m_compressorEnabled = SmartDashboard.getEntry("Compressor On?");
-
   // Automodes - if you add more here, add them to the chooser in setupAutoChooser()
   private final TaxiThenShoot m_taxiThenShoot =
       new TaxiThenShoot(
@@ -101,18 +97,13 @@ public class RobotContainer {
     // Silence joystick connection warnings since they're not useful
     DriverStation.silenceJoystickConnectionWarning(true);
 
-    // Display a compressor toggle on the dashboard
-    SmartDashboard.setDefaultBoolean("Compressor On?", true);
-    m_compressorEnabled.addListener(
-        event -> {
-          boolean enabled = event.value.getBoolean();
-          if (enabled) {
-            m_pcm.enableCompressorDigital();
-          } else {
-            m_pcm.disableCompressor();
-          }
-        },
-        EntryListenerFlags.kUpdate);
+    // Display a compressor toggle on the dashboard (defaults to on)
+    NetworkTableEntry compressorToggle = SmartDashboard.getEntry("Compressor On?");
+    compressorToggle.setBoolean(true);
+
+    new NetworkButton(compressorToggle)
+        .whenActive(m_pcm::enableCompressorDigital)
+        .whenInactive(m_pcm::disableCompressor);
 
     // Set default drivetrain command to arcade driving (happens during teleop)
     m_robotDrive.setDefaultCommand(
