@@ -82,6 +82,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_frontRightMotor.follow(m_centerRightMotor);
     m_backRightMotor.follow(m_centerRightMotor);
 
+    // Motors should be in brake mode
+    setBrakeMode();
+
     // Set current limits for all of the drive motors
     setCurrentLimits();
 
