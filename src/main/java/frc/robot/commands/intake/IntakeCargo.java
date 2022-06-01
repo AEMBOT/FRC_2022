@@ -19,6 +19,8 @@ public class IntakeCargo extends CommandBase {
   public IntakeCargo(IndexerSubsystem indexer, IntakeSubsystem intake) {
     m_indexer = indexer;
     m_intake = intake;
+
+    addRequirements(indexer, intake);
   }
 
   @Override

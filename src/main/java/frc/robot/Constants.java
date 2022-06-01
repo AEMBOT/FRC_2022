@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.TimedRobot;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -15,8 +16,11 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  // The default period of the robot loop is 20 milliseconds (0.02 seconds)
+  public static final double kRobotLoopPeriod = TimedRobot.kDefaultPeriod;
+
   /** Solenoid ports on the PCM for use in the climber subsystem. */
-  public final class ClimberConstants {
+  public static final class ClimberConstants {
     public static final int kClimbSolenoidRightRetract = 2;
     public static final int kClimbSolenoidRightExtend = 1;
     public static final int kClimbSolenoidRightChoke = 0;
@@ -114,6 +118,13 @@ public final class Constants {
     public static final double kRPMToMetersPerSecond =
         kMetersPerMotorRotation / 60; // 60 seconds per minute
 
+    // Track width (found using sysid)
+    public static final double kEffectiveTrackWidth = 0.69883;
+
+    // Ramsete constants
+    public static final double kRamseteB = 2;
+    public static final double kRamseteZeta = 0.7;
+
     // Motor controller ports (on Tupperware)
     // FIXME: Front/back IDs might be swapped (not that it affects anything)
     public static final int kLeftFront = 1;
@@ -128,47 +139,33 @@ public final class Constants {
     public static final double kMaxForwardPower = 1.0;
     public static final double kMaxRotationPower = 0.6;
 
-    /** Spark MAX Smart Motion constants for drive motors. */
-    public static final class SmartMotion {
-      // PIDF constants
-      public static final double kP = 0;
-      public static final double kI = 0;
-      public static final double kD = 0;
-      public static final double kIz = 0;
-      public static final double kFF = 0.000457;
+    // Max velocity & acceleration during automonous driving
+    public static final double kMaxVelocityMetersPerSecond = 3;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 1.5;
 
-      public static final double kMaxOutput = 1;
-      public static final double kMinOutput = -1;
-      public static final double kAllowedErr = 0.01; // meters
+    // Feedforward constants obtained from SysId
+    public static final double kSLinear = 0.17129; // V
+    public static final double kVLinear = 2.0522; // V*s/m
+    public static final double kALinear = 0.4259; // V*s^2/m
 
-      // All of these are measured in RPM
-      public static final double kMaxRPM = 5676;
-      public static final double kMinVel = 0;
-      public static final double kMaxVel = 2000;
-      public static final double kMaxAcc = 1500;
-    }
+    public static final double kSAngular = 0.36201; // V
+    public static final double kVAngular = 2.1981; // V*s/m
+    public static final double kAAngular = 0.20213; // V*s^2/m
 
-    /** PID/Motion profiling constants for driving straight (used in DriveStraightProfiled). */
-    public static final class StraightPID {
-      // Basic PID constants
-      public static final double kP = 0;
-      public static final double kI = 0;
-      public static final double kD = 0;
+    // Feedback (PID) constants for driving straight using the Spark Max onboard control
+    public static final double kLinearP = 0.066676;
+    public static final double kLinearI = 0;
+    public static final double kLinearD = 0;
 
-      // Profiling
-      public static final double kMaxVelocityMetersPerSecond = 2;
-      public static final double kMaxAccelerationMeterPerSecondSquared = 1.5;
+    // Feedforward is done on the rio, not the Spark Maxes
+    public static final double kLinearFF = 0;
 
-      // Feedforward (in power units)
-      public static final double kS = 0.05;
-      public static final double kVSecondsPerMeter = 0.269 / 0.8856;
-
-      // PID tolerances
-      public static final double kDriveToleranceMeters = 0.05;
-      public static final double kDriveVelocityToleranceMetersPerSecond = 0.2;
-    }
+    // Minimum/maximum output for onboard Spark Max control
+    public static final double kMaxOutput = 1;
+    public static final double kMinOutput = -1;
 
     /** PID/motion profiling constants for turning in place (used in TurnDegrees). */
+    // TODO: Transition these to voltages instead of power
     public static final class TurnPID {
       public static final double kP = 0.006;
       public static final double kI = 0;
@@ -178,12 +175,9 @@ public final class Constants {
       public static final double kMaxVelocityDegreesPerSecond = 360 / 5;
       public static final double kMaxAccelerationDegreesPerSecondSquared = 240;
 
-      // Feedforward (both in power units, i.e. on [0, 1])
+      // Feedforward
       public static final double kS = 0.058;
-      public static final double kVDegreesPerSecond = 0.0008;
-
-      public static final double kTurnToleranceDeg = 3.0;
-      public static final double kTurnRateToleranceDegPerS = 20.0;
+      public static final double kVSecondsPerDegree = 0.0008;
     }
   }
 

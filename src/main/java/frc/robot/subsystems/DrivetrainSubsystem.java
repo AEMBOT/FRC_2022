@@ -1,19 +1,31 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.DrivetrainConstants.*;
-import static frc.robot.Constants.DrivetrainConstants.SmartMotion.*;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.controller.LinearPlantInversionFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
+import frc.robot.Constants;
 
 /** A subsystem that includes the robot's drive motors/encoders, as well as the NavX IMU. */
 public class DrivetrainSubsystem extends SubsystemBase {
@@ -34,6 +46,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private final SparkMaxPIDController m_leftController = m_centerLeftMotor.getPIDController();
   private final SparkMaxPIDController m_rightController = m_centerRightMotor.getPIDController();
 
+  // Linear system model of drivetrain
+  private final LinearSystem<N2, N2, N2> m_drivetrainPlant =
+      LinearSystemId.identifyDrivetrainSystem(kVLinear, kALinear, kVAngular, kAAngular);
+
+  // Feedforward based on above linear system
+  private final LinearPlantInversionFeedforward<N2, N2, N2> m_feedforward =
+      new LinearPlantInversionFeedforward<>(m_drivetrainPlant, Constants.kRobotLoopPeriod);
+
   // This allows us to read angle information from the NavX
   private final AHRS m_navx = new AHRS(SPI.Port.kMXP);
 
@@ -42,8 +62,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
       new DifferentialDrive(m_centerLeftMotor, m_centerRightMotor);
 
   // This allows the robot to keep track of where it is on the field
-  private final DifferentialDriveOdometry m_odometry =
-      new DifferentialDriveOdometry(new Rotation2d());
+  private final DifferentialDriveOdometry m_odometry;
+
+  // Used to display the current robot position
+  private final Field2d m_field = new Field2d();
 
   /** Creates a new DriveSubsystem, configuring its motors, encoders, and odometry. */
   public DrivetrainSubsystem() {
@@ -60,24 +82,33 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_frontRightMotor.follow(m_centerRightMotor);
     m_backRightMotor.follow(m_centerRightMotor);
 
+    // Motors should be in brake mode
+    setBrakeMode();
+
     // Set current limits for all of the drive motors
     setCurrentLimits();
 
     // Set the SmartMotion constants for the center motors
-    setSmartMotionConstants(m_leftController);
-    setSmartMotionConstants(m_rightController);
+    configureSparkMax(m_leftController);
+    configureSparkMax(m_rightController);
 
     // Change encoder position readings to meters (per second)
     setupEncoderConversions();
 
-    // Reset the odometry & encoders upon initialization
-    resetOdometryAndEncoders();
+    // Initialize the odometry to track where the robot is on the field
+    m_odometry = new DifferentialDriveOdometry(m_navx.getRotation2d());
+
+    // Display the robot's position on a field widget on the dashboard
+    SmartDashboard.putData(m_field);
   }
 
   @Override
   public void periodic() {
     // Keep track of where the robot is on the field
-    updateOdometry();
+    Pose2d newPose = updateOdometry();
+
+    // Update the field widget on the dashboard with the robot's current pose
+    m_field.setRobotPose(newPose);
   }
 
   // MOTOR CONFIGURATION
@@ -131,22 +162,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
    *
    * @param controller The {@link SparkMaxPIDController} to configure
    */
-  private void setSmartMotionConstants(SparkMaxPIDController controller) {
+  private void configureSparkMax(SparkMaxPIDController controller) {
     int slot = 0;
 
-    // PIDF constants
-    controller.setP(kP, slot);
-    controller.setI(kI, slot);
-    controller.setD(kD, slot);
-    controller.setIZone(kIz, slot);
-    controller.setFF(kFF, slot);
+    // PID/feedforward constants
+    controller.setP(kLinearP, slot);
+    controller.setI(kLinearI, slot);
+    controller.setD(kLinearD, slot);
+    controller.setFF(kLinearFF, slot);
 
-    // Smart Motion-specific constants
+    // Output range (might not actually have to be set)
     controller.setOutputRange(kMinOutput, kMaxOutput, slot);
-    controller.setSmartMotionMaxVelocity(kMaxVel, slot);
-    controller.setSmartMotionMinOutputVelocity(kMinVel, slot);
-    controller.setSmartMotionMaxAccel(kMaxAcc, slot);
-    controller.setSmartMotionAllowedClosedLoopError(kAllowedErr, slot);
   }
 
   // BASIC DRIVE METHODS
@@ -160,6 +186,39 @@ public class DrivetrainSubsystem extends SubsystemBase {
    */
   public void arcadeDrive(double speed, double rotation, boolean squareInputs) {
     m_drive.arcadeDrive(speed, rotation, squareInputs);
+  }
+
+  /**
+   * Drives the left and right wheels at the specified velocities using closed loop velocity control
+   * on the Spark Maxes.
+   *
+   * @param leftVelocity The velocity of the left wheels, in meters per second.
+   * @param rightVelocity The velocity of the right wheels, in meters per second.
+   */
+  public void tankDriveVelocities(double leftVelocity, double rightVelocity) {
+    // Use a linear model of the drivetrain to calculate feedforward voltages
+    // TODO: Handle cases where the feedforward voltage is over 12V
+    Vector<N2> velocities = VecBuilder.fill(leftVelocity, rightVelocity);
+    Matrix<N2, N1> feedforwards = m_feedforward.calculate(velocities);
+
+    // TODO: Test if the static component makes other paths more accurate
+    double leftVolts = feedforwards.get(0, 0) + Math.signum(leftVelocity) * kSLinear;
+    double rightVolts = feedforwards.get(1, 0) + Math.signum(rightVelocity) * kSLinear;
+
+    // Command the motors at the above feedforward voltages, using PID to correct for error
+    m_leftController.setReference(leftVelocity, CANSparkMax.ControlType.kVelocity, 0, leftVolts);
+    m_rightController.setReference(rightVelocity, CANSparkMax.ControlType.kVelocity, 0, rightVolts);
+
+    // Feed the DifferentialDrive motor safety timer so it doesn't complain
+    m_drive.feedWatchdog();
+  }
+
+  /**
+   * Resets the previous velocities used for feedforward calculations in {@link
+   * #tankDriveVelocities(double, double)}.
+   */
+  public void resetFeedforward() {
+    m_feedforward.reset();
   }
 
   /** Stops all drive motors. */
@@ -192,57 +251,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // Convert RPM to meters per second
     m_centerLeftEncoder.setVelocityConversionFactor(kRPMToMetersPerSecond);
     m_centerRightEncoder.setVelocityConversionFactor(kRPMToMetersPerSecond);
-  }
-
-  // SMARTMOTION METHODS
-
-  /** Use the internal Spark Max velocity control */
-  public void driveAtVelocity(double leftMetersPerSecond, double rightMetersPerSecond) {
-    // Feed the DifferentialDrive so it doesn't complain
-    m_drive.feedWatchdog();
-
-    // Convert the speeds in meters per second to RPM, since that's what the Spark Maxes need for
-    // some reason
-    double leftRPM = leftMetersPerSecond / kRPMToMetersPerSecond;
-    double rightRPM = rightMetersPerSecond / kRPMToMetersPerSecond;
-
-    // Set the motor velocities
-    m_leftController.setReference(leftRPM, CANSparkMax.ControlType.kVelocity);
-    m_rightController.setReference(rightRPM, CANSparkMax.ControlType.kVelocity);
-  }
-
-  /**
-   * Runs the motors on both sides of the robot using SmartMotion.
-   *
-   * @param distance The distance to drive (in meters)
-   */
-  public void smartMotionToPosition(double distance) {
-    m_drive.feedWatchdog();
-    m_rightController.setReference(distance, CANSparkMax.ControlType.kSmartMotion, 0);
-    m_leftController.setReference(distance, CANSparkMax.ControlType.kSmartMotion, 0);
-  }
-
-  /**
-   * Returns true if the motors are close enough to a given goal position.
-   *
-   * @param goal The goal position of the motors
-   */
-  public boolean smartMotionAtGoal(double goal) {
-    double leftPosition = getLeftEncoderPosition();
-    double rightPosition = getRightEncoderPosition();
-    return inRangeInclusive(goal, kAllowedErr, leftPosition)
-        || inRangeInclusive(goal, kAllowedErr, rightPosition);
-  }
-
-  /**
-   * Checks if a value is within a given margin of a goal value.
-   *
-   * @param goal The desired value at the center of the range
-   * @param margin The margin the range extends around the goal value
-   * @param val The value to check whether it's inside/outside of the range
-   */
-  private boolean inRangeInclusive(double goal, double margin, double val) {
-    return goal - margin <= val && val <= goal + margin;
   }
 
   // NAVX METHODS
@@ -304,12 +312,33 @@ public class DrivetrainSubsystem extends SubsystemBase {
   /**
    * Updates the DifferentialDriveOdometry instance variable. It keeps track of where the robot is
    * on the field, but can get thrown off over time.
+   *
+   * @return The new robot pose on the field.
    */
-  private void updateOdometry() {
+  private Pose2d updateOdometry() {
     double currentLeftPosition = getLeftEncoderPosition();
     double currentRightPosition = getRightEncoderPosition();
 
     // Update the drive odometry
-    m_odometry.update(m_navx.getRotation2d(), currentLeftPosition, currentRightPosition);
+    return m_odometry.update(m_navx.getRotation2d(), currentLeftPosition, currentRightPosition);
+  }
+
+  // COMMAND FACTORIES
+
+  /**
+   * Creates a command that makes the robot drive the specified distance forward while following a
+   * trapezoidal velocity profile.
+   *
+   * @param meters The distance for the robot to drive, in meters.
+   * @return The command that makes the robot drive the specified distance.
+   */
+  public Command driveMetersCommand(double meters) {
+    return new TrapezoidProfileCommand(
+        new TrapezoidProfile(
+            new TrapezoidProfile.Constraints(
+                kMaxVelocityMetersPerSecond, kMaxAccelerationMetersPerSecondSquared),
+            new TrapezoidProfile.State(meters, 0)),
+        state -> tankDriveVelocities(state.velocity, state.velocity),
+        this);
   }
 }

@@ -5,9 +5,12 @@
 package frc.robot;
 
 import static frc.robot.Constants.ControllerConstants.*;
+import static frc.robot.Constants.DrivetrainConstants.*;
 
+import com.pathplanner.lib.PathPlanner;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.net.PortForwarder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -22,8 +25,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.autonomous.FiveBallAuto;
+import frc.robot.commands.autonomous.FollowTrajectory;
 import frc.robot.commands.autonomous.TaxiThenShoot;
+import frc.robot.commands.autonomous.TrajectoryCommandGroup;
+import frc.robot.commands.autonomous.TrajectoryCommandGroup.PositionTrigger;
 import frc.robot.commands.climber.ClimbTimed;
 import frc.robot.commands.drive.AlignWithHub;
 import frc.robot.commands.drive.DefaultDrive;
@@ -41,6 +46,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import java.util.Map;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -74,9 +80,25 @@ public class RobotContainer {
   private final TaxiThenShoot m_taxiThenShoot =
       new TaxiThenShoot(
           m_robotDrive, m_intakeSubsystem, m_indexerSubsystem, m_shooterSubsystem, m_limelight);
-  private final FiveBallAuto m_fiveBall =
-      new FiveBallAuto(
-          m_robotDrive, m_shooterSubsystem, m_indexerSubsystem, m_intakeSubsystem, m_limelight);
+  private final FollowTrajectory m_testTrajectory =
+      new FollowTrajectory(
+          m_robotDrive,
+          PathPlanner.loadPath(
+              "Test Path", kMaxVelocityMetersPerSecond, kMaxAccelerationMetersPerSecondSquared));
+  private final Command m_intakeAlongTrajectory =
+      new LiftIntake(m_intakeSubsystem)
+          .andThen(new LowerIntake(m_intakeSubsystem))
+          .andThen(
+              new TrajectoryCommandGroup(
+                  PathPlanner.loadPath(
+                      "Squiggle",
+                      kMaxVelocityMetersPerSecond,
+                      kMaxAccelerationMetersPerSecondSquared),
+                  m_robotDrive,
+                  Map.of(
+                      // Enable the intake roller for a bit towards the end of the path
+                      new IntakeCargo(m_indexerSubsystem, m_intakeSubsystem).withTimeout(1.5),
+                      new PositionTrigger(new Translation2d(3, 3.5), 0.5))));
 
   // Sets up driver controlled auto choices
   private final SendableChooser<Command> m_autoChooser = new SendableChooser<>();
@@ -181,7 +203,8 @@ public class RobotContainer {
   private void setupAutoChooser() {
     // IMPORTANT: Add any automodes here, don't override the chooser
     m_autoChooser.setDefaultOption("Taxi & Shoot", m_taxiThenShoot);
-    // m_chooser.addOption("Five Ball Auto*", m_fiveBall);
+    m_autoChooser.addOption("Follow Trajectory", m_testTrajectory);
+    m_autoChooser.addOption("Intake along trajectory", m_intakeAlongTrajectory);
 
     // Display the chooser on the dashboard
     SmartDashboard.putData(m_autoChooser);
@@ -210,6 +233,26 @@ public class RobotContainer {
   public void clearAllStickyFaults() {
     m_pdp.clearStickyFaults();
     m_pcm.clearAllStickyFaults();
+  }
+
+  /**
+   * Resets all subsystems to a stable state, with motors not moving and PID setpoints to zero, if
+   * applicable. Meant to be called in {@link Robot#disabledInit()}.
+   */
+  public void resetSubsystems() {
+    // Stop drive motors & reset internal feedforward
+    m_robotDrive.stopMotors();
+    m_robotDrive.resetFeedforward();
+
+    // Stop running the shooter flywheels
+    m_shooterSubsystem.stopShooter();
+
+    // Stop the indexer belts
+    m_indexerSubsystem.stopBelts();
+
+    // Stop the intake roller/lift
+    m_intakeSubsystem.stopRoller();
+    m_intakeSubsystem.stopLift();
   }
 
   /**
