@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.TimedRobot;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -16,10 +17,10 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   // The default period of the robot loop is 20 milliseconds (0.02 seconds)
-  public static final double kRobotLoopPeriod = 0.02;
+  public static final double kRobotLoopPeriod = TimedRobot.kDefaultPeriod;
 
   /** Solenoid ports on the PCM for use in the climber subsystem. */
-  public final class ClimberConstants {
+  public static final class ClimberConstants {
     public static final int kClimbSolenoidRightRetract = 2;
     public static final int kClimbSolenoidRightExtend = 1;
     public static final int kClimbSolenoidRightChoke = 0;
