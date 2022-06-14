@@ -11,6 +11,7 @@ import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.controller.DifferentialDriveWheelVoltages;
 import edu.wpi.first.math.controller.LTVDifferentialDriveController;
 import edu.wpi.first.math.controller.LinearPlantInversionFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,12 +21,16 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.TrapezoidProfileCommand;
 import frc.robot.Constants;
@@ -112,7 +117,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_odometry = new DifferentialDriveOdometry(m_navx.getRotation2d());
 
     // Set the tolerances of the trajectory pose controller
-    m_trajectoryController.setTolerance(new Pose2d(0.05, 0.05, Rotation2d.fromDegrees(3)), 0.1, 0.1);
+    m_trajectoryController.setTolerance(
+        new Pose2d(0.05, 0.05, Rotation2d.fromDegrees(3)), 0.1, 0.1);
 
     // Display the robot's position on a field widget on the dashboard
     SmartDashboard.putData(m_field);
@@ -356,5 +362,35 @@ public class DrivetrainSubsystem extends SubsystemBase {
             new TrapezoidProfile.State(meters, 0)),
         state -> tankDriveVelocities(state.velocity, state.velocity),
         this);
+  }
+
+  /**
+   * Creates a command that makes the robot follow a trajectory (this is untested though).
+   *
+   * @param trajectory The {@link Trajectory} for the robot to follow.
+   * @return A command that makes the robot follow the supplied trajectory.
+   */
+  public Command followTrajectory(Trajectory trajectory) {
+    final Timer trajectoryTimer = new Timer();
+
+    return new InstantCommand(() -> resetOdometryAndEncoders(trajectory.getInitialPose()), this)
+        .andThen(trajectoryTimer::start, this)
+        .andThen(
+            new RunCommand(
+                () -> {
+                  Trajectory.State goalState = trajectory.sample(trajectoryTimer.get());
+                  DifferentialDriveWheelVoltages voltages =
+                      m_trajectoryController.calculate(
+                          m_odometry.getPoseMeters(),
+                          m_centerLeftEncoder.getVelocity(),
+                          m_centerRightEncoder.getVelocity(),
+                          goalState);
+
+                  m_centerLeftMotor.setVoltage(voltages.left);
+                  m_centerRightMotor.setVoltage(voltages.right);
+                },
+                this))
+        .until(m_trajectoryController::atReference)
+        .andThen(this::stopMotors, this);
   }
 }
