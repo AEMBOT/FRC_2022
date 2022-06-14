@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.DrivetrainConstants.*;
+import static frc.robot.Constants.kRobotLoopPeriod;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
@@ -10,8 +11,10 @@ import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.controller.LTVDifferentialDriveController;
 import edu.wpi.first.math.controller.LinearPlantInversionFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
@@ -53,6 +56,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
   // Feedforward based on above linear system
   private final LinearPlantInversionFeedforward<N2, N2, N2> m_feedforward =
       new LinearPlantInversionFeedforward<>(m_drivetrainPlant, Constants.kRobotLoopPeriod);
+
+  // Controller for robot pose (used for path following)
+  private final LTVDifferentialDriveController m_trajectoryController =
+      new LTVDifferentialDriveController(
+          m_drivetrainPlant,
+          kEffectiveTrackWidth,
+          // TODO: Tune these error tolerances
+          VecBuilder.fill(0.05, 0.05, 0.01, 0.1, 0.1),
+          VecBuilder.fill(12, 12),
+          kRobotLoopPeriod);
 
   // This allows us to read angle information from the NavX
   private final AHRS m_navx = new AHRS(SPI.Port.kMXP);
@@ -97,6 +110,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     // Initialize the odometry to track where the robot is on the field
     m_odometry = new DifferentialDriveOdometry(m_navx.getRotation2d());
+
+    // Set the tolerances of the trajectory pose controller
+    m_trajectoryController.setTolerance(new Pose2d(0.05, 0.05, Rotation2d.fromDegrees(3)), 0.1, 0.1);
 
     // Display the robot's position on a field widget on the dashboard
     SmartDashboard.putData(m_field);
