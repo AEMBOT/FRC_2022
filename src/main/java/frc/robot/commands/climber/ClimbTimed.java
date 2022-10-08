@@ -107,9 +107,13 @@ public class ClimbTimed extends SequentialCommandGroup {
         new WaitUntilCommand(triggerAdvance),
         new InstantCommand(climber::setPistonsVertical, climber),
 
-        // Retract the hooks without a cutoff, since timings are inconsistent with so little air
+        // Retract the hooks with a cutoff, because it's annoying to lower the robot when
+        // it is fully up in the air and the chin grabbers have clicked on. Nolan thinks
+        // it is worth the risk of not releasing from the 2nd to last bar
         new WaitUntilCommand(triggerAdvance),
-        new InstantCommand(climber::retractArms, climber)
+        new InstantCommand(climber::retractArms, climber),
+        new WaitCommand(1.5),
+        new InstantCommand(climber::cutOffPressure, climber)
 
         // ???
         // Profit
