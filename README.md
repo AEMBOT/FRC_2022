@@ -21,6 +21,21 @@ You can use VSCode's builtin git tools to do this, or the command line:
 ## About this Project
 AEMBOT uses the WPILIB's Command-Based Programming pattern for implementing robot code. In this paradigm, robot sensors and actuators are grouped into subsystems, which expose an interface to Commands, which define the behaviors and states of the robot. Understanding the Command-based model is crucial to understanding this project. Learn more about Command-Based Programming [here](https://docs.wpilib.org/en/stable/docs/software/commandbased/index.html).
 
+## Key Bindings
+
+| Button  | Action | Details |
+| -- | -- | -- |
+| **Primary Controller** | -- | -- |
+| Joysticks | Arcade Drive | Currently set to lower power for Girls Gen and new user training |
+| A | Turn to Hub | Requires hub to be in sight, will buzz if not |
+| Start | Advance climb sequence | |
+| **Secondary Controller** | -- | -- |
+| A | Run intake roller belts | |
+| X | Run intake roller belts in reverse | |
+| B | Ramp up and advance shooter/indexer | |
+| Left/Right Bumper | Raise/lower intake | No need to hold down |
+| DPad up/down | Manually increment/decrement shooter RPM offset | |
+
 
 ## Resources
 * [FRC Control System Docs](https://docs.wpilib.org/en/stable/index.html)
