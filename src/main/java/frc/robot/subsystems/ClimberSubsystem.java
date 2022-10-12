@@ -20,6 +20,12 @@ public class ClimberSubsystem extends SubsystemBase {
       new ClimberArm(
           kClimbSolenoidRightExtend, kClimbSolenoidRightRetract, kClimbSolenoidRightChoke);
 
+  public ClimberSubsystem() {
+    super();
+    this.retractArms();
+    this.setPistonsVertical();
+  }  
+
   // The solenoid controlling the pistons that angle the climber arms
   private final Solenoid m_anglePistons =
       new Solenoid(PneumaticsModuleType.CTREPCM, kAngleSolenoid);
