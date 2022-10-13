@@ -33,7 +33,7 @@ AEMBOT uses the WPILIB's Command-Based Programming pattern for implementing robo
 | A | Run intake roller belts | |
 | X | Run intake roller belts in reverse | |
 | B | Ramp up and advance shooter/indexer | |
-| Left/Right Bumper | Raise/lower intake | No need to hold down |
+| Left/Right Bumper | Raise/lower intake | **Need to hold down** |
 | DPad up/down | Manually increment/decrement shooter RPM offset | |
 
 
