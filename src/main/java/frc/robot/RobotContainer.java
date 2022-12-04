@@ -124,6 +124,7 @@ public class RobotContainer {
     m_robotDrive.setDefaultCommand(
         new DefaultDrive(
             m_robotDrive, m_driverController::getLeftY, m_driverController::getRightX));
+    m_intakeSubsystem.setDefaultCommand(new LiftIntake(m_intakeSubsystem));
   }
 
   /**
@@ -155,12 +156,10 @@ public class RobotContainer {
                 m_driverController,
                 m_secondaryController));
 
-    // Operate the intake lift - Left/Right bumper
-    new JoystickButton(m_secondaryController, Button.kRightBumper.value)
-        .whenPressed(new LiftIntake(m_intakeSubsystem));
+    // Lowers intake and runs the intake roller & lower indexer belts to intake cargo - Left Bumper
 
     new JoystickButton(m_secondaryController, Button.kLeftBumper.value)
-        .whileHeld(new LowerIntake(m_intakeSubsystem));
+        .whileHeld(new IntakeCargo(m_indexerSubsystem, m_intakeSubsystem));
 
     // Manual modification of the shooter RPM during a match - dpad up/down
     Trigger dpadUp = new Trigger(() -> m_secondaryController.getPOV() == 0);
@@ -168,10 +167,6 @@ public class RobotContainer {
 
     dpadUp.whenActive(m_shooterSubsystem::incrementRPMOffset, m_shooterSubsystem);
     dpadDown.whenActive(m_shooterSubsystem::decrementRPMOffset, m_shooterSubsystem);
-
-    // Run the intake roller & lower indexer belts to intake cargo - A
-    new JoystickButton(m_secondaryController, Button.kA.value)
-        .whileHeld(new IntakeCargo(m_indexerSubsystem, m_intakeSubsystem));
 
     // Eject any cargo in the indexer/intake - X
     new JoystickButton(m_secondaryController, Button.kX.value)

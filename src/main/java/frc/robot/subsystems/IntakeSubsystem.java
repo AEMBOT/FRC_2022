@@ -69,6 +69,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   /** Returns true if the intake lift is drawing too much current. */
   public boolean isAtHardLimit() {
+    System.out.println(m_intakeLift.getOutputCurrent());
     return m_intakeLift.getOutputCurrent() > kLiftMaxExpectedCurrent;
   }
 

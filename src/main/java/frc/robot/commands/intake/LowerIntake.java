@@ -51,7 +51,9 @@ public class LowerIntake extends CommandBase {
 
   @Override
   public boolean isFinished() {
+    System.out.println(m_intake.getLiftPosition());
+    return m_intake.getLiftPosition() < -kLiftRangeOfMotion;
     // Finish after the roller runs for a tenth of a second
-    return m_rollerTimer.get() > 0.1;
+   
   }
 }

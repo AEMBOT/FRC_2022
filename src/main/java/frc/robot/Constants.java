@@ -64,8 +64,8 @@ public final class Constants {
 
     // Powers for moving various parts of the intake
     public static final double kRollerPower = 0.5;
-    public static final double kLiftRaisingPower = 0.2;
-    public static final double kLiftLoweringPower = -0.2;
+    public static final double kLiftRaisingPower = 0.1;
+    public static final double kLiftLoweringPower = -0.1;
 
     // Current limit for when the intake is fully up
     public static final int kLiftMaxExpectedCurrent = 35;

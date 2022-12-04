@@ -26,12 +26,15 @@ public class IntakeCargo extends CommandBase {
   @Override
   public void execute() {
     m_intake.runRollerInwards();
-    m_indexer.intakeCargo();
+   // m_indexer.intakeCargo();
+    m_intake.lowerIntake();
   }
 
   @Override
   public void end(boolean _interrupted) {
-    m_indexer.stopBelts();
+    // m_indexer.stopBelts();
     m_intake.stopRoller();
+    m_intake.raiseIntake();
+    System.out.println("End of IntakeCargo");
   }
 }
