@@ -1,5 +1,6 @@
 package frc.robot.commands.drive;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.hardware.Limelight;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -18,14 +19,10 @@ public class AlignWithHub extends SequentialCommandGroup {
    */
   public AlignWithHub(Limelight limelight, DrivetrainSubsystem drive) {
     m_limelight = limelight;
-    addCommands(new TurnDegrees(() -> this.m_goalAngle, drive));
-  }
-
-  @Override
-  public void initialize() {
-    super.initialize();
-
-    // Only fetch the hub angle when the command is first scheduled
-    m_goalAngle = -m_limelight.getX();
+    addCommands(
+            // Only fetch the hub angle when the command is first scheduled
+            new InstantCommand(() -> m_goalAngle = -m_limelight.getX()),
+            new TurnDegrees(() -> this.m_goalAngle, drive)
+    );
   }
 }

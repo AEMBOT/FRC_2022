@@ -37,11 +37,6 @@ public class TrajectoryCommandGroup extends CommandGroupBase {
     // Create a command to follow the provided trajectory and inherit its requirements
     m_trajectoryCommand = new FollowTrajectory(drive, trajectory);
     m_requirements.addAll(m_trajectoryCommand.getRequirements());
-
-    // The trajectory command shouldn't be able to be used elsewhere (although this is probably
-    // unnecessary since it's instantiated here)
-    requireUngrouped(m_trajectoryCommand);
-
     // Store a reference to the drivetrain subsystem for fetching the robot's pose
     m_drive = drive;
 
@@ -144,8 +139,6 @@ public class TrajectoryCommandGroup extends CommandGroupBase {
    * @param commands The map of commands to add to this group.
    */
   public void addCommands(Map<Command, PositionTrigger> commands) {
-    // Commands shouldn't be used elsewhere
-    requireUngrouped(commands.keySet());
 
     for (Map.Entry<Command, PositionTrigger> poseCommand : commands.entrySet()) {
       Command command = poseCommand.getKey();

@@ -2,6 +2,7 @@ package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.commands.indexer.RunIndexer;
@@ -19,76 +20,63 @@ import frc.robot.subsystems.ShooterSubsystem;
  * the shooter.
  */
 public class RampThenShoot extends SequentialCommandGroup {
-  private Limelight m_limelight;
+    private Limelight m_limelight;
 
-  /**
-   * Constructs a RampThenShoot command for use in autonomous (doesn't rumble the controllers).
-   *
-   * @param intake The robot's intake subsystem
-   * @param indexer The robot's indexer subsystem
-   * @param shooter The robot's shooter subsystem
-   * @param limelight The robot's Limelight instance
-   */
-  public RampThenShoot(
-      IntakeSubsystem intake,
-      IndexerSubsystem indexer,
-      ShooterSubsystem shooter,
-      Limelight limelight) {
-    this(intake, indexer, shooter, limelight, null, null);
-  }
+    /**
+     * Constructs a RampThenShoot command for use in autonomous (doesn't rumble the controllers).
+     *
+     * @param intake The robot's intake subsystem
+     * @param indexer The robot's indexer subsystem
+     * @param shooter The robot's shooter subsystem
+     * @param limelight The robot's Limelight instance
+     */
+    public RampThenShoot(
+            IntakeSubsystem intake,
+            IndexerSubsystem indexer,
+            ShooterSubsystem shooter,
+            Limelight limelight) {
+        this(intake, indexer, shooter, limelight, null, null);
+    }
 
-  /**
-   * Constructs a RampThenShoot command that rumbles the controllers if the hub isn't visible to the
-   * Limelight.
-   *
-   * @param intake The robot's intake subsystem
-   * @param indexer The robot's indexer subsystem
-   * @param shooter The robot's shooter subsystem
-   * @param limelight The robot's Limelight instance
-   * @param driverController The primary controller
-   * @param secondaryController The secondary controller
-   */
-  public RampThenShoot(
-      IntakeSubsystem intake,
-      IndexerSubsystem indexer,
-      ShooterSubsystem shooter,
-      Limelight limelight,
-      XboxController driverController,
-      XboxController secondaryController) {
-    addCommands(
-        // Ramp up the shooter to the desired power, rumbling the driver controller if there's no
-        // detected target
-        new ConditionalCommand(
-            new Noop(),
-            parallel(
-                new TimedRumble(driverController, 0.25, 0.5),
-                new TimedRumble(secondaryController, 0.25, 0.5)),
-            () ->
-                limelight.hasValidTarget()
-                    || driverController == null
-                    || secondaryController == null),
+    /**
+     * Constructs a RampThenShoot command that rumbles the controllers if the hub isn't visible to the
+     * Limelight.
+     *
+     * @param intake The robot's intake subsystem
+     * @param indexer The robot's indexer subsystem
+     * @param shooter The robot's shooter subsystem
+     * @param limelight The robot's Limelight instance
+     * @param driverController The primary controller
+     * @param secondaryController The secondary controller
+     */
+    public RampThenShoot(
+            IntakeSubsystem intake,
+            IndexerSubsystem indexer,
+            ShooterSubsystem shooter,
+            Limelight limelight,
+            XboxController driverController,
+            XboxController secondaryController) {
+        addCommands(
+                // Ramp up the shooter to the desired power, rumbling the driver controller if there's no
+                // detected target
+                new InstantCommand(() -> m_limelight.setLEDMode(LEDMode.ForceOn)),
+                new ConditionalCommand(
+                        new Noop(),
+                        parallel(
+                                new TimedRumble(driverController, 0.25, 0.5),
+                                new TimedRumble(secondaryController, 0.25, 0.5)),
+                        () ->
+                                limelight.hasValidTarget()
+                                        || driverController == null
+                                        || secondaryController == null),
 
-        // Ramp up the shooter then run the indexer once that's finished
-        parallel(
-            new RunShooterWithLimelight(shooter),
-            sequence(
-                new WaitUntilCommand(shooter::atTargetRPM).withTimeout(1),
-                new RunIndexer(indexer, CargoDirection.Intake))));
+                // Ramp up the shooter then run the indexer once that's finished
+                parallel(
+                        new RunShooterWithLimelight(shooter),
+                        sequence(
+                                new WaitUntilCommand(shooter::atTargetRPM).withTimeout(1),
+                                new RunIndexer(indexer, CargoDirection.Intake))));
 
-    m_limelight = limelight;
-  }
-
-  @Override
-  public void initialize() {
-    super.initialize();
-    m_limelight.setLEDMode(LEDMode.ForceOn);
-  }
-
-  @Override
-  public void end(boolean interrupted) {
-    super.end(interrupted);
-
-    // Turn off the limelight LED after finishing
-    // m_limelight.setLEDMode(LEDMode.ForceOff);
-  }
+        m_limelight = limelight;
+    }
 }

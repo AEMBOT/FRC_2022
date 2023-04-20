@@ -61,18 +61,16 @@ public class TaxiThenShoot extends SequentialCommandGroup {
         // A driver controller has to be passed in order for this command to work (it includes
         // rumble)
         new RampThenShoot(intake, indexer, shooter, limelight).withTimeout(5));
+    finallyDo(
+            (interrupted) -> {
+              // Stop all mechanisms
+              m_intake.stopRoller();
+              m_intake.stopLift();
+              m_drive.stopMotors();
+            }
+    );
 
     m_intake = intake;
     m_drive = drive;
-  }
-
-  @Override
-  public void end(boolean interrupted) {
-    super.end(interrupted);
-
-    // Stop all mechanisms
-    m_intake.stopRoller();
-    m_intake.stopLift();
-    m_drive.stopMotors();
   }
 }

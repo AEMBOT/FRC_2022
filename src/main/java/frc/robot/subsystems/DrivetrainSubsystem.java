@@ -96,7 +96,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     setupEncoderConversions();
 
     // Initialize the odometry to track where the robot is on the field
-    m_odometry = new DifferentialDriveOdometry(m_navx.getRotation2d());
+    m_odometry = new DifferentialDriveOdometry(m_navx.getRotation2d(), 0, 0, new Pose2d());
 
     // Display the robot's position on a field widget on the dashboard
     SmartDashboard.putData(m_field);
@@ -306,7 +306,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_centerRightEncoder.setPosition(0);
 
     // Reset the odometry with the new pose
-    m_odometry.resetPosition(pose, m_navx.getRotation2d());
+    m_odometry.resetPosition(m_navx.getRotation2d(), 0, 0, pose);
   }
 
   /**
