@@ -55,14 +55,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
       new LinearPlantInversionFeedforward<>(m_drivetrainPlant, Constants.kRobotLoopPeriod);
 
   // This allows us to read angle information from the NavX
-  private final AHRS m_navx = new AHRS(SPI.Port.kMXP);
+  //private final AHRS m_navx = new AHRS(SPI.Port.kMXP);
 
   // WPILib provides a convenience class for differential drive
   private final DifferentialDrive m_drive =
       new DifferentialDrive(m_centerLeftMotor, m_centerRightMotor);
 
   // This allows the robot to keep track of where it is on the field
-  private final DifferentialDriveOdometry m_odometry;
+  //private final DifferentialDriveOdometry m_odometry;
 
   // Used to display the current robot position
   private final Field2d m_field = new Field2d();
@@ -96,7 +96,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     setupEncoderConversions();
 
     // Initialize the odometry to track where the robot is on the field
-    m_odometry = new DifferentialDriveOdometry(m_navx.getRotation2d(), 0, 0, new Pose2d());
+    //m_odometry = new DifferentialDriveOdometry(m_navx.getRotation2d(), 0, 0, new Pose2d());
 
     // Display the robot's position on a field widget on the dashboard
     SmartDashboard.putData(m_field);
@@ -262,7 +262,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   public double getHeading() {
     // Negated to mirror signs on a coordinate plane (+ -> counterclockwise and vice
     // versa)
-    return -m_navx.getYaw();
+    return /*-m_navx.getYaw()*/ 0;
   }
 
   /**
@@ -272,12 +272,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
    * <p>Positive angles represent counterclockwise rotation, as most WPILib classes expect.
    */
   public double getAngle() {
-    return -m_navx.getAngle();
+    return /*-m_navx.getAngle()*/ 0;
   }
 
   /** Resets the robot heading to 0 degrees, as well as the drive motor encoders and odometry. */
   public void resetHeading() {
-    m_navx.zeroYaw();
+    //m_navx.zeroYaw();
 
     // Reset the odometry, reusing the previous pose on the field
     resetOdometryAndEncoders();
@@ -287,7 +287,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   /** Returns the robot's current pose on the field in meters. */
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+    return /*m_odometry.getPoseMeters()*/ new Pose2d();
   }
 
   /** Resets the odometry and encoders while maintaining the same pose. */
@@ -306,7 +306,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_centerRightEncoder.setPosition(0);
 
     // Reset the odometry with the new pose
-    m_odometry.resetPosition(m_navx.getRotation2d(), 0, 0, pose);
+    //m_odometry.resetPosition(m_navx.getRotation2d(), 0, 0, pose);
   }
 
   /**
@@ -320,7 +320,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     double currentRightPosition = getRightEncoderPosition();
 
     // Update the drive odometry
-    return m_odometry.update(m_navx.getRotation2d(), currentLeftPosition, currentRightPosition);
+    //return m_odometry.update(m_navx.getRotation2d(), currentLeftPosition, currentRightPosition);
+    return new Pose2d();
   }
 
   // COMMAND FACTORIES
